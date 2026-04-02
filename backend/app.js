@@ -8,6 +8,7 @@ const proveedorRoutes = require('./routes/proveedorRoutes');
 const productoRoutes = require('./routes/productoRoutes');
 const pedidoRoutes = require('./routes/pedidoRoutes');
 const facturaRoutes = require('./routes/facturaRoutes');
+const carritoRoutes = require('./routes/carritoRoutes'); // [NEW]
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/proveedores', proveedorRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api/pedidos', pedidoRoutes);
 app.use('/api/facturas', facturaRoutes);
+app.use('/api/carrito', carritoRoutes); // [NEW]
 
 // El servidor se inicializa en server.js
 

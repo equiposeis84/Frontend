@@ -6,10 +6,7 @@ const Usuario = {
         const [rows] = await db.query(`
             SELECT u.id_usuario, 
             u.rol_id, u.nombre, u.email, 
-            u.tipo_documento, 
             u.numero_documento, 
-            u.telefono, 
-            u.direccion, 
             u.activo, 
             r.nombre AS rol_nombre 
             FROM usuarios u 
@@ -39,11 +36,11 @@ const Usuario = {
         return rows[0];
     },
 
-    // CREAR (Create): Agregamos tipo_documento, telefono y direccion
+    // CREAR (Create)
     create: async (data) => {
         const {
             rol_id, nombre, email, password,
-            tipo_documento, numero_documento, telefono, direccion
+            numero_documento
         } = data;
 
         const [result] = await db.query(
@@ -52,22 +49,19 @@ const Usuario = {
             nombre, 
             email, 
             password, 
-            tipo_documento, 
             numero_documento, 
-            telefono, 
-            direccion, 
             activo) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-            [rol_id, nombre, email, password, tipo_documento, numero_documento, telefono, direccion]
+            VALUES (?, ?, ?, ?, ?, 1)`,
+            [rol_id, nombre, email, password, numero_documento]
         );
         return result.insertId;
     },
 
-    // ACTUALIZAR (Update): Sincronizado con todos los campos del modal
+    // ACTUALIZAR (Update)
     update: async (id, data) => {
         const {
-            rol_id, nombre, email, tipo_documento,
-            numero_documento, telefono, direccion, activo
+            rol_id, nombre, email,
+            numero_documento, activo
         } = data;
 
         const [result] = await db.query(
@@ -75,13 +69,10 @@ const Usuario = {
                 rol_id = ?, 
                 nombre = ?, 
                 email = ?, 
-                tipo_documento = ?, 
                 numero_documento = ?, 
-                telefono = ?, 
-                direccion = ?, 
                 activo = ? 
             WHERE id_usuario = ?`,
-            [rol_id, nombre, email, tipo_documento, numero_documento, telefono, direccion, activo, id]
+            [rol_id, nombre, email, numero_documento, activo, id]
         );
         return result.affectedRows > 0;
     },

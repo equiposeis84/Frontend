@@ -23,10 +23,7 @@ const Usuarios = () => {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [tipoDoc, setTipoDoc] = useState("");
   const [numDoc, setNumDoc] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [direccion, setDireccion] = useState("");
   const [activo, setActivo] = useState(1);
 
   const listar = () => {
@@ -50,7 +47,7 @@ const Usuarios = () => {
 
   const limpiarFormulario = () => {
     setRolId(1); setNombre(""); setEmail(""); setPassword("");
-    setTipoDoc(""); setNumDoc(""); setTelefono(""); setDireccion("");
+    setNumDoc("");
     setActivo(1); setEnEdicion(false); setIdUsuario(null);
     setShowModal(false);
   };
@@ -67,10 +64,7 @@ const Usuarios = () => {
     setRolId(u.rol_id);
     setNombre(u.nombre);
     setEmail(u.email);
-    setTipoDoc(u.tipo_documento);
     setNumDoc(u.numero_documento);
-    setTelefono(u.telefono);
-    setDireccion(u.direccion);
     setActivo(u.activo);
     setEnEdicion(true);
     setShowModal(true);
@@ -79,8 +73,8 @@ const Usuarios = () => {
   const guardar = () => {
     const datos = {
       rol_id: rolId, nombre, email, password,
-      tipo_documento: tipoDoc, numero_documento: numDoc,
-      telefono, direccion, activo
+      numero_documento: numDoc,
+      activo
     };
 
     if (enEdicion) {
@@ -149,7 +143,6 @@ const Usuarios = () => {
             <option value="id_usuario">ID Usuario</option>
             <option value="nombre">Nombre</option>
             <option value="email">Email</option>
-            <option value="tipo_documento">Tipo Doc</option>
             <option value="numero_documento">Num. Doc</option>
           </select>
           <button className="btn-search-ok" onClick={() => setCurrentPage(1)}>OK</button>
@@ -177,7 +170,6 @@ const Usuarios = () => {
                 <th>Nombre</th>
                 <th>Email</th>
                 <th>Documento</th>
-                <th>Teléfono</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
@@ -189,8 +181,7 @@ const Usuarios = () => {
                   <td><span className="badge-rol">{u.rol_nombre}</span></td>
                   <td>{u.nombre}</td>
                   <td>{u.email}</td>
-                  <td>{u.tipo_documento} {u.numero_documento}</td>
-                  <td>{u.telefono}</td>
+                  <td>{u.numero_documento}</td>
                   <td>
                     <button className={`status-toggle ${u.activo ? 'is-active' : 'is-inactive'}`}>
                       {u.activo ? 'Activo' : 'Inactivo'}
@@ -272,20 +263,8 @@ const Usuarios = () => {
                 </div>
               )}
               <div className="input-field">
-                <label>Tipo Documento</label>
-                <input value={tipoDoc} onChange={(e) => setTipoDoc(e.target.value)} />
-              </div>
-              <div className="input-field">
                 <label>Numero Documento</label>
                 <input value={numDoc} onChange={(e) => setNumDoc(e.target.value)} />
-              </div>
-              <div className="input-field">
-                <label>Teléfono</label>
-                <input value={telefono} onChange={(e) => setTelefono(e.target.value)} />
-              </div>
-              <div className="input-field">
-                <label>Dirección</label>
-                <input value={direccion} onChange={(e) => setDireccion(e.target.value)} />
               </div>
               <div className="input-field">
                 <label>Estado</label>

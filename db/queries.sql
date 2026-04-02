@@ -1,56 +1,86 @@
 -- =====================================================
--- 1. CONSULTA DE FACTURACIÓN   
+-- ARCHIVO: queries.sql
+-- DESCRIPCIÓN: Reportes de Facturación, Inventario y Seguridad
+-- =====================================================
+
+USE sistema_comercial;
+
+-- =====================================================
+-- 1. REPORTE DE VENTAS Y FACTURACIÓN DETALLADA
+-- Extrae los productos vendidos a través del vínculo Factura-Pedido
 -- =====================================================
 
 SELECT 
     f.numero_factura AS 'Factura_No',
     f.fecha AS 'Fecha_Venta',
-    u.nombre AS 'Nombre_Cliente',
-    u.numero_documento AS 'Documento_Cliente',
+    u.nombre AS 'Cliente',
+    u.numero_documento AS 'Documento',
     cat.nombre AS 'Categoria',
     p.nombre AS 'Producto',
-    df.cantidad AS 'Cant',
-    df.precio_unitario AS 'Precio_Unit_COP',
-    df.subtotal AS 'Subtotal_Item',
+    dp.cantidad AS 'Cant',
+    dp.precio_unitario AS 'Precio_Venta_COP',
+    dp.subtotal AS 'Subtotal_Item',
     f.total AS 'Total_Factura',
     f.estado AS 'Estado_Pago'
 FROM facturas f
 INNER JOIN pedidos ped ON f.pedido_id = ped.id_pedido
 INNER JOIN usuarios u ON ped.usuario_id = u.id_usuario
-INNER JOIN detalle_factura df ON f.id_factura = df.factura_id
-INNER JOIN productos p ON df.producto_id = p.id_producto
+INNER JOIN detalle_pedido dp ON ped.id_pedido = dp.pedido_id
+INNER JOIN productos p ON dp.producto_id = p.id_producto
 INNER JOIN categorias cat ON p.categoria_id = cat.id_categoria
 ORDER BY f.fecha DESC;
 
 -- =====================================================
--- 2. Consulta de Inventario y Abastecimiento
+-- 2. REPORTE DE INVENTARIO, STOCK Y GANANCIAS
+-- Muestra el estado del almacén y la rentabilidad por producto
 -- =====================================================
 
 SELECT 
     p.id_producto AS 'ID',
     p.nombre AS 'Producto',
     c.nombre AS 'Categoria',
-    prov.nombre AS 'Proveedor_Principal',
-    p.stock_actual AS 'Stock',
-    p.stock_minimo AS 'Minimo',
-    p.precio_compra AS 'Costo_COP',
-    p.precio_venta AS 'Venta_COP',
-    (p.precio_venta - p.precio_compra) AS 'Ganancia_Estimada'
+    IFNULL(prov.nombre, 'SIN PROVEEDOR') AS 'Proveedor',
+    p.stock_actual AS 'Stock_Disponible',
+    p.stock_minimo AS 'Stock_Min',
+    p.precio_compra AS 'Costo_Unit_COP',
+    p.precio_venta AS 'PVP_COP',
+    (p.precio_venta - p.precio_compra) AS 'Margen_Ganancia',
+    (p.stock_actual * (p.precio_venta - p.precio_compra)) AS 'Valor_Ganancia_en_Stock'
 FROM productos p
 INNER JOIN categorias c ON p.categoria_id = c.id_categoria
 LEFT JOIN proveedores prov ON p.proveedor_id = prov.id_proveedor
-ORDER BY p.nombre ASC;
+ORDER BY p.stock_actual ASC;
 
 -- =====================================================
--- 3. Consulta de Seguridad y Acceso (Login/Roles)
+-- 3. REPORTE DE SEGURIDAD, ROLES Y ACCESOS
+-- Utilizado para auditoría de usuarios y validación de permisos
 -- =====================================================
 
 SELECT 
-    u.id_usuario,
-    u.nombre AS 'Nombre_Completo',
-    u.email AS 'Correo_Electronico',
-    r.nombre AS 'Rol_Asignado',
-    r.descripcion AS 'Permisos_Del_Rol',
-    u.activo AS 'Cuenta_Activa'
+    u.id_usuario AS 'ID_User',
+    u.nombre AS 'Nombre_Usuario',
+    u.email AS 'Email_Login',
+    r.nombre AS 'Rol',
+    r.descripcion AS 'Permisos_Asignados',
+    CASE 
+        WHEN u.activo = 1 THEN 'ACTIVO' 
+        ELSE 'INACTIVO' 
+    END AS 'Estado_Cuenta'
 FROM usuarios u
-INNER JOIN roles r ON u.rol_id = r.id_rol;
+INNER JOIN roles r ON u.rol_id = r.id_rol
+ORDER BY r.nombre ASC;
+
+-- =====================================================
+-- 4. CONSULTA EXTRA: ESTADO ACTUAL DE CARRITOS
+-- Útil para ver qué tienen los clientes antes de comprar
+-- =====================================================
+
+SELECT 
+    IFNULL(u.nombre, 'Invitado (Sesión)') AS 'Usuario',
+    p.nombre AS 'Producto_Interés',
+    car.cantidad AS 'Cant_En_Carrito',
+    p.precio_venta AS 'Precio_Actual',
+    (car.cantidad * p.precio_venta) AS 'Total_Proyectado'
+FROM carrito car
+LEFT JOIN usuarios u ON car.usuario_id = u.id_usuario
+INNER JOIN productos p ON car.producto_id = p.id_producto;

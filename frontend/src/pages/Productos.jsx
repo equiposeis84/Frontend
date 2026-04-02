@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Pencil, Trash2, Package } from 'lucide-react';
+import { Pencil, Trash2, Package, ShoppingCart } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import '../Storefront.css';
 
 const URL_API = "http://localhost:3000/api/productos";
 const URL_CATEGORIAS = "http://localhost:3000/api/categorias";
 const URL_PROVEEDORES = "http://localhost:3000/api/proveedores";
 
-const Productos = () => {
+const Productos = ({ variant }) => {
   const [productos, setProductos] = useState([]);
   const [categoriasList, setCategoriasList] = useState([]);
   const [proveedoresList, setProveedoresList] = useState([]);
@@ -14,11 +16,14 @@ const Productos = () => {
   const [enEdicion, setEnEdicion] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const { addToCart } = useCart();
+  const isAdminView = variant === 'admin' || !variant;
+
   // Paginación y búsqueda
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState("nombre");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = isAdminView ? 5 : 12;
   
   // Campos de la BD
   const [idProducto, setIdProducto] = useState(null);
@@ -41,6 +46,7 @@ const Productos = () => {
   };
 
   const listarDependencias = () => {
+    if (!isAdminView) return; // Optimizacion: Invitado y cliente no requieren estas listas
     axios.get(URL_CATEGORIAS)
       .then(res => setCategoriasList(res.data))
       .catch(err => console.error("Error al listar categorias:", err));
@@ -53,7 +59,7 @@ const Productos = () => {
   useEffect(() => {
     listar();
     listarDependencias();
-  }, []);
+  }, [isAdminView]);
 
   const limpiarFormulario = () => {
     setCategoriaId(""); setProveedorId(""); setNombre(""); setDescripcion("");
@@ -139,6 +145,9 @@ const Productos = () => {
   };
 
   const filteredProductos = productos.filter(p => {
+    // Si no es admin, solo mostrar activos
+    if (!isAdminView && !p.activo) return false;
+    
     if (!searchTerm) return true;
     const value = p[searchField];
     if (value === null || value === undefined) return false;
@@ -147,6 +156,86 @@ const Productos = () => {
 
   const totalPages = Math.ceil(filteredProductos.length / itemsPerPage);
   const currentItems = filteredProductos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  if (!isAdminView) {
+    return (
+      <div className="storefront-container">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h1 className="module-title-table" style={{ margin: 0, fontSize: '1.5rem' }}>Resultados de búsqueda</h1>
+          <div className="search-container" style={{ margin: 0 }}>
+            <input 
+              type="text" 
+              className="search-input" 
+              placeholder="Buscar productos..." 
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+            />
+          </div>
+        </div>
+        
+        <div className="storefront-list">
+            {currentItems.map(p => (
+                <div key={p.id_producto} className="product-horizontal-card">
+                    <div className="product-row-header">
+                        <h2 className="product-hc-title">{p.nombre}</h2>
+                    </div>
+                    
+                    <div className="product-body-split">
+                        {/* LEFT: IMAGE */}
+                        <div className="product-hc-left">
+                            <div className="img-placeholder" style={{ background: '#f1f5f9' }}>
+                                <Package size={56} color="#94a3b8" />
+                            </div>
+                        </div>
+
+                        {/* CENTER: DESCRIPCION REAL BED */}
+                        <div className="product-hc-center">
+                            {p.proveedor_nombre && (
+                                <div className="badge-brand" style={{ background: '#e2e8f0', border: 'none' }}>
+                                    {p.proveedor_nombre}
+                                </div>
+                            )}
+                            <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: '1.5', margin: '0 0 15px 0' }}>
+                                {p.descripcion || 'Sin descripción detallada de este producto.'}
+                            </p>
+                            <div style={{ color: '#64748b', fontSize: '0.85rem' }}>
+                                Categoría: <strong>{p.categoria_nombre || 'General'}</strong>
+                            </div>
+                            <div style={{ color: '#64748b', fontSize: '0.85rem', marginTop: '5px' }}>
+                                Stock disponible: <strong>{p.stock_actual}</strong>
+                            </div>
+                        </div>
+
+                        {/* RIGHT: PRECIO REAL Y CARRITO */}
+                        <div className="product-hc-right" style={{ justifyContent: 'center' }}>
+                            <div className="pricing-block">
+                                <div className="precio-final">${Number(p.precio_venta).toLocaleString()}</div>
+                            </div>
+
+                            {p.stock_actual > 0 ? (
+                                <button className="btn-add-red" onClick={() => addToCart(p)}>
+                                    <ShoppingCart size={22} />
+                                </button>
+                            ) : (
+                                <button className="btn-add-red" disabled>
+                                    Agotado
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ))}
+            
+            {currentItems.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '3rem', color: '#999' }}>
+                    <Package size={64} opacity={0.5} />
+                    <p>No se encontraron productos.</p>
+                </div>
+            )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

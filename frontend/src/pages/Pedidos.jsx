@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pencil, Trash2, ShoppingCart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const URL_API = "http://localhost:3000/api/pedidos";
 const URL_USUARIOS = "http://localhost:3000/api/usuarios";
 
-const Pedidos = () => {
+const Pedidos = ({ variant }) => {
   const [pedidos, setPedidos] = useState([]);
   const [usuariosList, setUsuariosList] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [enEdicion, setEnEdicion] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+  const isAdminView = variant === 'admin' || !variant;
+  const isGuestView = variant === 'guest';
 
   // Paginación y búsqueda
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,6 +40,7 @@ const Pedidos = () => {
   };
 
   const listarUsuarios = () => {
+    if (!isAdminView) return;
     axios.get(URL_USUARIOS)
       .then(res => setUsuariosList(res.data))
       .catch(err => console.error("Error al listar usuarios:", err));
@@ -43,7 +49,7 @@ const Pedidos = () => {
   useEffect(() => {
     listar();
     listarUsuarios();
-  }, []);
+  }, [isAdminView]);
 
   const limpiarFormulario = () => {
     setUsuarioId(""); setSubtotal(0); setImpuesto(0); setTotal(0); setEstado('PENDIENTE');
@@ -120,6 +126,12 @@ const Pedidos = () => {
   };
 
   const filteredPedidos = pedidos.filter(p => {
+    if (!isAdminView) {
+      const userStr = localStorage.getItem('user');
+      const user = userStr ? JSON.parse(userStr) : null;
+      if (!user || p.usuario_id !== user.id_usuario) return false;
+    }
+
     if (!searchTerm) return true;
     const value = p[searchField];
     if (value === null || value === undefined) return false;
@@ -128,6 +140,63 @@ const Pedidos = () => {
 
   const totalPages = Math.ceil(filteredPedidos.length / itemsPerPage);
   const currentItems = filteredPedidos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  if (isGuestView) {
+    return (
+      <div className="module-container" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+         <ShoppingCart size={64} style={{ color: 'var(--primary)', opacity: 0.5, marginBottom: '1.5rem' }} />
+         <h2>Debe registrarse o iniciar sesión para completar el pedido</h2>
+         <button onClick={() => navigate('/login')} style={{ marginTop: '20px', padding: '12px 24px', background: 'var(--primary)', color: '#0f172a', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+           Iniciar Sesión / Registrarse
+         </button>
+      </div>
+    );
+  }
+
+  if (!isAdminView) {
+    return (
+      <div className="module-container">
+        <div className="module-header">
+          <h1 className="module-title-table">Mis Pedidos</h1>
+        </div>
+        <div className="module-content">
+          {currentItems.length === 0 ? (
+             <div style={{ textAlign: 'center', padding: '3rem' }}>
+               <ShoppingCart size={48} style={{ color: '#94a3b8', opacity: 0.5, marginBottom: '1rem' }} />
+               <p style={{ color: '#94a3b8' }}>Aún no tienes pedidos registrados.</p>
+             </div>
+          ) : (
+            <table className="styled-table">
+              <thead>
+                <tr>
+                  <th>ID Pedido</th>
+                  <th>Fecha</th>
+                  <th>Subtotal</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentItems.map((p) => (
+                  <tr key={p.id_pedido}>
+                    <td>#{p.id_pedido}</td>
+                    <td>{new Date(p.fecha).toLocaleDateString()}</td>
+                    <td>${Number(p.subtotal).toLocaleString()}</td>
+                    <td>${Number(p.total).toLocaleString()}</td>
+                    <td>
+                      <span className="badge-rol" style={{ backgroundColor: p.estado === 'PENDIENTE' ? '#f59f00' : p.estado === 'CANCELADO' ? '#e03131' : '#2f9e44', fontSize: '0.8rem' }}>
+                        {p.estado}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

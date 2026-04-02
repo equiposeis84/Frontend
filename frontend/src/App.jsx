@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Usuarios from './pages/Usuarios';
 import Roles from './pages/Roles';
@@ -12,59 +12,118 @@ import Perfil from './pages/Perfil';
 import Inicio from './pages/Inicio';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Carrito from './pages/Carrito';
+import Ayuda from './pages/Ayuda';
+import Contacto from './pages/Contacto';
 import { Menu } from 'lucide-react';
+import { CartProvider } from './context/CartContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
-import './services/authService'; // Activa los interceptores de Axios globalmente
+import './services/authService';
 
-function App() {
+const AppLayout = ({ variant }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const { logout } = useAuth();
+  
+  return (
+    <div className="app-wrapper">
+      <Sidebar
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+        onLogout={logout}
+        variant={variant}
+      />
+      <div className={`main-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+        <div className="mobile-header">
+          <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>
+            <Menu size={28} />
+          </button>
+          <h2 className="mobile-title">
+            {variant === 'admin' ? 'AdminPanel' : 'RematesPaisa'}
+          </h2>
+        </div>
+
+        <div className="admin-container">
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+function AppRoutes() {
+  const { isAuthenticated, role, loading } = useAuth();
+
+  if (loading) return <div style={{ padding: '4rem', textAlign: 'center' }}>Validando sesión...</div>;
+
+  const isAdmin = role === 'Administrador';
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/inicio" replace /> : <Login onLogin={() => setIsAuthenticated(true)} />} />
-        <Route path="/register" element={isAuthenticated ? <Navigate to="/inicio" replace /> : <Register />} />
+    <Routes>
+      <Route path="/" element={<Navigate to="/usuario/inicio" replace />} />
+      <Route path="/login" element={isAuthenticated ? <Navigate to={isAdmin ? "/admin/inicio" : "/cliente/inicio"} replace /> : <Login />} />
+      <Route path="/register" element={isAuthenticated ? <Navigate to={isAdmin ? "/admin/inicio" : "/cliente/inicio"} replace /> : <Register />} />
 
-        <Route path="/*" element={
-          isAuthenticated ? (
-            <div className="app-wrapper">
-              <Sidebar
-                isOpen={isSidebarOpen}
-                setIsOpen={setIsSidebarOpen}
-                onLogout={() => setIsAuthenticated(false)}
-              />
+      {/* Rutas de Invitado - Totalmente Públicas */}
+      <Route path="/usuario" element={<AppLayout variant="usuario" />}>
+        <Route index element={<Navigate to="inicio" replace />} />
+        <Route path="inicio" element={<Inicio />} />
+        <Route path="productos" element={<Productos variant="usuario" />} />
+        <Route path="carrito" element={<Carrito variant="usuario" />} />
+        <Route path="pedidos" element={<Pedidos variant="usuario" />} />
+        <Route path="ayuda" element={<Ayuda />} />
+        <Route path="contacto" element={<Contacto />} />
+      </Route>
 
-              <div className={`main-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-                <div className="mobile-header">
-                  <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>
-                    <Menu size={28} />
-                  </button>
-                  <h2 className="mobile-title">AdminPanel</h2>
-                </div>
+      {/* Rutas de Cliente Registrado */}
+      <Route path="/cliente" element={
+        <ProtectedRoute allowedRoles={['Cliente', 'Administrador']}>
+          <AppLayout variant="cliente" />
+        </ProtectedRoute>
+      }>
+        <Route index element={<Navigate to="inicio" replace />} />
+        <Route path="inicio" element={<Inicio />} />
+        <Route path="productos" element={<Productos variant="cliente" />} />
+        <Route path="carrito" element={<Carrito variant="cliente" />} />
+        <Route path="pedidos" element={<Pedidos variant="cliente" />} />
+        <Route path="ayuda" element={<Ayuda />} />
+        <Route path="contacto" element={<Contacto />} />
+        <Route path="perfil" element={<Perfil />} />
+      </Route>
 
-                <div className="admin-container">
-                  <Routes>
-                    <Route path="/" element={<Navigate to="/inicio" replace />} />
-                    <Route path="/inicio" element={<Inicio />} />
-                    <Route path="/usuarios" element={<Usuarios />} />
-                    <Route path="/roles" element={<Roles />} />
-                    <Route path="/categorias" element={<Categorias />} />
-                    <Route path="/productos" element={<Productos />} />
-                    <Route path="/pedidos" element={<Pedidos />} />
-                    <Route path="/facturas" element={<Facturas />} />
-                    <Route path="/proveedores" element={<Proveedores />} />
-                    <Route path="/perfil" element={<Perfil />} />
-                  </Routes>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        } />
-      </Routes>
-    </BrowserRouter>
+      {/* Rutas de Administrador */}
+      <Route path="/admin" element={
+        <ProtectedRoute allowedRoles={['Administrador']}>
+          <AppLayout variant="admin" />
+        </ProtectedRoute>
+      }>
+        <Route index element={<Navigate to="inicio" replace />} />
+        <Route path="inicio" element={<Inicio />} />
+        <Route path="usuarios" element={<Usuarios />} />
+        <Route path="roles" element={<Roles />} />
+        <Route path="categorias" element={<Categorias />} />
+        <Route path="productos" element={<Productos variant="admin" />} />
+        <Route path="pedidos" element={<Pedidos variant="admin" />} />
+        <Route path="facturas" element={<Facturas />} />
+        <Route path="proveedores" element={<Proveedores />} />
+        <Route path="perfil" element={<Perfil />} />
+      </Route>
+      
+      <Route path="/*" element={<Navigate to="/usuario/inicio" replace />} />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 

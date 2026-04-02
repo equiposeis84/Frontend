@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Layers } from 'lucide-react';
-import { saveSession } from '../services/authService';
+import { useAuth } from '../context/AuthContext';
 
 const URL_LOGIN = "http://localhost:3000/api/usuarios/login";
 
-const Login = ({ onLogin }) => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  
+  const { login } = useAuth(); // Hook al Contexto Global
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,12 +27,9 @@ const Login = ({ onLogin }) => {
     try {
       const response = await axios.post(URL_LOGIN, { email, password });
 
-      // Guardar token JWT y datos del usuario en localStorage
-      saveSession(response.data.token, response.data.user);
-      onLogin(); // notifica a App.jsx para re-renderizar inmediatamente
+      // Cargar sesión al contexto global (esto redirigirá automáticamente vía App.jsx)
+      login(response.data.token, response.data.user);
 
-      // Redirigir a inicio
-      navigate('/inicio');
     } catch (err) {
       setError(err.response?.data?.message || 'Error al iniciar sesión');
     } finally {

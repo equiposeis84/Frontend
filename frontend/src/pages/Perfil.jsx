@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { UserCircle, Save, Bell, Moon, Shield } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
-// Hardcoded current admin user ID (assuming standard setup with sebbx as ID=1)
-const CURRENT_USER_ID = 1;
 const URL_API = "http://localhost:3000/api/usuarios";
 
 const Perfil = () => {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   
   // User Data
@@ -25,12 +25,16 @@ const Perfil = () => {
   const [autenticacionDosPasos, setAutenticacionDosPasos] = useState(false);
 
   useEffect(() => {
-    cargarPerfil();
-  }, []);
+    if (user?.id_usuario) {
+      cargarPerfil();
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
 
   const cargarPerfil = () => {
     setLoading(true);
-    axios.get(`${URL_API}/${CURRENT_USER_ID}`)
+    axios.get(`${URL_API}/${user.id_usuario}`)
       .then(res => {
         const u = res.data;
         if(u) {
@@ -48,6 +52,8 @@ const Perfil = () => {
   };
 
   const guardarPerfil = () => {
+    if (!user?.id_usuario) return;
+    
     const datos = {
       rol_id: rolId,
       nombre,
@@ -65,7 +71,7 @@ const Perfil = () => {
       return;
     }
 
-    axios.put(`${URL_API}/${CURRENT_USER_ID}`, datos)
+    axios.put(`${URL_API}/${user.id_usuario}`, datos)
       .then(() => {
         alert("¡Perfil actualizado con éxito!");
         setPassword(""); 
