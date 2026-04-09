@@ -1,8 +1,8 @@
-const Carrito = require('../models/carritoModel');
+import Carrito from '../models/carritoModel.js';
 
-exports.getCart = async (req, res) => {
+const getCart = async (req, res) => {
     try {
-        const { usuario_id, session_id } = req.query; // leemos por query si es por get
+        const { usuario_id, session_id } = req.query;
         const items = await Carrito.find(usuario_id, session_id);
         res.json(items);
     } catch (error) {
@@ -11,7 +11,7 @@ exports.getCart = async (req, res) => {
     }
 };
 
-exports.add = async (req, res) => {
+const add = async (req, res) => {
     try {
         const { usuario_id, session_id, producto_id, cantidad } = req.body;
         if (!producto_id || !cantidad) {
@@ -26,7 +26,7 @@ exports.add = async (req, res) => {
     }
 };
 
-exports.update = async (req, res) => {
+const update = async (req, res) => {
     try {
         const { id_carrito } = req.params;
         const { cantidad, usuario_id, session_id } = req.body;
@@ -39,7 +39,7 @@ exports.update = async (req, res) => {
     }
 };
 
-exports.remove = async (req, res) => {
+const remove = async (req, res) => {
     try {
         const { producto_id } = req.params;
         const { usuario_id, session_id } = req.query;
@@ -52,9 +52,9 @@ exports.remove = async (req, res) => {
     }
 };
 
-exports.clear = async (req, res) => {
+const clear = async (req, res) => {
     try {
-        const { usuario_id, session_id } = req.body; // por POST a clear
+        const { usuario_id, session_id } = req.body;
         await Carrito.clearCart(usuario_id, session_id);
         res.json([]);
     } catch (error) {
@@ -63,7 +63,7 @@ exports.clear = async (req, res) => {
     }
 };
 
-exports.merge = async (req, res) => {
+const merge = async (req, res) => {
     try {
         const { session_id, usuario_id } = req.body;
         if (session_id && usuario_id) {
@@ -75,4 +75,14 @@ exports.merge = async (req, res) => {
         console.error("Error al fusionar:", error);
         res.status(500).json({ error: error.message });
     }
+};
+
+// Exportamos todas las funciones como un objeto por defecto
+export default {
+    getCart,
+    add,
+    update,
+    remove,
+    clear,
+    merge
 };

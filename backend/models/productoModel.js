@@ -1,4 +1,4 @@
-const db = require('../config/db');
+import db from '../config/db.js';
 
 const Producto = {
     findAll: async () => {
@@ -22,7 +22,6 @@ const Producto = {
         return rows[0];
     },
     create: async (data) => {
-        // En Express params que no se mandan llegan como undefined.
         const categoria_id = data.categoria_id || null;
         const proveedor_id = data.proveedor_id || null;
         const nombre = data.nombre || '';
@@ -53,4 +52,4 @@ const Producto = {
     }
 };
 
-module.exports = Producto;
+export default Producto;

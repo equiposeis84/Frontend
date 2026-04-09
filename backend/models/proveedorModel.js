@@ -1,4 +1,4 @@
-const db = require('../config/db');
+import db from '../config/db.js';
 
 const Proveedor = {
     findAll: async () => {
@@ -31,4 +31,4 @@ const Proveedor = {
     }
 };
 
-module.exports = Proveedor;
+export default Proveedor;

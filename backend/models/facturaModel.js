@@ -1,4 +1,4 @@
-const db = require('../config/db');
+import db from '../config/db.js';
 
 const Factura = {
     findAll: async () => {
@@ -37,4 +37,4 @@ const Factura = {
     }
 };
 
-module.exports = Factura;
+export default Factura;

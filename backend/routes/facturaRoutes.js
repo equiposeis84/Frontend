@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const facturaController = require('../controllers/facturaController');
+import facturaController from '../controllers/facturaController.js';
 
 router.get('/', facturaController.getAll);
 router.get('/:id', facturaController.getOne);
@@ -8,4 +8,4 @@ router.post('/', facturaController.store);
 router.put('/:id', facturaController.update);
 router.delete('/:id', facturaController.destroy);
 
-module.exports = router;
+export default router;

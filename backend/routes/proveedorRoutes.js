@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const proveedorController = require('../controllers/proveedorController');
+import proveedorController from '../controllers/proveedorController.js';
 
 router.get('/', proveedorController.getAll);
 router.get('/:id', proveedorController.getOne);
@@ -8,4 +8,4 @@ router.post('/', proveedorController.store);
 router.put('/:id', proveedorController.update);
 router.delete('/:id', proveedorController.destroy);
 
-module.exports = router;
+export default router;

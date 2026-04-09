@@ -1,4 +1,4 @@
-const db = require('../config/db');
+import db from '../config/db.js';
 
 const Categoria = {
     findAll: async () => {
@@ -31,4 +31,4 @@ const Categoria = {
     }
 };
 
-module.exports = Categoria;
+export default Categoria;

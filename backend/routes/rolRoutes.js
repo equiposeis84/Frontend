@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const rolController = require('../controllers/rolController');
+import rolController from '../controllers/rolController.js';
 
 router.get('/', rolController.getAll);
 router.get('/:id', rolController.getOne);
@@ -8,4 +8,4 @@ router.post('/', rolController.store);
 router.put('/:id', rolController.update);
 router.delete('/:id', rolController.destroy);
 
-module.exports = router;
+export default router;

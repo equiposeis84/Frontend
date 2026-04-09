@@ -1,6 +1,6 @@
-const Factura = require('../models/facturaModel');
+import Factura from '../models/facturaModel.js';
 
-exports.getAll = async (req, res) => {
+const getAll = async (req, res) => {
     try {
         const data = await Factura.findAll();
         res.json(data);
@@ -9,7 +9,7 @@ exports.getAll = async (req, res) => {
     }
 };
 
-exports.getOne = async (req, res) => {
+const getOne = async (req, res) => {
     try {
         const row = await Factura.findById(req.params.id);
         if (!row) return res.status(404).json({ message: "Factura no encontrada" });
@@ -19,11 +19,10 @@ exports.getOne = async (req, res) => {
     }
 };
 
-exports.store = async (req, res) => {
+const store = async (req, res) => {
     try {
         const { pedido_id, numero_factura } = req.body;
         if (!pedido_id || !numero_factura) return res.status(400).json({ message: "ID del pedido y numero de factura son obligatorios" });
-        
         const id = await Factura.create(req.body);
         res.status(201).json({ message: "Factura generada con éxito", id_factura: id });
     } catch (error) {
@@ -31,7 +30,7 @@ exports.store = async (req, res) => {
     }
 };
 
-exports.update = async (req, res) => {
+const update = async (req, res) => {
     try {
         const { id } = req.params;
         const actualizado = await Factura.update(id, req.body);
@@ -42,7 +41,7 @@ exports.update = async (req, res) => {
     }
 };
 
-exports.destroy = async (req, res) => {
+const destroy = async (req, res) => {
     try {
         const { id } = req.params;
         const eliminado = await Factura.delete(id);
@@ -50,10 +49,10 @@ exports.destroy = async (req, res) => {
         res.json({ message: "Factura eliminada" });
     } catch (error) {
         if (error.code === 'ER_ROW_IS_REFERENCED_2') {
-            return res.status(400).json({ 
-                error: "No se puede eliminar esta factura porque tiene detalles asociados." 
-            });
+            return res.status(400).json({ error: "No se puede eliminar esta factura porque tiene detalles asociados." });
         }
         res.status(500).json({ error: error.message });
     }
 };
+
+export default { getAll, getOne, store, update, destroy };

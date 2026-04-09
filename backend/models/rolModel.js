@@ -1,4 +1,4 @@
-const db = require('../config/db');
+import db from '../config/db.js';
 
 const Rol = {
     findAll: async () => {
@@ -31,4 +31,4 @@ const Rol = {
     }
 };
 
-module.exports = Rol;
+export default Rol;

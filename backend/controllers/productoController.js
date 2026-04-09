@@ -1,6 +1,6 @@
-const Producto = require('../models/productoModel');
+import Producto from '../models/productoModel.js';
 
-exports.getAll = async (req, res) => {
+const getAll = async (req, res) => {
     try {
         const data = await Producto.findAll();
         res.json(data);
@@ -9,7 +9,7 @@ exports.getAll = async (req, res) => {
     }
 };
 
-exports.getOne = async (req, res) => {
+const getOne = async (req, res) => {
     try {
         const row = await Producto.findById(req.params.id);
         if (!row) return res.status(404).json({ message: "Producto no encontrado" });
@@ -19,7 +19,7 @@ exports.getOne = async (req, res) => {
     }
 };
 
-exports.store = async (req, res) => {
+const store = async (req, res) => {
     try {
         const { categoria_id, nombre, precio_compra, precio_venta } = req.body;
         if (!categoria_id || !nombre || precio_compra === undefined || precio_venta === undefined) {
@@ -32,7 +32,7 @@ exports.store = async (req, res) => {
     }
 };
 
-exports.update = async (req, res) => {
+const update = async (req, res) => {
     try {
         const { id } = req.params;
         const actualizado = await Producto.update(id, req.body);
@@ -43,7 +43,7 @@ exports.update = async (req, res) => {
     }
 };
 
-exports.destroy = async (req, res) => {
+const destroy = async (req, res) => {
     try {
         const { id } = req.params;
         const eliminado = await Producto.delete(id);
@@ -51,10 +51,10 @@ exports.destroy = async (req, res) => {
         res.json({ message: "Producto eliminado" });
     } catch (error) {
         if (error.code === 'ER_ROW_IS_REFERENCED_2') {
-            return res.status(400).json({ 
-                error: "No se puede eliminar este producto porque se usa en inventarios, compras o pedidos. Por favor, desáctivalo en la opción 'Estado'." 
-            });
+            return res.status(400).json({ error: "No se puede eliminar este producto porque se usa en inventarios o pedidos." });
         }
         res.status(500).json({ error: error.message });
     }
 };
+
+export default { getAll, getOne, store, update, destroy };

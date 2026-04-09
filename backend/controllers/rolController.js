@@ -1,6 +1,6 @@
-const Rol = require('../models/rolModel');
+import Rol from '../models/rolModel.js';
 
-exports.getAll = async (req, res) => {
+const getAll = async (req, res) => {
     try {
         const data = await Rol.findAll();
         res.json(data);
@@ -9,7 +9,7 @@ exports.getAll = async (req, res) => {
     }
 };
 
-exports.getOne = async (req, res) => {
+const getOne = async (req, res) => {
     try {
         const row = await Rol.findById(req.params.id);
         if (!row) return res.status(404).json({ message: "Rol no encontrado" });
@@ -19,7 +19,7 @@ exports.getOne = async (req, res) => {
     }
 };
 
-exports.store = async (req, res) => {
+const store = async (req, res) => {
     try {
         const { nombre, descripcion } = req.body;
         if (!nombre) return res.status(400).json({ message: "El nombre es obligatorio" });
@@ -30,7 +30,7 @@ exports.store = async (req, res) => {
     }
 };
 
-exports.update = async (req, res) => {
+const update = async (req, res) => {
     try {
         const { id } = req.params;
         const actualizado = await Rol.update(id, req.body);
@@ -41,7 +41,7 @@ exports.update = async (req, res) => {
     }
 };
 
-exports.destroy = async (req, res) => {
+const destroy = async (req, res) => {
     try {
         const { id } = req.params;
         const eliminado = await Rol.delete(id);
@@ -49,10 +49,10 @@ exports.destroy = async (req, res) => {
         res.json({ message: "Rol eliminado" });
     } catch (error) {
         if (error.code === 'ER_ROW_IS_REFERENCED_2') {
-            return res.status(400).json({ 
-                error: "No se puede eliminar este rol porque hay usuarios asignados a él." 
-            });
+            return res.status(400).json({ error: "No se puede eliminar este rol porque hay usuarios asignados." });
         }
         res.status(500).json({ error: error.message });
     }
 };
+
+export default { getAll, getOne, store, update, destroy };

@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = process.env.JWT_SECRET || "mi_clave_secreta_super_segura";
 
@@ -6,7 +6,7 @@ const SECRET_KEY = process.env.JWT_SECRET || "mi_clave_secreta_super_segura";
  * Middleware para verificar el JWT en rutas protegidas.
  * Espera el header: Authorization: Bearer <token>
  */
-function verificarToken(req, res, next) {
+export const verificarToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -25,6 +25,4 @@ function verificarToken(req, res, next) {
         }
         return res.status(403).json({ message: "Token inválido." });
     }
-}
-
-module.exports = { verificarToken };
+};

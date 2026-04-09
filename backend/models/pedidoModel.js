@@ -1,4 +1,4 @@
-const db = require('../config/db');
+import db from '../config/db.js';
 
 const Pedido = {
     findAll: async () => {
@@ -42,4 +42,4 @@ const Pedido = {
     }
 };
 
-module.exports = Pedido;
+export default Pedido;

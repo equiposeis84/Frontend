@@ -1,7 +1,6 @@
-const db = require('../config/db');
+import db from '../config/db.js';
 
 const Carrito = {
-    // Buscar carrito por usuario (prioridad) o por sesion (invitados)
     find: async (usuario_id, session_id) => {
         let query = `
             SELECT c.id_carrito, c.usuario_id, c.session_id, c.producto_id, c.cantidad, 
@@ -16,18 +15,16 @@ const Carrito = {
             query += ` WHERE c.usuario_id = ?`;
             params.push(usuario_id);
         } else if (session_id) {
-            // Un usuario sin login (huerfano) tiene el usuario_id null y el session activo
             query += ` WHERE c.session_id = ? AND c.usuario_id IS NULL`;
             params.push(session_id);
         } else {
-            return []; // no pasaron ni id ni sesion
+            return [];
         }
 
         const [rows] = await db.query(query, params);
         return rows;
     },
 
-    // Buscar items unicos para saber si agregar o solo actualizar cantidad
     findItem: async (usuario_id, session_id, producto_id) => {
         let query = `SELECT * FROM carrito WHERE producto_id = ? AND `;
         let params = [producto_id];
@@ -49,12 +46,10 @@ const Carrito = {
     addItem: async (usuario_id, session_id, producto_id, cantidad) => {
         const existing = await Carrito.findItem(usuario_id, session_id, producto_id);
         if (existing) {
-            // suma cantidad
             const nuevaCantidad = existing.cantidad + cantidad;
             const [result] = await db.query(`UPDATE carrito SET cantidad = ? WHERE id_carrito = ?`, [nuevaCantidad, existing.id_carrito]);
             return result.affectedRows > 0;
         } else {
-            // inserta nuevo
             const [result] = await db.query(`
                 INSERT INTO carrito (usuario_id, session_id, producto_id, cantidad) 
                 VALUES (?, ?, ?, ?)`, 
@@ -105,11 +100,7 @@ const Carrito = {
         return result.affectedRows > 0;
     },
 
-    // El truco de magia: traspasar las sesiones huerfanas a un cliente real recien logueado
     mergeSession: async (session_id, usuario_id) => {
-        // En lugar de chocar por unique, si un usuario loguea y tenia productos anonimos y además productos viejos, 
-        // lo mas limpio es mover los ID
-        // Como no hay Restricción Unique (usuario_id, producto_id) en el esquema actual, el update masivo es directo (podría haber repetidos, pero lo abstraemos simple)
         const [result] = await db.query(`
             UPDATE carrito 
             SET usuario_id = ?, session_id = NULL 
@@ -119,4 +110,4 @@ const Carrito = {
     }
 };
 
-module.exports = Carrito;
+export default Carrito;
