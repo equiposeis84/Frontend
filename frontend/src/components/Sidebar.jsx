@@ -24,7 +24,6 @@ const Sidebar = ({ isOpen, setIsOpen, onLogout, variant = "admin" }) => {
     { id: 'categorias', path: '/admin/categorias', label: 'Categorías', icon: Tags },
     { id: 'productos', path: '/admin/productos', label: 'Productos', icon: Package },
     { id: 'pedidos', path: '/admin/pedidos', label: 'Pedidos', icon: ShoppingCart },
-    { id: 'facturas', path: '/admin/facturas', label: 'Facturas', icon: Receipt },
     { id: 'proveedores', path: '/admin/proveedores', label: 'Proveedores', icon: Truck }
   ];
 

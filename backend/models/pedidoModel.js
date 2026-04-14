@@ -39,6 +39,28 @@ const Pedido = {
     delete: async (id) => {
         const [result] = await db.query('DELETE FROM pedidos WHERE id_pedido = ?', [id]);
         return result.affectedRows > 0;
+    },
+    findByIdWithDetails: async (id) => {
+        const [orderRows] = await db.query(`
+            SELECT p.*, u.nombre AS usuario_nombre, u.email AS usuario_email, u.numero_documento
+            FROM pedidos p
+            INNER JOIN usuarios u ON p.usuario_id = u.id_usuario
+            WHERE p.id_pedido = ?
+        `, [id]);
+        if (orderRows.length === 0) return null;
+
+        const pedido = orderRows[0];
+
+        const [detalles] = await db.query(`
+            SELECT dp.*, pr.nombre AS producto_nombre
+            FROM detalle_pedido dp
+            INNER JOIN productos pr ON dp.producto_id = pr.id_producto
+            WHERE dp.pedido_id = ?
+            ORDER BY dp.id_detalle_pedido ASC
+        `, [id]);
+
+        pedido.detalles = detalles;
+        return pedido;
     }
 };
 

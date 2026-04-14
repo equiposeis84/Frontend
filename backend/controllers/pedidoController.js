@@ -92,4 +92,14 @@ const destroy = async (req, res) => {
     }
 };
 
-export default { getAll, getOne, checkout, store, update, destroy };
+const getTicket = async (req, res) => {
+    try {
+        const pedido = await Pedido.findByIdWithDetails(req.params.id);
+        if (!pedido) return res.status(404).json({ message: "Pedido no encontrado" });
+        res.json(pedido);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export default { getAll, getOne, checkout, store, update, destroy, getTicket };
