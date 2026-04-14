@@ -9,7 +9,7 @@ const Contacto = () => {
       <div className="module-content">
         <p>Comunícate con nosotros para cualquier inquietud o problema con tu pedido.</p>
         <p>Email: soporte@rematespaisa.com</p>
-        <p>Teléfono: +57 300 000 0000</p>
+        <p>Teléfono: +57 310 8892977 , +57 322 3191394</p>
       </div>
     </div>
   );

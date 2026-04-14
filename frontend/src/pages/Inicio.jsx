@@ -34,9 +34,9 @@ const Inicio = () => {
           {features.map((feat, idx) => {
             const Icon = feat.icon;
             return (
-              <div 
-                key={idx} 
-                className="modal-box" 
+              <div
+                key={idx}
+                className="modal-box"
                 style={{ position: 'relative', transform: 'none', margin: 0, cursor: 'pointer', transition: 'transform 0.2s', borderTop: `4px solid ${feat.color}` }}
                 onClick={() => navigate(feat.path)}
                 onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
@@ -61,7 +61,7 @@ const Inicio = () => {
   return (
     <div className="storefront-container" style={{ textAlign: 'center', paddingTop: '3rem' }}>
       <div style={{ background: 'var(--card-bg)', borderRadius: '16px', padding: '4rem 2rem', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', position: 'relative', overflow: 'hidden' }}>
-        
+
         {/* Adorno decorativo de fondo */}
         <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '300px', height: '300px', background: 'var(--primary)', opacity: '0.1', borderRadius: '50%', filter: 'blur(50px)' }}></div>
         <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: '300px', height: '300px', background: 'var(--danger)', opacity: '0.1', borderRadius: '50%', filter: 'blur(50px)' }}></div>
@@ -71,18 +71,18 @@ const Inicio = () => {
           ¡Bienvenido a <span style={{ color: 'var(--primary)' }}>RematesPaisa</span>!
         </h1>
         <p style={{ fontSize: '1.2rem', color: '#94a3b8', maxWidth: '600px', margin: '0 auto 2.5rem' }}>
-          {isAuthenticated 
-            ? `Hola ${user?.nombre}, explora nuestras ofertas exclusivas del día y lleva la mejor tecnología al mejor precio con seguridad garantizada.` 
-            : 'Explora nuestro inmenso catálogo de gadgets y tecnología a un precio imbatible. ¿Listo para renovar tus equipos?'}
+          {isAuthenticated
+            ? `Hola ${user?.nombre}, explora nuestras ofertas exclusivas del día y lleva los mejores productos para el hogar al mejor precio con seguridad garantizada.`
+            : 'Explora nuestro inmenso catálogo de productos para el hogar a un precio imbatible.'}
         </p>
-        
+
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-          <button 
-            className="btn-add-red" 
+          <button
+            className="btn-add-red"
             style={{ padding: '1rem 2.5rem', fontSize: '1.2rem' }}
             onClick={() => navigate(`${prefix}/productos`)}
           >
-            <Store size={22} style={{ marginRight: '8px' }}/> Explorar Tienda
+            <Store size={22} style={{ marginRight: '8px' }} /> Explorar Tienda
           </button>
         </div>
       </div>
