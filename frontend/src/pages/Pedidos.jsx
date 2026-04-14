@@ -44,6 +44,19 @@ const Pedidos = ({ variant }) => {
       .catch(err => console.error("Error al listar usuarios:", err));
   };
 
+  // --- LÓGICA RF011: Cancelación para el Cliente ---
+  const cancelarMiPedido = async (id) => {
+    if (window.confirm("¿Estás seguro de que deseas cancelar este pedido?")) {
+      try {
+        await axios.put(`${URL_API}/${id}/cancelar`);
+        listar(); // Refrescamos la lista automáticamente
+        alert("Pedido cancelado correctamente.");
+      } catch (err) {
+        alert(err.response?.data?.message || "Error al cancelar");
+      }
+    }
+  };
+
   useEffect(() => {
     listar();
     listarUsuarios();
@@ -119,7 +132,6 @@ const Pedidos = ({ variant }) => {
     }
   };
 
-  // ── Descarga de Ticket de Compra ──
   const descargarTicket = async (pedidoId) => {
     try {
       const res = await axios.get(`${URL_API}/${pedidoId}/ticket`);
@@ -301,7 +313,7 @@ const Pedidos = ({ variant }) => {
                   <th>Fecha</th>
                   <th>Total</th>
                   <th>Estado</th>
-                  <th>Ticket</th>
+                  <th>Acciones</th> {/* Cambiado Ticket por Acciones */}
                 </tr>
               </thead>
               <tbody>
@@ -316,14 +328,28 @@ const Pedidos = ({ variant }) => {
                       </span>
                     </td>
                     <td>
-                      <button
-                        className="btn-icon"
-                        onClick={() => descargarTicket(p.id_pedido)}
-                        title="Descargar Ticket de Compra"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-                      >
-                        <Download size={18} color="var(--primary)" />
-                      </button>
+                      {/* DIV CONTENEDOR DE BOTONES (LINEA 268) */}
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        {/* BOTÓN TICKET (RF023) */}
+                        <button
+                          className="btn-icon"
+                          onClick={() => descargarTicket(p.id_pedido)}
+                          title="Descargar Ticket de Compra"
+                        >
+                          <Download size={18} color="var(--primary)" />
+                        </button>
+
+                        {/* BOTÓN CANCELAR (RF011): Solo visible si está PENDIENTE */}
+                        {p.estado === 'PENDIENTE' && (
+                          <button
+                            className="btn-icon"
+                            onClick={() => cancelarMiPedido(p.id_pedido)}
+                            title="Cancelar Pedido"
+                          >
+                            <Trash2 size={18} color="#ef4444" />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -101,5 +101,33 @@ const getTicket = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+const cancelar = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const pedido = await Pedido.findById(id);
 
-export default { getAll, getOne, checkout, store, update, destroy, getTicket };
+        if (!pedido) {
+            return res.status(404).json({ message: "Pedido no encontrado" });
+        }
+
+        // Regla RF011: Solo cancelar si está PENDIENTE
+        if (pedido.estado !== 'PENDIENTE') {
+            return res.status(400).json({
+                message: "No se puede cancelar un pedido que ya no está PENDIENTE"
+            });
+        }
+
+        // LLAMADA A LA NUEVA FUNCIÓN DEL MODELO
+        const actualizado = await Pedido.updateStatus(id, 'CANCELADO');
+
+        if (actualizado) {
+            res.json({ message: "Pedido cancelado con éxito" });
+        } else {
+            res.status(500).json({ message: "No se pudo actualizar el estado" });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export default { getAll, getOne, checkout, store, update, destroy, getTicket, cancelar };

@@ -25,7 +25,7 @@ import './services/authService';
 const AppLayout = ({ variant }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { logout } = useAuth();
-  
+
   return (
     <div className="app-wrapper">
       <Sidebar
@@ -61,22 +61,31 @@ function AppRoutes() {
 
   return (
     <Routes>
+      {/* Redirección Inicial */}
       <Route path="/" element={<Navigate to="/usuario/inicio" replace />} />
+
+      {/* Login y Registro Globales (Sin Sidebar) */}
       <Route path="/login" element={isAuthenticated ? <Navigate to={isAdmin ? "/admin/inicio" : "/cliente/inicio"} replace /> : <Login />} />
       <Route path="/register" element={isAuthenticated ? <Navigate to={isAdmin ? "/admin/inicio" : "/cliente/inicio"} replace /> : <Register />} />
 
-      {/* Rutas de Invitado - Totalmente Públicas */}
-      <Route path="/usuario" element={<AppLayout variant="usuario" />}>
-        <Route index element={<Navigate to="inicio" replace />} />
-        <Route path="inicio" element={<Inicio />} />
-        <Route path="productos" element={<Productos variant="usuario" />} />
-        <Route path="carrito" element={<Carrito variant="usuario" />} />
-        <Route path="pedidos" element={<Pedidos variant="usuario" />} />
-        <Route path="ayuda" element={<Ayuda />} />
-        <Route path="contacto" element={<Contacto />} />
+      {/* --- SECCIÓN DE USUARIO / INVITADO --- */}
+      <Route path="/usuario">
+        {/* Login específico dentro de /usuario (Sin Sidebar para evitar errores) */}
+        <Route path="login" element={isAuthenticated ? <Navigate to="/usuario/inicio" replace /> : <Login />} />
+
+        {/* Rutas con Sidebar mediante AppLayout */}
+        <Route element={<AppLayout variant="usuario" />}>
+          <Route index element={<Navigate to="inicio" replace />} />
+          <Route path="inicio" element={<Inicio />} />
+          <Route path="productos" element={<Productos variant="usuario" />} />
+          <Route path="carrito" element={<Carrito variant="usuario" />} />
+          <Route path="pedidos" element={<Pedidos variant="usuario" />} />
+          <Route path="ayuda" element={<Ayuda />} />
+          <Route path="contacto" element={<Contacto />} />
+        </Route>
       </Route>
 
-      {/* Rutas de Cliente Registrado */}
+      {/* --- SECCIÓN DE CLIENTE REGISTRADO --- */}
       <Route path="/cliente" element={
         <ProtectedRoute allowedRoles={['Cliente', 'Administrador']}>
           <AppLayout variant="cliente" />
@@ -92,7 +101,7 @@ function AppRoutes() {
         <Route path="perfil" element={<Perfil />} />
       </Route>
 
-      {/* Rutas de Administrador */}
+      {/* --- SECCIÓN DE ADMINISTRADOR --- */}
       <Route path="/admin" element={
         <ProtectedRoute allowedRoles={['Administrador']}>
           <AppLayout variant="admin" />
@@ -109,7 +118,8 @@ function AppRoutes() {
         <Route path="proveedores" element={<Proveedores />} />
         <Route path="perfil" element={<Perfil />} />
       </Route>
-      
+
+      {/* Catch-all: Redirigir a inicio si la ruta no existe */}
       <Route path="/*" element={<Navigate to="/usuario/inicio" replace />} />
     </Routes>
   );

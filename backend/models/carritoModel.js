@@ -10,7 +10,7 @@ const Carrito = {
             INNER JOIN productos p ON c.producto_id = p.id_producto 
         `;
         let params = [];
-        
+
         if (usuario_id) {
             query += ` WHERE c.usuario_id = ?`;
             params.push(usuario_id);
@@ -28,7 +28,7 @@ const Carrito = {
     findItem: async (usuario_id, session_id, producto_id) => {
         let query = `SELECT * FROM carrito WHERE producto_id = ? AND `;
         let params = [producto_id];
-        
+
         if (usuario_id) {
             query += `usuario_id = ?`;
             params.push(usuario_id);
@@ -52,7 +52,7 @@ const Carrito = {
         } else {
             const [result] = await db.query(`
                 INSERT INTO carrito (usuario_id, session_id, producto_id, cantidad) 
-                VALUES (?, ?, ?, ?)`, 
+                VALUES (?, ?, ?, ?)`,
                 [usuario_id || null, session_id || null, producto_id, cantidad]
             );
             return result.insertId;
