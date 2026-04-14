@@ -8,6 +8,7 @@ router.get('/:id', pedidoController.getOne);
 router.post('/checkout', pedidoController.checkout);
 router.post('/', pedidoController.store);
 router.put('/:id', pedidoController.update);
+router.put('/:id/cancelar', pedidoController.cancelar);
 router.delete('/:id', pedidoController.destroy);
 
 export default router;

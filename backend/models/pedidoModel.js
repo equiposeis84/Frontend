@@ -36,6 +36,16 @@ const Pedido = {
         );
         return result.affectedRows > 0;
     },
+
+    // Nueva función para actualizar solo el estado (RF011)
+    updateStatus: async (id, estado) => {
+        const [result] = await db.query(
+            `UPDATE pedidos SET estado = ? WHERE id_pedido = ?`,
+            [estado, id]
+        );
+        return result.affectedRows > 0;
+    },
+
     delete: async (id) => {
         const [result] = await db.query('DELETE FROM pedidos WHERE id_pedido = ?', [id]);
         return result.affectedRows > 0;

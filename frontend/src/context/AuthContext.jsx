@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = getToken();
     const storedUser = getUser();
-    
+
     if (token && storedUser) {
       setUser(storedUser);
       setIsAuthenticated(true);
