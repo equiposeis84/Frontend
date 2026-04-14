@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Pencil, Trash2, Package, ShoppingCart } from 'lucide-react';
+import { Pencil, Trash2, Package, ShoppingCart, Info } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import '../Storefront.css';
 
@@ -16,6 +16,10 @@ const Productos = ({ variant }) => {
   const [enEdicion, setEnEdicion] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // --- ESTADOS PARA RF005 (Ficha Técnica) ---
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   const { addToCart } = useCart();
   const isAdminView = variant === 'admin' || !variant;
 
@@ -24,7 +28,7 @@ const Productos = ({ variant }) => {
   const [searchField, setSearchField] = useState("nombre");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = isAdminView ? 5 : 12;
-  
+
   // Campos de la BD
   const [idProducto, setIdProducto] = useState(null);
   const [categoriaId, setCategoriaId] = useState("");
@@ -46,11 +50,11 @@ const Productos = ({ variant }) => {
   };
 
   const listarDependencias = () => {
-    if (!isAdminView) return; // Optimizacion: Invitado y cliente no requieren estas listas
+    if (!isAdminView) return;
     axios.get(URL_CATEGORIAS)
       .then(res => setCategoriasList(res.data))
       .catch(err => console.error("Error al listar categorias:", err));
-      
+
     axios.get(URL_PROVEEDORES)
       .then(res => setProveedoresList(res.data))
       .catch(err => console.error("Error al listar proveedores:", err));
@@ -60,6 +64,12 @@ const Productos = ({ variant }) => {
     listar();
     listarDependencias();
   }, [isAdminView]);
+
+  // --- FUNCIÓN VER DETALLES (RF005) ---
+  const verDetalles = (p) => {
+    setSelectedProduct(p);
+    setShowDetailModal(true);
+  };
 
   const limpiarFormulario = () => {
     setCategoriaId(""); setProveedorId(""); setNombre(""); setDescripcion("");
@@ -139,15 +149,13 @@ const Productos = ({ variant }) => {
         .then(() => listar())
         .catch(err => {
           console.error("Error al eliminar:", err);
-          alert("No se puede eliminar el producto. Es posible que tenga existencias en inventario o ventas relacionadas.\nDetalle: " + (err.response?.data?.error || err.message));
+          alert("No se puede eliminar el producto. Detalle: " + (err.response?.data?.error || err.message));
         });
     }
   };
 
   const filteredProductos = productos.filter(p => {
-    // Si no es admin, solo mostrar activos
     if (!isAdminView && !p.activo) return false;
-    
     if (!searchTerm) return true;
     const value = p[searchField];
     if (value === null || value === undefined) return false;
@@ -157,100 +165,152 @@ const Productos = ({ variant }) => {
   const totalPages = Math.ceil(filteredProductos.length / itemsPerPage);
   const currentItems = filteredProductos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
+  // --- VISTA CLIENTE / INVITADO ---
   if (!isAdminView) {
     return (
       <div className="storefront-container">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h1 className="module-title-table" style={{ margin: 0, fontSize: '1.5rem' }}>Resultados de búsqueda</h1>
           <div className="search-container" style={{ margin: 0 }}>
-            <input 
-              type="text" 
-              className="search-input" 
-              placeholder="Buscar productos..." 
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Buscar productos..."
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             />
           </div>
         </div>
-        
+
         <div className="storefront-list">
-            {currentItems.map(p => (
-                <div key={p.id_producto} className="product-horizontal-card">
-                    <div className="product-row-header">
-                        <h2 className="product-hc-title">{p.nombre}</h2>
-                    </div>
-                    
-                    <div className="product-body-split">
-                        {/* LEFT: IMAGE */}
-                        <div className="product-hc-left">
-                            <div className="img-placeholder" style={{ background: '#f1f5f9' }}>
-                                <Package size={56} color="#94a3b8" />
-                            </div>
-                        </div>
+          {currentItems.map(p => (
+            <div key={p.id_producto} className="product-horizontal-card">
+              <div className="product-row-header">
+                {/* Título clickeable para RF005 */}
+                <h2 className="product-hc-title" style={{ cursor: 'pointer', color: 'var(--primary)' }} onClick={() => verDetalles(p)}>
+                  {p.nombre}
+                </h2>
+              </div>
 
-                        {/* CENTER: DESCRIPCION REAL BED */}
-                        <div className="product-hc-center">
-                            {p.proveedor_nombre && (
-                                <div className="badge-brand" style={{ background: '#e2e8f0', border: 'none' }}>
-                                    {p.proveedor_nombre}
-                                </div>
-                            )}
-                            <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: '1.5', margin: '0 0 15px 0' }}>
-                                {p.descripcion || 'Sin descripción detallada de este producto.'}
-                            </p>
-                            <div style={{ color: '#64748b', fontSize: '0.85rem' }}>
-                                Categoría: <strong>{p.categoria_nombre || 'General'}</strong>
-                            </div>
-                            <div style={{ color: '#64748b', fontSize: '0.85rem', marginTop: '5px' }}>
-                                Stock disponible: <strong>{p.stock_actual}</strong>
-                            </div>
-                        </div>
-
-                        {/* RIGHT: PRECIO REAL Y CARRITO */}
-                        <div className="product-hc-right" style={{ justifyContent: 'center' }}>
-                            <div className="pricing-block">
-                                <div className="precio-final">${Number(p.precio_venta).toLocaleString()}</div>
-                            </div>
-
-                            {p.stock_actual > 0 ? (
-                                <button className="btn-add-red" onClick={() => addToCart(p)}>
-                                    <ShoppingCart size={22} />
-                                </button>
-                            ) : (
-                                <button className="btn-add-red" disabled>
-                                    Agotado
-                                </button>
-                            )}
-                        </div>
-                    </div>
+              <div className="product-body-split">
+                <div className="product-hc-left" onClick={() => verDetalles(p)} style={{ cursor: 'pointer' }}>
+                  <div className="img-placeholder" style={{ background: '#f1f5f9' }}>
+                    <Package size={56} color="#94a3b8" />
+                  </div>
                 </div>
-            ))}
-            
-            {currentItems.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '3rem', color: '#999' }}>
-                    <Package size={64} opacity={0.5} />
-                    <p>No se encontraron productos.</p>
+
+                <div className="product-hc-center">
+                  {p.proveedor_nombre && (
+                    <div className="badge-brand" style={{ background: '#e2e8f0', border: 'none' }}>
+                      {p.proveedor_nombre}
+                    </div>
+                  )}
+                  <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: '1.5', margin: '0 0 10px 0' }}>
+                    {p.descripcion ? p.descripcion.substring(0, 100) + '...' : 'Sin descripción detallada.'}
+                  </p>
+                  <div style={{ color: '#64748b', fontSize: '0.85rem' }}>
+                    Categoría: <strong>{p.categoria_nombre || 'General'}</strong>
+                  </div>
+                  {/* Botón extra para ficha técnica (RF005) */}
+                  <button
+                    onClick={() => verDetalles(p)}
+                    style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.85rem', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '5px', padding: 0 }}
+                  >
+                    <Info size={14} /> Ver ficha técnica
+                  </button>
                 </div>
-            )}
+
+                <div className="product-hc-right" style={{ justifyContent: 'center' }}>
+                  <div className="pricing-block">
+                    <div className="precio-final">${Number(p.precio_venta).toLocaleString()}</div>
+                  </div>
+
+                  {p.stock_actual > 0 ? (
+                    <button className="btn-add-red" onClick={() => addToCart(p)}>
+                      <ShoppingCart size={22} />
+                    </button>
+                  ) : (
+                    <button className="btn-add-red" disabled>Agotado</button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
+
+        {/* MODAL DE DETALLES (RF005) */}
+        {showDetailModal && selectedProduct && (
+          <div className="modal-backdrop" onClick={() => setShowDetailModal(false)}>
+            <div className="modal-box detail-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '700px' }}>
+              <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '15px' }}>
+                <h2 style={{ margin: 0 }}>Ficha Técnica del Producto</h2>
+                <button onClick={() => setShowDetailModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '25px', marginTop: '20px' }}>
+                <div style={{ background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', padding: '20px' }}>
+                  <Package size={150} color="#cbd5e1" />
+                </div>
+
+                <div>
+                  <h1 style={{ fontSize: '1.8rem', marginBottom: '10px', color: '#0f172a' }}>{selectedProduct.nombre}</h1>
+                  <div style={{ display: 'inline-block', padding: '4px 12px', background: '#dbeafe', color: '#1e40af', borderRadius: '12px', fontSize: '0.85rem', marginBottom: '15px' }}>
+                    {selectedProduct.categoria_nombre || 'General'}
+                  </div>
+
+                  <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '20px' }}>
+                    ${Number(selectedProduct.precio_venta).toLocaleString()}
+                  </div>
+
+                  <div style={{ marginBottom: '20px' }}>
+                    <h4 style={{ textTransform: 'uppercase', fontSize: '0.75rem', color: '#64748b', marginBottom: '8px', letterSpacing: '0.5px' }}>Descripción completa</h4>
+                    <p style={{ fontSize: '0.95rem', color: '#475569', lineHeight: '1.6' }}>{selectedProduct.descripcion || 'No hay descripción disponible para este artículo.'}</p>
+                  </div>
+
+                  <div style={{ padding: '15px', background: '#f1f5f9', borderRadius: '8px' }}>
+                    <h4 style={{ textTransform: 'uppercase', fontSize: '0.75rem', color: '#64748b', marginBottom: '10px' }}>Información Técnica</h4>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.85rem', color: '#334155' }}>
+                      <li style={{ marginBottom: '6px' }}>• <strong>ID de Producto:</strong> #{selectedProduct.id_producto}</li>
+                      <li style={{ marginBottom: '6px' }}>• <strong>Disponibilidad:</strong> {selectedProduct.stock_actual} unidades</li>
+                      <li style={{ marginBottom: '6px' }}>• <strong>Proveedor:</strong> {selectedProduct.proveedor_nombre || 'No especificado'}</li>
+                      <li>• <strong>Garantía:</strong> 6 meses con el fabricante</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="modal-btns" style={{ marginTop: '30px', borderTop: '1px solid #e2e8f0', paddingTop: '20px' }}>
+                <button className="btn-cancel" onClick={() => setShowDetailModal(false)}>Cerrar</button>
+                <button
+                  className="btn-save"
+                  onClick={() => { addToCart(selectedProduct); setShowDetailModal(false); }}
+                  disabled={selectedProduct.stock_actual <= 0}
+                >
+                  {selectedProduct.stock_actual > 0 ? 'Añadir al Carrito' : 'Agotado'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
+  // --- VISTA ADMINISTRADOR (Original 100%) ---
   return (
     <>
       <div className="top-action-bar">
         <button className="btn-add-record" onClick={abrirRegistro}>Añadir Producto</button>
         <div className="search-container">
-          <input 
-            type="text" 
-            className="search-input" 
-            placeholder="Search..." 
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search..."
             value={searchTerm}
             onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
           />
-          <select 
-            className="search-select" 
+          <select
+            className="search-select"
             value={searchField}
             onChange={(e) => { setSearchField(e.target.value); setCurrentPage(1); }}
           >
@@ -295,9 +355,9 @@ const Productos = ({ variant }) => {
                   <td>{p.id_producto}</td>
                   <td>{p.nombre}</td>
                   <td>{p.categoria_nombre}</td>
-                  <td>{p.proveedor_nombre || <span style={{color: '#aaa', fontStyle: 'italic'}}>Ninguno</span>}</td>
+                  <td>{p.proveedor_nombre || <span style={{ color: '#aaa', fontStyle: 'italic' }}>Ninguno</span>}</td>
                   <td>
-                    <span style={{ 
+                    <span style={{
                       color: p.stock_actual <= p.stock_minimo ? 'var(--danger)' : 'inherit',
                       fontWeight: p.stock_actual <= p.stock_minimo ? 'bold' : 'normal'
                     }}>
@@ -327,29 +387,11 @@ const Productos = ({ variant }) => {
 
       {!loading && totalPages > 1 && (
         <div className="pagination-bar">
-          <button 
-            className="page-btn" 
-            disabled={currentPage === 1} 
-            onClick={() => setCurrentPage(prev => prev - 1)}
-          >
-            Previous
-          </button>
+          <button className="page-btn" disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}>Previous</button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
-            <button 
-              key={num}
-              className={`page-btn ${currentPage === num ? 'active' : ''}`}
-              onClick={() => setCurrentPage(num)}
-            >
-              {num}
-            </button>
+            <button key={num} className={`page-btn ${currentPage === num ? 'active' : ''}`} onClick={() => setCurrentPage(num)}>{num}</button>
           ))}
-          <button 
-            className="page-btn" 
-            disabled={currentPage === totalPages} 
-            onClick={() => setCurrentPage(prev => prev + 1)}
-          >
-            Next
-          </button>
+          <button className="page-btn" disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => prev + 1)}>Next</button>
         </div>
       )}
 
@@ -360,13 +402,13 @@ const Productos = ({ variant }) => {
             <div className="form-grid">
               <div className="input-field" style={{ gridColumn: 'span 2' }}>
                 <label>ID</label>
-                <input type="text" value={idProducto || ''} disabled style={{ background: 'var(--border)', cursor: 'not-allowed' }}/>
+                <input type="text" value={idProducto || ''} disabled style={{ background: 'var(--border)', cursor: 'not-allowed' }} />
               </div>
               <div className="input-field" style={{ gridColumn: 'span 2' }}>
                 <label>Nombre del Producto *</label>
                 <input value={nombre} onChange={(e) => setNombre(e.target.value)} />
               </div>
-              
+
               <div className="input-field">
                 <label>Categoría *</label>
                 <select value={categoriaId} onChange={(e) => setCategoriaId(Number(e.target.value))}>
@@ -376,7 +418,7 @@ const Productos = ({ variant }) => {
                   ))}
                 </select>
               </div>
-              
+
               <div className="input-field">
                 <label>Proveedor</label>
                 <select value={proveedorId} onChange={(e) => setProveedorId(Number(e.target.value))}>
@@ -391,17 +433,17 @@ const Productos = ({ variant }) => {
                 <label>Precio Compra</label>
                 <input type="number" step="0.01" value={precioCompra} onChange={(e) => setPrecioCompra(e.target.value)} />
               </div>
-              
+
               <div className="input-field">
                 <label>Precio Venta</label>
                 <input type="number" step="0.01" value={precioVenta} onChange={(e) => setPrecioVenta(e.target.value)} />
               </div>
-              
+
               <div className="input-field">
                 <label>Stock Actual</label>
                 <input type="number" value={stockActual} onChange={(e) => setStockActual(e.target.value)} />
               </div>
-              
+
               <div className="input-field">
                 <label>Stock Mínimo</label>
                 <input type="number" value={stockMinimo} onChange={(e) => setStockMinimo(e.target.value)} />
@@ -409,9 +451,9 @@ const Productos = ({ variant }) => {
 
               <div className="input-field" style={{ gridColumn: 'span 2' }}>
                 <label>Descripción</label>
-                <textarea 
-                  value={descripcion} 
-                  onChange={(e) => setDescripcion(e.target.value)} 
+                <textarea
+                  value={descripcion}
+                  onChange={(e) => setDescripcion(e.target.value)}
                   rows={2}
                   style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
                 />
