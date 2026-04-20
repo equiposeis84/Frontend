@@ -12,7 +12,7 @@ USE sistema_comercial;
 
 SELECT 
     f.numero_factura AS 'Factura_No',
-    f.fecha AS 'Fecha_Venta',
+    f.fecha_emision AS 'Fecha_Venta',
     u.nombre AS 'Cliente',
     u.numero_documento AS 'Documento',
     cat.nombre AS 'Categoria',
@@ -28,7 +28,7 @@ INNER JOIN usuarios u ON ped.usuario_id = u.id_usuario
 INNER JOIN detalle_pedido dp ON ped.id_pedido = dp.pedido_id
 INNER JOIN productos p ON dp.producto_id = p.id_producto
 INNER JOIN categorias cat ON p.categoria_id = cat.id_categoria
-ORDER BY f.fecha DESC;
+ORDER BY f.fecha_emision DESC;
 
 -- =====================================================
 -- 2. REPORTE DE INVENTARIO, STOCK Y GANANCIAS

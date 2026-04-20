@@ -1,998 +1,1680 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "RematesPaisa API",
-    "description": "API REST para la plataforma RematesPaisa. Use el botón **Authorize** (🔒) para ingresar su token JWT y ejecutar los endpoints protegidos.",
+    "title": "API de ejemplo",
+    "description": "Esta es una API de ejemplo para demostrar Swagger",
     "version": "1.0.0"
   },
   "host": "localhost:3000",
   "basePath": "/",
-  "schemes": ["http"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
-  "securityDefinitions": {
-    "BearerAuth": {
-      "type": "apiKey",
-      "in": "header",
-      "name": "Authorization",
-      "description": "Ingrese el token en el formato: **Bearer &lt;token&gt;**. Obtenga el token en POST /api/usuarios/login."
-    }
-  },
-  "definitions": {
-    "Usuario": {
-      "type": "object",
-      "properties": {
-        "id_usuario":       { "type": "integer", "example": 1 },
-        "rol_id":           { "type": "integer", "example": 1 },
-        "nombre":           { "type": "string",  "example": "Admin Principal" },
-        "email":            { "type": "string",  "example": "admin@rematespaisa.com" },
-        "numero_documento": { "type": "string",  "example": "123456789" },
-        "activo":           { "type": "integer", "example": 1 },
-        "rol_nombre":       { "type": "string",  "example": "Administrador" }
-      }
-    },
-    "Rol": {
-      "type": "object",
-      "properties": {
-        "id_rol":     { "type": "integer", "example": 1 },
-        "nombre":     { "type": "string",  "example": "Administrador" },
-        "descripcion":{ "type": "string",  "example": "Acceso total al sistema" }
-      }
-    },
-    "Categoria": {
-      "type": "object",
-      "properties": {
-        "id_categoria": { "type": "integer", "example": 1 },
-        "nombre":       { "type": "string",  "example": "Electrodomésticos" },
-        "descripcion":  { "type": "string",  "example": "Artículos para el hogar" }
-      }
-    },
-    "Proveedor": {
-      "type": "object",
-      "properties": {
-        "id_proveedor": { "type": "integer", "example": 1 },
-        "nit":          { "type": "string",  "example": "900123456-1" },
-        "nombre":       { "type": "string",  "example": "Distribuidora XYZ" },
-        "telefono":     { "type": "string",  "example": "3001234567" },
-        "correo":       { "type": "string",  "example": "ventas@xyz.com" },
-        "direccion":    { "type": "string",  "example": "Calle 10 #20-30, Medellín" }
-      }
-    },
-    "Producto": {
-      "type": "object",
-      "properties": {
-        "id_producto":      { "type": "integer", "example": 1 },
-        "categoria_id":     { "type": "integer", "example": 1 },
-        "proveedor_id":     { "type": "integer", "example": 1 },
-        "nombre":           { "type": "string",  "example": "Nevera LG 350L" },
-        "descripcion":      { "type": "string",  "example": "Nevera de 350 litros, color plateado" },
-        "precio_compra":    { "type": "number",  "example": 800000 },
-        "precio_venta":     { "type": "number",  "example": 1200000 },
-        "stock_actual":     { "type": "integer", "example": 15 },
-        "stock_minimo":     { "type": "integer", "example": 3 },
-        "activo":           { "type": "integer", "example": 1 },
-        "categoria_nombre": { "type": "string",  "example": "Electrodomésticos" },
-        "proveedor_nombre": { "type": "string",  "example": "Distribuidora XYZ" }
-      }
-    },
-    "Pedido": {
-      "type": "object",
-      "properties": {
-        "id_pedido":    { "type": "integer", "example": 1 },
-        "usuario_id":   { "type": "integer", "example": 2 },
-        "estado":       { "type": "string",  "example": "pendiente" },
-        "total":        { "type": "number",  "example": 250000 },
-        "fecha_pedido": { "type": "string",  "example": "2024-04-20T10:00:00.000Z" }
-      }
-    },
-    "Factura": {
-      "type": "object",
-      "properties": {
-        "id_factura":      { "type": "integer", "example": 1 },
-        "pedido_id":       { "type": "integer", "example": 1 },
-        "numero_factura":  { "type": "string",  "example": "FAC-0001" },
-        "fecha_emision":   { "type": "string",  "example": "2024-04-20T10:05:00.000Z" },
-        "total":           { "type": "number",  "example": 250000 }
-      }
-    },
-    "ErrorResponse": {
-      "type": "object",
-      "properties": {
-        "message": { "type": "string", "example": "Acceso denegado. No se proporcionó un token." }
-      }
-    }
-  },
+  "schemes": [
+    "http"
+  ],
   "paths": {
     "/api/usuarios/login": {
       "post": {
-        "tags": ["Autenticación"],
-        "summary": "Iniciar sesión",
-        "description": "Autentica al usuario y devuelve el token JWT en una cookie httpOnly segura. Use los datos del usuario devueltos para la interfaz. **Copie el token desde la cookie o la respuesta para usar el botón Authorize.**",
+        "description": "",
         "parameters": [
           {
             "name": "body",
             "in": "body",
-            "required": true,
             "schema": {
               "type": "object",
-              "required": ["email", "password"],
               "properties": {
-                "email":    { "type": "string", "example": "admin@rematespaisa.com" },
-                "password": { "type": "string", "example": "admin123" }
+                "email": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Login exitoso. Token emitido en cookie httpOnly.",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": { "type": "string", "example": "¡Inicio de sesión exitoso!" },
-                "user":    { "$ref": "#/definitions/Usuario" }
-              }
-            }
+            "description": "OK"
           },
-          "401": { "description": "Credenciales incorrectas", "schema": { "$ref": "#/definitions/ErrorResponse" } },
-          "403": { "description": "Cuenta inactiva",          "schema": { "$ref": "#/definitions/ErrorResponse" } },
-          "500": { "description": "Error interno del servidor","schema": { "$ref": "#/definitions/ErrorResponse" } }
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/usuarios/logout": {
       "post": {
-        "tags": ["Autenticación"],
-        "summary": "Cerrar sesión",
-        "description": "Limpia la cookie httpOnly del servidor, cerrando la sesión del usuario.",
+        "description": "",
         "responses": {
-          "200": { "description": "Sesión cerrada correctamente" }
+          "200": {
+            "description": "OK"
+          }
         }
       }
     },
     "/api/usuarios/roles": {
       "get": {
-        "tags": ["Usuarios"],
-        "summary": "Listar todos los roles disponibles",
+        "description": "",
         "responses": {
           "200": {
-            "description": "Lista de roles",
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/Rol" } }
+            "description": "OK"
           },
-          "500": { "description": "Error interno del servidor" }
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/usuarios/": {
       "get": {
-        "tags": ["Usuarios"],
-        "summary": "Listar todos los usuarios",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "Authorization", "in": "header", "type": "string", "description": "Bearer {token}" }
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
         ],
         "responses": {
           "200": {
-            "description": "Lista de usuarios",
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/Usuario" } }
+            "description": "OK"
           },
-          "401": { "description": "Token no proporcionado",  "schema": { "$ref": "#/definitions/ErrorResponse" } },
-          "403": { "description": "Token inválido",          "schema": { "$ref": "#/definitions/ErrorResponse" } },
-          "500": { "description": "Error interno del servidor" }
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "post": {
-        "tags": ["Usuarios"],
-        "summary": "Crear un nuevo usuario",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
-            "required": true,
             "schema": {
               "type": "object",
-              "required": ["rol_id", "nombre", "email", "password"],
               "properties": {
-                "rol_id":           { "type": "integer", "example": 2 },
-                "nombre":           { "type": "string",  "example": "Carlos Pérez" },
-                "email":            { "type": "string",  "example": "carlos@ejemplo.com" },
-                "password":         { "type": "string",  "example": "miPassword123" },
-                "numero_documento": { "type": "string",  "example": "987654321" }
+                "rol_id": {
+                  "example": "any"
+                },
+                "nombre": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                },
+                "tipo_documento": {
+                  "example": "any"
+                },
+                "numero_documento": {
+                  "example": "any"
+                },
+                "telefono": {
+                  "example": "any"
+                },
+                "direccion": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "201": { "description": "Usuario creado exitosamente" },
-          "400": { "description": "Faltan campos obligatorios" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/usuarios/{id}": {
       "get": {
-        "tags": ["Usuarios"],
-        "summary": "Obtener un usuario por ID",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
-        ],
-        "responses": {
-          "200": { "description": "Usuario encontrado", "schema": { "$ref": "#/definitions/Usuario" } },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Usuario no encontrado" },
-          "500": { "description": "Error interno del servidor" }
-        }
-      },
-      "put": {
-        "tags": ["Usuarios"],
-        "summary": "Actualizar un usuario",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 },
           {
-            "name": "body", "in": "body", "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "nombre":           { "type": "string",  "example": "Carlos Actualizado" },
-                "email":            { "type": "string",  "example": "carlos.nuevo@ejemplo.com" },
-                "numero_documento": { "type": "string",  "example": "111222333" },
-                "activo":           { "type": "integer", "example": 1 }
-              }
-            }
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
-          "200": { "description": "Usuario actualizado correctamente" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Usuario no encontrado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "delete": {
-        "tags": ["Usuarios"],
-        "summary": "Eliminar un usuario",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
         ],
         "responses": {
-          "200": { "description": "Usuario eliminado" },
-          "400": { "description": "No se puede eliminar: tiene registros asociados" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Usuario no encontrado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/roles/": {
       "get": {
-        "tags": ["Roles"],
-        "summary": "Listar todos los roles",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Lista de roles",
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/Rol" } }
+            "description": "OK"
           },
-          "500": { "description": "Error interno del servidor" }
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "post": {
-        "tags": ["Roles"],
-        "summary": "Crear un rol",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
           {
-            "name": "body", "in": "body", "required": true,
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
               "type": "object",
-              "required": ["nombre"],
               "properties": {
-                "nombre":      { "type": "string", "example": "Vendedor" },
-                "descripcion": { "type": "string", "example": "Puede gestionar ventas" }
+                "nombre": {
+                  "example": "any"
+                },
+                "descripcion": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "201": { "description": "Rol creado" },
-          "400": { "description": "Faltan campos obligatorios" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/roles/{id}": {
       "get": {
-        "tags": ["Roles"],
-        "summary": "Obtener un rol por ID",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
-        ],
-        "responses": {
-          "200": { "description": "Rol encontrado", "schema": { "$ref": "#/definitions/Rol" } },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Rol no encontrado" },
-          "500": { "description": "Error interno del servidor" }
-        }
-      },
-      "put": {
-        "tags": ["Roles"],
-        "summary": "Actualizar un rol",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 },
           {
-            "name": "body", "in": "body", "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "nombre":      { "type": "string", "example": "Vendedor Senior" },
-                "descripcion": { "type": "string", "example": "Puede gestionar ventas y reportes" }
-              }
-            }
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
-          "200": { "description": "Rol actualizado" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Rol no encontrado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "delete": {
-        "tags": ["Roles"],
-        "summary": "Eliminar un rol",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
         ],
         "responses": {
-          "200": { "description": "Rol eliminado" },
-          "400": { "description": "No se puede eliminar: tiene usuarios asociados" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Rol no encontrado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/categorias/": {
       "get": {
-        "tags": ["Categorías"],
-        "summary": "Listar todas las categorías",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Lista de categorías",
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/Categoria" } }
+            "description": "OK"
           },
-          "500": { "description": "Error interno del servidor" }
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "post": {
-        "tags": ["Categorías"],
-        "summary": "Crear una categoría",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
           {
-            "name": "body", "in": "body", "required": true,
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
               "type": "object",
-              "required": ["nombre"],
               "properties": {
-                "nombre":      { "type": "string", "example": "Tecnología" },
-                "descripcion": { "type": "string", "example": "Celulares, computadores y accesorios" }
+                "nombre": {
+                  "example": "any"
+                },
+                "descripcion": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "201": { "description": "Categoría creada" },
-          "400": { "description": "Faltan campos obligatorios" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/categorias/{id}": {
       "get": {
-        "tags": ["Categorías"],
-        "summary": "Obtener una categoría por ID",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
-        ],
-        "responses": {
-          "200": { "description": "Categoría encontrada", "schema": { "$ref": "#/definitions/Categoria" } },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Categoría no encontrada" },
-          "500": { "description": "Error interno del servidor" }
-        }
-      },
-      "put": {
-        "tags": ["Categorías"],
-        "summary": "Actualizar una categoría",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 },
           {
-            "name": "body", "in": "body", "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "nombre":      { "type": "string", "example": "Tecnología Actualizada" },
-                "descripcion": { "type": "string", "example": "Descripción actualizada" }
-              }
-            }
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
-          "200": { "description": "Categoría actualizada" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Categoría no encontrada" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "delete": {
-        "tags": ["Categorías"],
-        "summary": "Eliminar una categoría",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
         ],
         "responses": {
-          "200": { "description": "Categoría eliminada" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Categoría no encontrada" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/proveedores/": {
       "get": {
-        "tags": ["Proveedores"],
-        "summary": "Listar todos los proveedores",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Lista de proveedores",
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/Proveedor" } }
+            "description": "OK"
           },
-          "500": { "description": "Error interno del servidor" }
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "post": {
-        "tags": ["Proveedores"],
-        "summary": "Crear un proveedor",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
           {
-            "name": "body", "in": "body", "required": true,
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
               "type": "object",
-              "required": ["nit", "nombre"],
               "properties": {
-                "nit":       { "type": "string", "example": "900123456-1" },
-                "nombre":    { "type": "string", "example": "Distribuidora Nueva" },
-                "telefono":  { "type": "string", "example": "3151234567" },
-                "correo":    { "type": "string", "example": "info@nueva.com" },
-                "direccion": { "type": "string", "example": "Carrera 50 #30-40, Bogotá" }
+                "nit": {
+                  "example": "any"
+                },
+                "nombre": {
+                  "example": "any"
+                },
+                "telefono": {
+                  "example": "any"
+                },
+                "correo": {
+                  "example": "any"
+                },
+                "direccion": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "201": { "description": "Proveedor creado" },
-          "400": { "description": "Faltan campos obligatorios" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/proveedores/{id}": {
       "get": {
-        "tags": ["Proveedores"],
-        "summary": "Obtener un proveedor por ID",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
-        ],
-        "responses": {
-          "200": { "description": "Proveedor encontrado", "schema": { "$ref": "#/definitions/Proveedor" } },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Proveedor no encontrado" },
-          "500": { "description": "Error interno del servidor" }
-        }
-      },
-      "put": {
-        "tags": ["Proveedores"],
-        "summary": "Actualizar un proveedor",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 },
           {
-            "name": "body", "in": "body", "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "nit":       { "type": "string", "example": "900123456-2" },
-                "nombre":    { "type": "string", "example": "Distribuidora Actualizada" },
-                "telefono":  { "type": "string", "example": "3159876543" },
-                "correo":    { "type": "string", "example": "nuevo@distribuidora.com" },
-                "direccion": { "type": "string", "example": "Av. 10 #5-20, Medellín" }
-              }
-            }
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
-          "200": { "description": "Proveedor actualizado" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Proveedor no encontrado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "delete": {
-        "tags": ["Proveedores"],
-        "summary": "Eliminar un proveedor",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
         ],
         "responses": {
-          "200": { "description": "Proveedor eliminado" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Proveedor no encontrado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/productos/": {
       "get": {
-        "tags": ["Productos"],
-        "summary": "Listar todos los productos",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Lista de productos",
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/Producto" } }
+            "description": "OK"
           },
-          "500": { "description": "Error interno del servidor" }
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "post": {
-        "tags": ["Productos"],
-        "summary": "Crear un producto",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
           {
-            "name": "body", "in": "body", "required": true,
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
               "type": "object",
-              "required": ["categoria_id", "nombre", "precio_venta"],
               "properties": {
-                "categoria_id":  { "type": "integer", "example": 1 },
-                "proveedor_id":  { "type": "integer", "example": 1 },
-                "nombre":        { "type": "string",  "example": "Televisor Samsung 55\"" },
-                "descripcion":   { "type": "string",  "example": "Smart TV 4K" },
-                "precio_compra": { "type": "number",  "example": 1500000 },
-                "precio_venta":  { "type": "number",  "example": 2200000 },
-                "stock_actual":  { "type": "integer", "example": 10 },
-                "stock_minimo":  { "type": "integer", "example": 2 }
+                "categoria_id": {
+                  "example": "any"
+                },
+                "nombre": {
+                  "example": "any"
+                },
+                "precio_compra": {
+                  "example": "any"
+                },
+                "precio_venta": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "201": { "description": "Producto creado" },
-          "400": { "description": "Faltan campos obligatorios" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/productos/{id}": {
       "get": {
-        "tags": ["Productos"],
-        "summary": "Obtener un producto por ID",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
-        ],
-        "responses": {
-          "200": { "description": "Producto encontrado", "schema": { "$ref": "#/definitions/Producto" } },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Producto no encontrado" },
-          "500": { "description": "Error interno del servidor" }
-        }
-      },
-      "put": {
-        "tags": ["Productos"],
-        "summary": "Actualizar un producto",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 },
           {
-            "name": "body", "in": "body", "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "nombre":        { "type": "string",  "example": "Televisor Samsung 65\"" },
-                "precio_venta":  { "type": "number",  "example": 2800000 },
-                "stock_actual":  { "type": "integer", "example": 8 },
-                "activo":        { "type": "integer", "example": 1 }
-              }
-            }
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
-          "200": { "description": "Producto actualizado" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Producto no encontrado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "delete": {
-        "tags": ["Productos"],
-        "summary": "Eliminar un producto",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
         ],
         "responses": {
-          "200": { "description": "Producto eliminado" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Producto no encontrado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/pedidos/": {
       "get": {
-        "tags": ["Pedidos"],
-        "summary": "Listar todos los pedidos",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Lista de pedidos",
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/Pedido" } }
+            "description": "OK"
           },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "post": {
-        "tags": ["Pedidos"],
-        "summary": "Crear un pedido",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
           {
-            "name": "body", "in": "body", "required": true,
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
               "type": "object",
-              "required": ["usuario_id"],
               "properties": {
-                "usuario_id": { "type": "integer", "example": 2 }
+                "usuario_id": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "201": { "description": "Pedido creado" },
-          "400": { "description": "Faltan campos obligatorios" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/pedidos/{id}/ticket": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/pedidos/{id}": {
       "get": {
-        "tags": ["Pedidos"],
-        "summary": "Obtener un pedido por ID",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
-        ],
-        "responses": {
-          "200": { "description": "Pedido encontrado", "schema": { "$ref": "#/definitions/Pedido" } },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Pedido no encontrado" },
-          "500": { "description": "Error interno del servidor" }
-        }
-      },
-      "put": {
-        "tags": ["Pedidos"],
-        "summary": "Actualizar estado del pedido",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 },
           {
-            "name": "body", "in": "body", "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "estado": { "type": "string", "example": "enviado", "enum": ["pendiente", "enviado", "entregado", "cancelado"] }
-              }
-            }
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
-          "200": { "description": "Pedido actualizado" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Pedido no encontrado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "delete": {
-        "tags": ["Pedidos"],
-        "summary": "Eliminar un pedido",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
         ],
         "responses": {
-          "200": { "description": "Pedido eliminado" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Pedido no encontrado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/pedidos/checkout": {
       "post": {
-        "tags": ["Pedidos"],
-        "summary": "Realizar checkout del carrito",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
           {
-            "name": "body", "in": "body", "required": true,
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
               "type": "object",
-              "required": ["usuario_id"],
               "properties": {
-                "usuario_id": { "type": "integer", "example": 2 }
+                "usuario_id": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "201": { "description": "Checkout exitoso - pedido creado" },
-          "400": { "description": "Carrito vacío o sin stock" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/pedidos/{id}/cancelar": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/facturas/": {
       "get": {
-        "tags": ["Facturas"],
-        "summary": "Listar todas las facturas",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Lista de facturas",
-            "schema": { "type": "array", "items": { "$ref": "#/definitions/Factura" } }
+            "description": "OK"
           },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "post": {
-        "tags": ["Facturas"],
-        "summary": "Crear una factura",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
           {
-            "name": "body", "in": "body", "required": true,
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
               "type": "object",
-              "required": ["pedido_id", "numero_factura"],
               "properties": {
-                "pedido_id":      { "type": "integer", "example": 1 },
-                "numero_factura": { "type": "string",  "example": "FAC-0001" }
+                "pedido_id": {
+                  "example": "any"
+                },
+                "numero_factura": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "201": { "description": "Factura creada" },
-          "400": { "description": "Faltan campos obligatorios" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/facturas/{id}": {
       "get": {
-        "tags": ["Facturas"],
-        "summary": "Obtener una factura por ID",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
-        ],
-        "responses": {
-          "200": { "description": "Factura encontrada", "schema": { "$ref": "#/definitions/Factura" } },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Factura no encontrada" },
-          "500": { "description": "Error interno del servidor" }
-        }
-      },
-      "put": {
-        "tags": ["Facturas"],
-        "summary": "Actualizar una factura",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 },
           {
-            "name": "body", "in": "body", "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "numero_factura": { "type": "string", "example": "FAC-0001-MOD" }
-              }
-            }
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
-          "200": { "description": "Factura actualizada" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Factura no encontrada" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       },
       "delete": {
-        "tags": ["Facturas"],
-        "summary": "Eliminar una factura",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "type": "integer", "example": 1 }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
         ],
         "responses": {
-          "200": { "description": "Factura eliminada" },
-          "401": { "description": "Token no proporcionado" },
-          "404": { "description": "Factura no encontrada" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/carrito/": {
       "get": {
-        "tags": ["Carrito"],
-        "summary": "Ver carrito del usuario o sesión anónima",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "usuario_id", "in": "query", "type": "integer", "example": 2,           "description": "ID del usuario autenticado" },
-          { "name": "session_id", "in": "query", "type": "string",  "example": "abc123xyz", "description": "ID de sesión anónima" }
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "usuario_id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "session_id",
+            "in": "query",
+            "type": "string"
+          }
         ],
         "responses": {
-          "200": { "description": "Contenido del carrito" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/carrito/add": {
       "post": {
-        "tags": ["Carrito"],
-        "summary": "Agregar producto al carrito",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
           {
-            "name": "body", "in": "body", "required": true,
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
               "type": "object",
-              "required": ["producto_id", "cantidad"],
               "properties": {
-                "usuario_id":  { "type": "integer", "example": 2 },
-                "session_id":  { "type": "string",  "example": "abc123xyz" },
-                "producto_id": { "type": "integer", "example": 3 },
-                "cantidad":    { "type": "integer", "example": 2 }
+                "usuario_id": {
+                  "example": "any"
+                },
+                "session_id": {
+                  "example": "any"
+                },
+                "producto_id": {
+                  "example": "any"
+                },
+                "cantidad": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "200": { "description": "Producto agregado al carrito" },
-          "400": { "description": "Stock insuficiente o campos faltantes" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/carrito/clear": {
       "post": {
-        "tags": ["Carrito"],
-        "summary": "Vaciar el carrito",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
           {
-            "name": "body", "in": "body", "required": true,
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
               "type": "object",
               "properties": {
-                "usuario_id": { "type": "integer", "example": 2 },
-                "session_id": { "type": "string",  "example": "abc123xyz" }
+                "usuario_id": {
+                  "example": "any"
+                },
+                "session_id": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "200": { "description": "Carrito vaciado" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/carrito/merge": {
       "post": {
-        "tags": ["Carrito"],
-        "summary": "Fusionar carrito anónimo con carrito del usuario autenticado",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
           {
-            "name": "body", "in": "body", "required": true,
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
               "type": "object",
-              "required": ["session_id", "usuario_id"],
               "properties": {
-                "session_id": { "type": "string",  "example": "abc123xyz" },
-                "usuario_id": { "type": "integer", "example": 2 }
+                "session_id": {
+                  "example": "any"
+                },
+                "usuario_id": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "200": { "description": "Carritos fusionados" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/carrito/update/{id_carrito}": {
       "put": {
-        "tags": ["Carrito"],
-        "summary": "Actualizar cantidad de un ítem del carrito",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "id_carrito", "in": "path", "required": true, "type": "integer", "example": 1 },
           {
-            "name": "body", "in": "body", "required": true,
+            "name": "id_carrito",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
               "type": "object",
-              "required": ["cantidad"],
               "properties": {
-                "cantidad":   { "type": "integer", "example": 3 },
-                "usuario_id": { "type": "integer", "example": 2 },
-                "session_id": { "type": "string",  "example": "abc123xyz" }
+                "cantidad": {
+                  "example": "any"
+                },
+                "usuario_id": {
+                  "example": "any"
+                },
+                "session_id": {
+                  "example": "any"
+                }
               }
             }
           }
         ],
         "responses": {
-          "200": { "description": "Ítem actualizado" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     },
     "/api/carrito/remove/{producto_id}": {
       "delete": {
-        "tags": ["Carrito"],
-        "summary": "Eliminar un producto del carrito",
-        "security": [{ "BearerAuth": [] }],
+        "description": "",
         "parameters": [
-          { "name": "producto_id", "in": "path", "required": true, "type": "integer", "example": 3 },
-          { "name": "usuario_id",  "in": "query", "type": "integer", "example": 2 },
-          { "name": "session_id",  "in": "query", "type": "string",  "example": "abc123xyz" }
+          {
+            "name": "producto_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "usuario_id",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "session_id",
+            "in": "query",
+            "type": "string"
+          }
         ],
         "responses": {
-          "200": { "description": "Producto removido del carrito" },
-          "401": { "description": "Token no proporcionado" },
-          "500": { "description": "Error interno del servidor" }
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
       }
     }
