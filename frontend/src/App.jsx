@@ -8,6 +8,7 @@ import Productos from './pages/Productos';
 import Pedidos from './pages/Pedidos';
 import Facturas from './pages/Facturas';
 import Proveedores from './pages/Proveedores';
+import Repartidores from './pages/Repartidores';
 import Perfil from './pages/Perfil';
 import Inicio from './pages/Inicio';
 import Login from './pages/Login';
@@ -116,6 +117,7 @@ function AppRoutes() {
         <Route path="pedidos" element={<Pedidos variant="admin" />} />
         <Route path="facturas" element={<Facturas />} />
         <Route path="proveedores" element={<Proveedores />} />
+        <Route path="repartidores" element={<Repartidores />} />
         <Route path="perfil" element={<Perfil />} />
       </Route>
 

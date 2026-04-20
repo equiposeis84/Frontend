@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   Shield, Users, Tags, Package, ShoppingCart, 
   Receipt, Truck, X, Layers, LogOut, UserCircle,
-  Home, HelpCircle, Mail, LogIn
+  Home, HelpCircle, Mail, LogIn, MapPin
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -24,7 +24,8 @@ const Sidebar = ({ isOpen, setIsOpen, onLogout, variant = "admin" }) => {
     { id: 'categorias', path: '/admin/categorias', label: 'Categorías', icon: Tags },
     { id: 'productos', path: '/admin/productos', label: 'Productos', icon: Package },
     { id: 'pedidos', path: '/admin/pedidos', label: 'Pedidos', icon: ShoppingCart },
-    { id: 'proveedores', path: '/admin/proveedores', label: 'Proveedores', icon: Truck }
+    { id: 'proveedores', path: '/admin/proveedores', label: 'Proveedores', icon: Truck },
+    { id: 'repartidores', path: '/admin/repartidores', label: 'Repartidores', icon: MapPin }
   ];
 
   const storefrontItems = [
