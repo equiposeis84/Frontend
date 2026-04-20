@@ -1,33 +1,40 @@
-import db from '../config/db.js';
+import prisma from '../config/prisma.js';
 
 const Categoria = {
     findAll: async () => {
-        const [rows] = await db.query('SELECT * FROM categorias ORDER BY id_categoria ASC');
-        return rows;
+        return prisma.categorias.findMany({
+            orderBy: { id_categoria: 'asc' }
+        });
     },
+
     findById: async (id) => {
-        const [rows] = await db.query('SELECT * FROM categorias WHERE id_categoria = ?', [id]);
-        return rows[0];
+        return prisma.categorias.findUnique({
+            where: { id_categoria: Number(id) }
+        });
     },
+
     create: async (data) => {
         const { nombre, descripcion } = data;
-        const [result] = await db.query(
-            'INSERT INTO categorias (nombre, descripcion) VALUES (?, ?)',
-            [nombre, descripcion]
-        );
-        return result.insertId;
+        const result = await prisma.categorias.create({
+            data: { nombre, descripcion }
+        });
+        return result.id_categoria;
     },
+
     update: async (id, data) => {
         const { nombre, descripcion } = data;
-        const [result] = await db.query(
-            'UPDATE categorias SET nombre = ?, descripcion = ? WHERE id_categoria = ?',
-            [nombre, descripcion, id]
-        );
-        return result.affectedRows > 0;
+        const result = await prisma.categorias.updateMany({
+            where: { id_categoria: Number(id) },
+            data: { nombre, descripcion }
+        });
+        return result.count > 0;
     },
+
     delete: async (id) => {
-        const [result] = await db.query('DELETE FROM categorias WHERE id_categoria = ?', [id]);
-        return result.affectedRows > 0;
+        const result = await prisma.categorias.deleteMany({
+            where: { id_categoria: Number(id) }
+        });
+        return result.count > 0;
     }
 };
 

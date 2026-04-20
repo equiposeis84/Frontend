@@ -1,6 +1,6 @@
 // package.json debe tener "type": "module"
 // package.json: { "type": "module" }
-import app from './app.mjs'; 
+import app from './app.js'; 
 
 const PORT = 3000;
 

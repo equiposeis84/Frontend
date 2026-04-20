@@ -1,11 +1,12 @@
 import express from 'express';
 const router = express.Router();
 import rolController from '../controllers/rolController.js';
+import { verificarToken } from '../middleware/authMiddleware.js';
 
-router.get('/', rolController.getAll);
-router.get('/:id', rolController.getOne);
-router.post('/', rolController.store);
-router.put('/:id', rolController.update);
-router.delete('/:id', rolController.destroy);
+router.get('/',     verificarToken, rolController.getAll);
+router.get('/:id',  verificarToken, rolController.getOne);
+router.post('/',    verificarToken, rolController.store);
+router.put('/:id',  verificarToken, rolController.update);
+router.delete('/:id', verificarToken, rolController.destroy);
 
 export default router;

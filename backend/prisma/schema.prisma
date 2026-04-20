@@ -1,0 +1,128 @@
+// ─────────────────────────────────────────────────────────────
+// Prisma Schema — RematesPaisa
+// Base de datos: sistema_comercial (MySQL)
+// ─────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+// ─── Roles ────────────────────────────────────────────────────
+model roles {
+  id_rol     Int       @id @default(autoincrement())
+  nombre     String    @db.VarChar(50)
+  descripcion String?  @db.VarChar(255)
+  usuarios   usuarios[]
+}
+
+// ─── Usuarios ─────────────────────────────────────────────────
+model usuarios {
+  id_usuario       Int       @id @default(autoincrement())
+  rol_id           Int
+  nombre           String    @db.VarChar(100)
+  email            String    @unique @db.VarChar(100)
+  password         String    @db.VarChar(255)
+  tipo_documento   String?   @db.VarChar(20)
+  numero_documento String?   @db.VarChar(20)
+  telefono         String?   @db.VarChar(20)
+  direccion        String?   @db.VarChar(255)
+  activo           Int       @default(1)
+  rol              roles     @relation(fields: [rol_id], references: [id_rol])
+  pedidos          pedidos[]
+  carrito          carrito[]
+}
+
+// ─── Categorías ───────────────────────────────────────────────
+model categorias {
+  id_categoria Int        @id @default(autoincrement())
+  nombre       String     @db.VarChar(100)
+  descripcion  String?    @db.VarChar(255)
+  productos    productos[]
+}
+
+// ─── Proveedores ──────────────────────────────────────────────
+model proveedores {
+  id_proveedor Int        @id @default(autoincrement())
+  nit          String     @unique @db.VarChar(20)
+  nombre       String     @db.VarChar(100)
+  telefono     String?    @db.VarChar(20)
+  correo       String?    @db.VarChar(100)
+  direccion    String?    @db.VarChar(255)
+  activo       Int        @default(1)
+  productos    productos[]
+}
+
+// ─── Productos ────────────────────────────────────────────────
+model productos {
+  id_producto  Int       @id @default(autoincrement())
+  categoria_id Int?
+  proveedor_id Int?
+  nombre       String    @db.VarChar(150)
+  descripcion  String?   @db.Text
+  precio_compra Decimal   @default(0) @db.Decimal(12, 2)
+  precio_venta  Decimal   @default(0) @db.Decimal(12, 2)
+  stock_actual  Int       @default(0)
+  stock_minimo  Int       @default(0)
+  activo        Int       @default(1)
+  categoria     categorias?  @relation(fields: [categoria_id], references: [id_categoria])
+  proveedor     proveedores? @relation(fields: [proveedor_id], references: [id_proveedor])
+  detalle_pedido detalle_pedido[]
+  carrito        carrito[]
+}
+
+// ─── Pedidos ──────────────────────────────────────────────────
+model pedidos {
+  id_pedido    Int       @id @default(autoincrement())
+  usuario_id   Int
+  subtotal     Decimal   @default(0) @db.Decimal(12, 2)
+  impuesto     Decimal   @default(0) @db.Decimal(12, 2)
+  total        Decimal   @default(0) @db.Decimal(12, 2)
+  estado       String    @default("PENDIENTE") @db.VarChar(30)
+  fecha_pedido DateTime  @default(now())
+  usuario      usuarios  @relation(fields: [usuario_id], references: [id_usuario])
+  detalle_pedido detalle_pedido[]
+  facturas       facturas[]
+}
+
+// ─── Detalle Pedido ───────────────────────────────────────────
+model detalle_pedido {
+  id_detalle_pedido Int      @id @default(autoincrement())
+  pedido_id         Int
+  producto_id       Int
+  cantidad          Int
+  precio_unitario   Decimal  @db.Decimal(12, 2)
+  subtotal          Decimal  @db.Decimal(12, 2)
+  pedido            pedidos  @relation(fields: [pedido_id], references: [id_pedido])
+  producto          productos @relation(fields: [producto_id], references: [id_producto])
+}
+
+// ─── Facturas ─────────────────────────────────────────────────
+model facturas {
+  id_factura     Int      @id @default(autoincrement())
+  pedido_id      Int
+  numero_factura String   @db.VarChar(50)
+  subtotal       Decimal  @default(0) @db.Decimal(12, 2)
+  impuesto       Decimal  @default(0) @db.Decimal(12, 2)
+  total          Decimal  @default(0) @db.Decimal(12, 2)
+  estado         String   @default("EMITIDA") @db.VarChar(30)
+  fecha_emision  DateTime @default(now())
+  pedido         pedidos  @relation(fields: [pedido_id], references: [id_pedido])
+}
+
+// ─── Carrito ──────────────────────────────────────────────────
+model carrito {
+  id_carrito  Int       @id @default(autoincrement())
+  usuario_id  Int?
+  session_id  String?   @db.VarChar(100)
+  producto_id Int
+  cantidad    Int       @default(1)
+  usuario     usuarios?  @relation(fields: [usuario_id], references: [id_usuario])
+  producto    productos  @relation(fields: [producto_id], references: [id_producto])
+}

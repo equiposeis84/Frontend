@@ -1,11 +1,12 @@
 import express from 'express';
 const router = express.Router();
 import facturaController from '../controllers/facturaController.js';
+import { verificarToken } from '../middleware/authMiddleware.js';
 
-router.get('/', facturaController.getAll);
-router.get('/:id', facturaController.getOne);
-router.post('/', facturaController.store);
-router.put('/:id', facturaController.update);
-router.delete('/:id', facturaController.destroy);
+router.get('/',     verificarToken, facturaController.getAll);
+router.get('/:id',  verificarToken, facturaController.getOne);
+router.post('/',    verificarToken, facturaController.store);
+router.put('/:id',  verificarToken, facturaController.update);
+router.delete('/:id', verificarToken, facturaController.destroy);
 
 export default router;

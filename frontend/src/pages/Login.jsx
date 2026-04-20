@@ -27,8 +27,9 @@ const Login = () => {
     try {
       const response = await axios.post(URL_LOGIN, { email, password });
 
-      // Cargar sesión al contexto global (esto redirigirá automáticamente vía App.jsx)
-      login(response.data.token, response.data.user);
+      // Cargar sesión al contexto global. El token ya está en la httpOnly cookie
+      // que el servidor emitió; aquí solo pasamos los datos del usuario para la UI.
+      login(response.data.user);
 
     } catch (err) {
       setError(err.response?.data?.message || 'Error al iniciar sesión');

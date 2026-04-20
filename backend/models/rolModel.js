@@ -1,33 +1,40 @@
-import db from '../config/db.js';
+import prisma from '../config/prisma.js';
 
 const Rol = {
     findAll: async () => {
-        const [rows] = await db.query('SELECT * FROM roles ORDER BY id_rol ASC');
-        return rows;
+        return prisma.roles.findMany({
+            orderBy: { id_rol: 'asc' }
+        });
     },
+
     findById: async (id) => {
-        const [rows] = await db.query('SELECT * FROM roles WHERE id_rol = ?', [id]);
-        return rows[0];
+        return prisma.roles.findUnique({
+            where: { id_rol: Number(id) }
+        });
     },
+
     create: async (data) => {
         const { nombre, descripcion } = data;
-        const [result] = await db.query(
-            'INSERT INTO roles (nombre, descripcion) VALUES (?, ?)',
-            [nombre, descripcion]
-        );
-        return result.insertId;
+        const result = await prisma.roles.create({
+            data: { nombre, descripcion }
+        });
+        return result.id_rol;
     },
+
     update: async (id, data) => {
         const { nombre, descripcion } = data;
-        const [result] = await db.query(
-            'UPDATE roles SET nombre = ?, descripcion = ? WHERE id_rol = ?',
-            [nombre, descripcion, id]
-        );
-        return result.affectedRows > 0;
+        const result = await prisma.roles.updateMany({
+            where: { id_rol: Number(id) },
+            data: { nombre, descripcion }
+        });
+        return result.count > 0;
     },
+
     delete: async (id) => {
-        const [result] = await db.query('DELETE FROM roles WHERE id_rol = ?', [id]);
-        return result.affectedRows > 0;
+        const result = await prisma.roles.deleteMany({
+            where: { id_rol: Number(id) }
+        });
+        return result.count > 0;
     }
 };
 

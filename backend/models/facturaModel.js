@@ -1,39 +1,49 @@
-import db from '../config/db.js';
+import prisma from '../config/prisma.js';
 
 const Factura = {
     findAll: async () => {
-        const [rows] = await db.query(`
-            SELECT f.*, p.estado AS pedido_estado 
-            FROM facturas f 
-            INNER JOIN pedidos p ON f.pedido_id = p.id_pedido
-            ORDER BY f.id_factura ASC
-        `);
-        return rows;
+        const rows = await prisma.facturas.findMany({
+            orderBy: { id_factura: 'asc' },
+            include: { pedido: { select: { estado: true } } }
+        });
+        return rows.map(f => ({ ...f, pedido_estado: f.pedido?.estado, pedido: undefined }));
     },
+
     findById: async (id) => {
-        const [rows] = await db.query('SELECT * FROM facturas WHERE id_factura = ?', [id]);
-        return rows[0];
+        return prisma.facturas.findUnique({
+            where: { id_factura: Number(id) }
+        });
     },
+
     create: async (data) => {
         const { pedido_id, numero_factura, subtotal, impuesto, total, estado } = data;
-        const [result] = await db.query(
-            `INSERT INTO facturas (pedido_id, numero_factura, subtotal, impuesto, total, estado) 
-             VALUES (?, ?, ?, ?, ?, ?)`,
-            [pedido_id, numero_factura, subtotal || 0, impuesto || 0, total || 0, estado || 'EMITIDA']
-        );
-        return result.insertId;
+        const result = await prisma.facturas.create({
+            data: {
+                pedido_id: Number(pedido_id),
+                numero_factura,
+                subtotal: subtotal || 0,
+                impuesto: impuesto || 0,
+                total: total || 0,
+                estado: estado || 'EMITIDA'
+            }
+        });
+        return result.id_factura;
     },
+
     update: async (id, data) => {
         const { numero_factura, subtotal, impuesto, total, estado } = data;
-        const [result] = await db.query(
-            `UPDATE facturas SET numero_factura=?, subtotal=?, impuesto=?, total=?, estado=? WHERE id_factura=?`,
-            [numero_factura, subtotal, impuesto, total, estado, id]
-        );
-        return result.affectedRows > 0;
+        const result = await prisma.facturas.updateMany({
+            where: { id_factura: Number(id) },
+            data: { numero_factura, subtotal, impuesto, total, estado }
+        });
+        return result.count > 0;
     },
+
     delete: async (id) => {
-        const [result] = await db.query('DELETE FROM facturas WHERE id_factura = ?', [id]);
-        return result.affectedRows > 0;
+        const result = await prisma.facturas.deleteMany({
+            where: { id_factura: Number(id) }
+        });
+        return result.count > 0;
     }
 };
 
