@@ -1,89 +1,112 @@
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Tags, Package, ShoppingCart, Receipt, Truck, Shield, Store, Rocket } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import '../Storefront.css';
+import { useLanguage } from '../context/LanguageContext';
+import { ArrowRight, Box, Zap, Users } from 'lucide-react';
+import './Inicio.css';
 
 const Inicio = () => {
-  const { user, role, isAuthenticated } = useAuth();
+  const { isAuthenticated, role, user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
+  const [showParticles, setShowParticles] = useState(false);
 
-  const isAdmin = role === 'Administrador';
-  const prefix = isAuthenticated ? '/cliente' : '/usuario';
+  useEffect(() => {
+    const timer = setTimeout(() => setShowParticles(true), 300);
+    return () => clearTimeout(timer);
+  }, []);
 
-  const features = [
-    { title: 'Usuarios', desc: 'Gestiona los clientes y administradores.', icon: Users, path: '/admin/usuarios', color: '#3b82f6' },
-    { title: 'Roles', desc: 'Niveles de acceso del sistema.', icon: Shield, path: '/admin/roles', color: '#8b5cf6' },
-    { title: 'Categorías', desc: 'Organiza los productos por tipo.', icon: Tags, path: '/admin/categorias', color: '#10b981' },
-    { title: 'Productos', desc: 'Catálogo e inventario comercial.', icon: Package, path: '/admin/productos', color: '#f59e0b' },
-    { title: 'Proveedores', desc: 'Empresas que surten los productos.', icon: Truck, path: '/admin/proveedores', color: '#64748b' },
-    { title: 'Pedidos', desc: 'Órdenes de compra de los clientes.', icon: ShoppingCart, path: '/admin/pedidos', color: '#ef4444' },
-    { title: 'Facturas', desc: 'Registro contable de las ventas.', icon: Receipt, path: '/admin/facturas', color: '#06b6d4' }
-  ];
+  const renderParticles = () => {
+    if (!showParticles) return null;
+    return Array.from({ length: 40 }).map((_, i) => {
+      const size = Math.random() * 4 + 2;
+      const style = {
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        width: `${size}px`,
+        height: `${size}px`,
+        animationDelay: `${Math.random() * 5}s`,
+        animationDuration: `${Math.random() * 10 + 10}s`
+      };
+      const colors = ['particle-blue', 'particle-red', 'particle-dark'];
+      const colorClass = colors[Math.floor(Math.random() * colors.length)];
+      
+      return <div key={i} className={`particle ${colorClass}`} style={style} />;
+    });
+  };
 
-  if (isAdmin) {
-    return (
-      <>
-        <header className="main-header">
-          <div>
-            <h1 style={{ marginBottom: '0.25rem' }}>Panel de Control (Admin)</h1>
-            <p style={{ color: '#94a3b8', margin: 0, fontSize: '1.05rem' }}>Bienvenido nuevamente, <strong>{user?.nombre}</strong></p>
-          </div>
-        </header>
-
-        <div style={{ padding: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-          {features.map((feat, idx) => {
-            const Icon = feat.icon;
-            return (
-              <div
-                key={idx}
-                className="modal-box"
-                style={{ position: 'relative', transform: 'none', margin: 0, cursor: 'pointer', transition: 'transform 0.2s', borderTop: `4px solid ${feat.color}` }}
-                onClick={() => navigate(feat.path)}
-                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                  <div style={{ backgroundColor: `${feat.color}20`, padding: '0.75rem', borderRadius: '8px' }}>
-                    <Icon size={28} color={feat.color} />
-                  </div>
-                  <h3 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-main)' }}>{feat.title}</h3>
-                </div>
-                <p style={{ color: '#94a3b8', fontSize: '0.9rem', margin: 0 }}>{feat.desc}</p>
-              </div>
-            );
-          })}
-        </div>
-      </>
-    );
-  }
-
-  // Vista para Clientes e Invitados
   return (
-    <div className="storefront-container" style={{ textAlign: 'center', paddingTop: '3rem' }}>
-      <div style={{ background: 'var(--card-bg)', borderRadius: '16px', padding: '4rem 2rem', border: '1px solid var(--border)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', position: 'relative', overflow: 'hidden' }}>
+    <div className="landing-container">
+      <div className="particles-wrapper">
+        {renderParticles()}
+      </div>
 
-        {/* Adorno decorativo de fondo */}
-        <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '300px', height: '300px', background: 'var(--primary)', opacity: '0.1', borderRadius: '50%', filter: 'blur(50px)' }}></div>
-        <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: '300px', height: '300px', background: 'var(--danger)', opacity: '0.1', borderRadius: '50%', filter: 'blur(50px)' }}></div>
-
-        <Rocket size={64} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
-        <h1 style={{ fontSize: '3rem', margin: '0 0 1rem 0', color: 'var(--text-main)' }}>
-          ¡Bienvenido a <span style={{ color: 'var(--primary)' }}>RematesPaisa</span>!
+      <div className="hero-content">
+        <div className="hero-badge">
+          <Zap size={14} className="badge-icon" />
+          <span>{t('brand')} v2.0 is now live</span>
+        </div>
+        
+        <h1 className="hero-title">
+          {t('hero.title.1')} <br className="hero-break" /> 
+          {t('hero.title.2')} <span className="text-gradient">{t('hero.title.span')}</span>
         </h1>
-        <p style={{ fontSize: '1.2rem', color: '#94a3b8', maxWidth: '600px', margin: '0 auto 2.5rem' }}>
-          {isAuthenticated
-            ? `Hola ${user?.nombre}, explora nuestras ofertas exclusivas del día y lleva los mejores productos para el hogar al mejor precio con seguridad garantizada.`
-            : 'Explora nuestro inmenso catálogo de productos para el hogar a un precio imbatible.'}
+        
+        <p className="hero-subtitle">
+          {isAuthenticated 
+            ? t('hero.subtitle.auth', { name: user?.nombre || role })
+            : t('hero.subtitle.guest')}
         </p>
+        
+        <div className="hero-actions">
+          {isAuthenticated ? (
+            role === 'Administrador' ? (
+              <>
+                <button className="btn-dark-pill huge" onClick={() => navigate('/admin/pedidos')}>
+                  {t('hero.btn.manage')}
+                </button>
+                <button className="btn-outline-pill huge" onClick={() => navigate('/admin/usuarios')}>
+                  {t('hero.btn.users')} <ArrowRight size={18} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button className="btn-dark-pill huge" onClick={() => navigate(role === 'Cliente' ? '/cliente/productos' : '/usuario/productos')}>
+                  {t('hero.btn.catalog')}
+                </button>
+                <button className="btn-outline-pill huge" onClick={() => navigate(role === 'Cliente' ? '/cliente/pedidos' : '/usuario/pedidos')}>
+                  {t('hero.btn.myOrders')} <ArrowRight size={18} />
+                </button>
+              </>
+            )
+          ) : (
+            <>
+              <button className="btn-dark-pill huge" onClick={() => navigate('/login')}>
+                {t('hero.btn.start')}
+              </button>
+              <button className="btn-outline-pill huge" onClick={() => navigate('/usuario/productos')}>
+                {t('hero.btn.explore')} <ArrowRight size={18} />
+              </button>
+            </>
+          )}
+        </div>
+      </div>
 
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-          <button
-            className="btn-add-red"
-            style={{ padding: '1rem 2.5rem', fontSize: '1.2rem' }}
-            onClick={() => navigate(`${prefix}/productos`)}
-          >
-            <Store size={22} style={{ marginRight: '8px' }} /> Explorar Tienda
-          </button>
+      <div className="features-grid">
+        <div className="feature-card">
+          <div className="feature-icon"><Box size={24} /></div>
+          <h3>{t('feature.1.title')}</h3>
+          <p>{t('feature.1.desc')}</p>
+        </div>
+        <div className="feature-card">
+          <div className="feature-icon"><Users size={24} /></div>
+          <h3>{t('feature.2.title')}</h3>
+          <p>{t('feature.2.desc')}</p>
+        </div>
+        <div className="feature-card">
+          <div className="feature-icon"><Zap size={24} /></div>
+          <h3>{t('feature.3.title')}</h3>
+          <p>{t('feature.3.desc')}</p>
         </div>
       </div>
     </div>

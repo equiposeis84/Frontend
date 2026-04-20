@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
+import TopBar from './components/TopBar';
 import Usuarios from './pages/Usuarios';
 import Roles from './pages/Roles';
 import Categorias from './pages/Categorias';
@@ -20,26 +20,21 @@ import { Menu } from 'lucide-react';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import { LanguageProvider } from './context/LanguageContext';
 import './App.css';
 import './services/authService';
 
 const AppLayout = ({ variant }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { logout } = useAuth();
 
   return (
     <div className="app-wrapper">
-      <Sidebar
-        isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
+      <TopBar
         onLogout={logout}
         variant={variant}
       />
-      <div className={`main-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+      <div className="main-content">
         <div className="mobile-header">
-          <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>
-            <Menu size={28} />
-          </button>
           <h2 className="mobile-title">
             {variant === 'admin' ? 'AdminPanel' : 'RematesPaisa'}
           </h2>
@@ -127,15 +122,18 @@ function AppRoutes() {
   );
 }
 
+
 function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </CartProvider>
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </CartProvider>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
 

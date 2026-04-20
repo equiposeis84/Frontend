@@ -1,28 +1,26 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  /* Variables del estilo Vite */
-  --accent: #646cff;
-  --accent-bg: rgba(100, 108, 255, 0.1);
-  --accent-border: #747bff;
-  --border: rgba(255, 255, 255, 0.1);
-  --text-h: #ffffff;
-  --social-bg: #2f2f2f;
-  --shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  color-scheme: light;
+  color: #111827;
+  background-color: #fafbfc;
+  
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-    --border: rgba(0, 0, 0, 0.1);
-    --text-h: #213547;
-    --social-bg: #f6f6f7;
-  }
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
 }

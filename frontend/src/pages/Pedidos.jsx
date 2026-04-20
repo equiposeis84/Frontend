@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pencil, Trash2, ShoppingCart, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import './Pedidos.css';
 
 const URL_API = "http://localhost:3000/api/pedidos";
 const URL_USUARIOS = "http://localhost:3000/api/usuarios";
@@ -296,74 +297,70 @@ const Pedidos = ({ variant }) => {
   if (!isAdminView) {
     return (
       <div className="module-container">
-        <div className="module-header">
-          <h1 className="module-title-table">Mis Pedidos</h1>
+        <div className="module-header" style={{marginBottom: '2rem'}}>
+          <h1 className="module-title-table" style={{fontSize: '2rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.03em'}}>Mis Pedidos</h1>
         </div>
+        
         <div className="module-content">
           {currentItems.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem' }}>
-              <ShoppingCart size={48} style={{ color: '#94a3b8', opacity: 0.5, marginBottom: '1rem' }} />
-              <p style={{ color: '#94a3b8' }}>Aún no tienes pedidos registrados.</p>
+            <div className="empty-orders">
+              <div className="empty-icon-wrap">
+                <ShoppingCart size={32} color="#9ca3af" />
+              </div>
+              <h3>Aún no tienes pedidos</h3>
+              <p>Cuando realices una compra, aparecerá aquí para que puedas hacerle seguimiento.</p>
             </div>
           ) : (
-            <table className="styled-table">
-              <thead>
-                <tr>
-                  <th>ID Pedido</th>
-                  <th>Fecha</th>
-                  <th>Total</th>
-                  <th>Estado</th>
-                  <th>Acciones</th> {/* Cambiado Ticket por Acciones */}
-                </tr>
-              </thead>
-              <tbody>
-                {currentItems.map((p) => (
-                  <tr key={p.id_pedido}>
-                    <td>#{p.id_pedido}</td>
-                    <td>{new Date(p.fecha).toLocaleDateString()}</td>
-                    <td>${Number(p.total).toLocaleString()}</td>
-                    <td>
-                      <span className="badge-rol" style={{ backgroundColor: p.estado === 'PENDIENTE' ? '#f59f00' : p.estado === 'CANCELADO' ? '#e03131' : '#2f9e44', fontSize: '0.8rem' }}>
-                        {p.estado}
-                      </span>
-                    </td>
-                    <td>
-                      {/* DIV CONTENEDOR DE BOTONES (LINEA 268) */}
-                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        {/* BOTÓN TICKET (RF023) */}
-                        <button
-                          className="btn-icon"
-                          onClick={() => descargarTicket(p.id_pedido)}
-                          title="Descargar Ticket de Compra"
-                        >
-                          <Download size={18} color="var(--primary)" />
-                        </button>
+            <div className="orders-grid">
+              {currentItems.map((p) => (
+                <div className="order-card" key={p.id_pedido}>
+                  <div className="order-header">
+                    <span className="order-id">#{p.id_pedido}</span>
+                    <span className={`order-status status-${p.estado?.toLowerCase() || 'pendiente'}`}>
+                      {p.estado}
+                    </span>
+                  </div>
+                  
+                  <div className="order-body">
+                    <div className="order-info-row">
+                      <span className="order-info-label">Fecha de orden</span>
+                      <span className="order-info-value">{new Date(p.fecha).toLocaleDateString()}</span>
+                    </div>
+                    <div className="order-info-row order-total-row">
+                      <span className="order-info-label">Total a pagar</span>
+                      <span className="order-total-value">${Number(p.total).toLocaleString()}</span>
+                    </div>
+                  </div>
 
-                        {/* BOTÓN CANCELAR (RF011): Solo visible si está PENDIENTE */}
-                        {p.estado === 'PENDIENTE' && (
-                          <button
-                            className="btn-icon"
-                            onClick={() => cancelarMiPedido(p.id_pedido)}
-                            title="Cancelar Pedido"
-                          >
-                            <Trash2 size={18} color="#ef4444" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                  <div className="order-actions">
+                    <button
+                      className="btn-order-action btn-download"
+                      onClick={() => descargarTicket(p.id_pedido)}
+                    >
+                      <Download size={16} /> Ticket
+                    </button>
+
+                    {p.estado === 'PENDIENTE' && (
+                      <button
+                        className="btn-order-action btn-cancel-order"
+                        onClick={() => cancelarMiPedido(p.id_pedido)}
+                      >
+                        <Trash2 size={16} /> Cancelar
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
 
           {totalPages > 1 && (
             <div className="pagination-bar">
-              <button className="page-btn" disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}>Previous</button>
+              <button className="page-btn" disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}>Anterior</button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
                 <button key={num} className={`page-btn ${currentPage === num ? 'active' : ''}`} onClick={() => setCurrentPage(num)}>{num}</button>
               ))}
-              <button className="page-btn" disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => prev + 1)}>Next</button>
+              <button className="page-btn" disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => prev + 1)}>Siguiente</button>
             </div>
           )}
         </div>
