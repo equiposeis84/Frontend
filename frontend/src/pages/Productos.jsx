@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pencil, Trash2, Package, ShoppingCart, Info } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import '../Storefront.css';
+
 
 const URL_API = "http://localhost:3000/api/productos";
 const URL_CATEGORIAS = "http://localhost:3000/api/categorias";

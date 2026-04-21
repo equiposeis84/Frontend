@@ -7,7 +7,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import './Sidebar.css';
 
 const Sidebar = ({ isOpen, setIsOpen, onLogout, variant = "admin" }) => {
   const navigate = useNavigate();

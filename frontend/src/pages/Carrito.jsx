@@ -2,7 +2,6 @@ import React from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { Package, ShieldCheck, Lock, CreditCard, ChevronRight } from 'lucide-react';
-import '../Storefront.css';
 
 const Carrito = ({ variant }) => {
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart, checkout } = useCart();

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { ArrowRight, Box, Zap, Users } from 'lucide-react';
-import './Inicio.css';
 
 const Inicio = () => {
   const { isAuthenticated, role, user } = useAuth();
@@ -60,16 +59,7 @@ const Inicio = () => {
         
         <div className="hero-actions">
           {isAuthenticated ? (
-            role === 'Administrador' ? (
-              <>
-                <button className="btn-dark-pill huge" onClick={() => navigate('/admin/pedidos')}>
-                  {t('hero.btn.manage')}
-                </button>
-                <button className="btn-outline-pill huge" onClick={() => navigate('/admin/usuarios')}>
-                  {t('hero.btn.users')} <ArrowRight size={18} />
-                </button>
-              </>
-            ) : (
+            role === 'Administrador' ? null : (
               <>
                 <button className="btn-dark-pill huge" onClick={() => navigate(role === 'Cliente' ? '/cliente/productos' : '/usuario/productos')}>
                   {t('hero.btn.catalog')}

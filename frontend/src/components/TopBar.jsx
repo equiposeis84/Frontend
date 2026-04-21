@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
-import './TopBar.css';
 
 const TopBar = ({ onLogout, variant }) => {
   const { totalItems } = useCart();

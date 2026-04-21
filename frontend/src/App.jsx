@@ -21,7 +21,6 @@ import { CartProvider } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { LanguageProvider } from './context/LanguageContext';
-import './App.css';
 import './services/authService';
 
 const AppLayout = ({ variant }) => {

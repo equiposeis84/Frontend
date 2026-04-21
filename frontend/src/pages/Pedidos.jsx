@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pencil, Trash2, ShoppingCart, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import './Pedidos.css';
 
 const URL_API = "http://localhost:3000/api/pedidos";
 const URL_USUARIOS = "http://localhost:3000/api/usuarios";
@@ -155,53 +154,66 @@ const Pedidos = ({ variant }) => {
         <html lang="es">
         <head>
           <meta charset="UTF-8"/>
-          <title>Ticket de Compra - Pedido #${pedido.id_pedido}</title>
+          <title>Comprobante de Pedido - #${pedido.id_pedido}</title>
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
             * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'Inter', sans-serif; background: #f1f5f9; padding: 20px; color: #1e293b; }
-            .ticket { max-width: 520px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); overflow: hidden; }
-            .ticket-header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; padding: 28px 24px; text-align: center; }
-            .ticket-header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.5px; }
-            .ticket-header .subtitle { color: #94a3b8; font-size: 0.85rem; }
-            .ticket-header .order-id { display: inline-block; margin-top: 12px; background: rgba(56,189,248,0.15); color: #38bdf8; padding: 6px 18px; border-radius: 20px; font-weight: 600; font-size: 0.95rem; }
-            .ticket-body { padding: 24px; }
-            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
-            .info-item label { display: block; font-size: 0.72rem; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 3px; }
-            .info-item span { font-size: 0.92rem; font-weight: 500; }
-            .badge { display: inline-block; padding: 3px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
-            .badge-pendiente { background: #fef3c7; color: #92400e; }
-            .badge-pagado { background: #d1fae5; color: #065f46; }
-            .badge-entregado { background: #dbeafe; color: #1e40af; }
-            .badge-cancelado { background: #fee2e2; color: #991b1b; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-            thead th { background: #f8fafc; padding: 10px 12px; font-size: 0.78rem; text-transform: uppercase; color: #64748b; font-weight: 600; letter-spacing: 0.5px; border-bottom: 2px solid #e2e8f0; text-align: left; }
+            body { font-family: 'Inter', sans-serif; background: #e2e8f0; padding: 40px 20px; color: #1e293b; }
+            .ticket { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; border-top: 6px solid #0f172a; }
+            .ticket-header { padding: 32px 32px 16px 32px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f1f5f9; }
+            .ticket-header .brand { font-size: 1.75rem; font-weight: 700; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.5px; }
+            .ticket-header .doc-type { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+            .ticket-header .order-id { text-align: right; }
+            .ticket-header .order-id-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; }
+            .ticket-header .order-id-value { font-size: 1.25rem; font-weight: 700; color: #0f172a; }
+            .ticket-body { padding: 32px; }
+            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; background: #f8fafc; padding: 20px; border-radius: 6px; border: 1px solid #f1f5f9; }
+            .info-item label { display: block; font-size: 0.75rem; text-transform: uppercase; color: #64748b; font-weight: 600; margin-bottom: 6px; }
+            .info-item span { font-size: 0.95rem; font-weight: 500; color: #0f172a; }
+            .badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; }
+            .badge-pendiente { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+            .badge-pagado { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+            .badge-entregado { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+            .badge-cancelado { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+            thead th { border-bottom: 2px solid #e2e8f0; padding: 12px 12px; font-size: 0.8rem; text-transform: uppercase; color: #64748b; font-weight: 600; text-align: left; }
             thead th:nth-child(2), thead th:nth-child(3), thead th:nth-child(4) { text-align: center; }
             thead th:nth-child(3), thead th:nth-child(4) { text-align: right; }
-            .total-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-top: 2px solid #0f172a; margin-top: 4px; }
-            .total-row .label { font-size: 1rem; font-weight: 700; color: #0f172a; }
-            .total-row .amount { font-size: 1.4rem; font-weight: 700; color: #0f172a; }
-            .ticket-footer { text-align: center; padding: 18px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; }
-            .ticket-footer p { font-size: 0.8rem; color: #94a3b8; }
-            .ticket-footer .brand { font-weight: 700; color: #38bdf8; }
+            tbody td { padding: 14px 12px; font-size: 0.95rem; color: #334155; border-bottom: 1px solid #f1f5f9; }
+            .total-section { display: flex; justify-content: flex-end; }
+            .total-box { width: 250px; }
+            .total-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
+            .total-row.final { border-top: 2px solid #0f172a; padding-top: 16px; margin-top: 4px; }
+            .total-row .label { font-size: 0.9rem; font-weight: 600; color: #64748b; }
+            .total-row.final .label { font-size: 1.1rem; font-weight: 700; color: #0f172a; }
+            .total-row .amount { font-size: 1rem; font-weight: 600; color: #334155; }
+            .total-row.final .amount { font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+            .ticket-footer { text-align: center; padding: 24px 32px; background: #fff; border-top: 1px solid #f1f5f9; }
+            .ticket-footer p { font-size: 0.85rem; color: #64748b; line-height: 1.5; }
+            .ticket-footer .doc-info { font-size: 0.75rem; color: #94a3b8; margin-top: 12px; }
             @media print {
               body { background: #fff; padding: 0; }
-              .ticket { box-shadow: none; border-radius: 0; }
+              .ticket { box-shadow: none; border: none; border-top: 6px solid #0f172a; }
               .no-print { display: none !important; }
             }
           </style>
         </head>
         <body>
-          <div style="text-align:center;margin-bottom:16px;" class="no-print">
-            <button onclick="window.print()" style="padding:10px 28px;background:#0f172a;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.95rem;">
-              🖨️ Imprimir / Guardar como PDF
+          <div style="text-align:center;margin-bottom:24px;" class="no-print">
+            <button onclick="window.print()" style="padding:12px 32px;background:#0f172a;color:#fff;border:none;border-radius:4px;font-weight:500;cursor:pointer;font-size:1rem;letter-spacing:0.5px;transition:background 0.2s;">
+              Imprimir Documento
             </button>
           </div>
           <div class="ticket">
             <div class="ticket-header">
-              <h1>RematesPaisa</h1>
-              <div class="subtitle">Ticket de Compra</div>
-              <div class="order-id">Pedido #${pedido.id_pedido}</div>
+              <div>
+                <div class="brand">RematesPaisa</div>
+                <div class="doc-type">Comprobante de Pedido</div>
+              </div>
+              <div class="order-id">
+                <div class="order-id-label">Nº de Pedido</div>
+                <div class="order-id-value">${String(pedido.id_pedido).padStart(6, '0')}</div>
+              </div>
             </div>
             <div class="ticket-body">
               <div class="info-grid">
@@ -210,24 +222,24 @@ const Pedidos = ({ variant }) => {
                   <span>${pedido.usuario_nombre || 'N/A'}</span>
                 </div>
                 <div class="info-item">
-                  <label>Documento</label>
+                  <label>Documento de Identidad</label>
                   <span>${pedido.numero_documento || 'N/A'}</span>
                 </div>
                 <div class="info-item">
-                  <label>Fecha</label>
+                  <label>Fecha de Emisión</label>
                   <span>${new Date(pedido.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                 </div>
                 <div class="info-item">
-                  <label>Estado</label>
+                  <label>Estado del Pedido</label>
                   <span class="badge badge-${pedido.estado?.toLowerCase() || 'pendiente'}">${pedido.estado || 'PENDIENTE'}</span>
                 </div>
               </div>
               <table>
                 <thead>
                   <tr>
-                    <th>Producto</th>
-                    <th>Cant.</th>
-                    <th>P. Unit.</th>
+                    <th>Descripción del Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
                     <th>Subtotal</th>
                   </tr>
                 </thead>
@@ -235,14 +247,21 @@ const Pedidos = ({ variant }) => {
                   ${filasProductos}
                 </tbody>
               </table>
-              <div class="total-row">
-                <span class="label">TOTAL A PAGAR</span>
-                <span class="amount">$${Number(pedido.total).toLocaleString()}</span>
+              <div class="total-section">
+                <div class="total-box">
+                  <div class="total-row final">
+                    <span class="label">Total a Pagar</span>
+                    <span class="amount">$${Number(pedido.total).toLocaleString()}</span>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="ticket-footer">
-              <p>Gracias por tu compra en <span class="brand">RematesPaisa</span></p>
-              <p style="margin-top:4px;">Este documento es tu comprobante de compra.</p>
+              <p>Este documento constituye el comprobante oficial de su pedido en RematesPaisa.</p>
+              <p>Para consultas o reclamos, por favor conserve este número de pedido.</p>
+              <div class="doc-info">
+                Documento generado el ${new Date().toLocaleString('es-CO')}
+              </div>
             </div>
           </div>
         </body>
