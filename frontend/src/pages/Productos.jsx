@@ -1,49 +1,87 @@
+// ============================================================
+// PASO 7: frontend/src/pages/Productos.jsx  (REEMPLAZAR COMPLETO)
+// Cambios:
+//  - Estado `imagenFile` y `imagenPreview` para manejar la imagen
+//  - guardar() usa FormData en vez de JSON (necesario para enviar archivos)
+//  - Vista cliente muestra <img> real con fallback al ícono Package
+//  - Modal de administrador incluye campo para subir/cambiar imagen
+// ============================================================
+
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Pencil, Trash2, Package, ShoppingCart, Info } from 'lucide-react';
+import { Pencil, Trash2, Package, ShoppingCart, Info, Upload, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
-
-const URL_API = "http://localhost:3000/api/productos";
+const URL_API        = "http://localhost:3000/api/productos";
+const URL_API_PUBLIC = "http://localhost:3000/api/productos/publico";
 const URL_CATEGORIAS = "http://localhost:3000/api/categorias";
 const URL_PROVEEDORES = "http://localhost:3000/api/proveedores";
 
+// ── Componente de imagen con fallback al ícono ───────────────
+const ProductoImagen = ({ src, alt, style = {}, iconSize = 56 }) => {
+  const [error, setError] = useState(false);
+  if (!src || error) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: '#f1f5f9', width: '100%', height: '100%', ...style }}>
+        <Package size={iconSize} color="#94a3b8" />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setError(true)}
+      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', ...style }}
+    />
+  );
+};
+
 const Productos = ({ variant }) => {
-  const [productos, setProductos] = useState([]);
+  const [productos, setProductos]           = useState([]);
   const [categoriasList, setCategoriasList] = useState([]);
   const [proveedoresList, setProveedoresList] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [enEdicion, setEnEdicion] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal]           = useState(false);
+  const [enEdicion, setEnEdicion]           = useState(false);
+  const [loading, setLoading]               = useState(true);
+  const [guardando, setGuardando]           = useState(false);
 
-  // --- ESTADOS PARA RF005 (Ficha Técnica) ---
+  // Ficha técnica (RF005)
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const { addToCart } = useCart();
-  const isAdminView = variant === 'admin' || !variant;
+  const isAdminView   = variant === 'admin' || !variant;
 
   // Paginación y búsqueda
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm]   = useState("");
   const [searchField, setSearchField] = useState("nombre");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = isAdminView ? 5 : 12;
 
-  // Campos de la BD
-  const [idProducto, setIdProducto] = useState(null);
-  const [categoriaId, setCategoriaId] = useState("");
-  const [proveedorId, setProveedorId] = useState("");
-  const [nombre, setNombre] = useState("");
-  const [descripcion, setDescripcion] = useState("");
+  // Campos del formulario
+  const [idProducto, setIdProducto]     = useState(null);
+  const [categoriaId, setCategoriaId]   = useState("");
+  const [proveedorId, setProveedorId]   = useState("");
+  const [nombre, setNombre]             = useState("");
+  const [descripcion, setDescripcion]   = useState("");
   const [precioCompra, setPrecioCompra] = useState(0);
-  const [precioVenta, setPrecioVenta] = useState(0);
-  const [stockActual, setStockActual] = useState(0);
-  const [stockMinimo, setStockMinimo] = useState(0);
-  const [activo, setActivo] = useState(1);
+  const [precioVenta, setPrecioVenta]   = useState(0);
+  const [stockActual, setStockActual]   = useState(0);
+  const [stockMinimo, setStockMinimo]   = useState(0);
+  const [activo, setActivo]             = useState(1);
+
+  // ── NUEVO: estados para la imagen ───────────────────────────
+  const [imagenFile, setImagenFile]       = useState(null);    // Archivo seleccionado
+  const [imagenPreview, setImagenPreview] = useState(null);    // URL previa (blob o cloudinary)
+  const [imagenUrlActual, setImagenUrlActual] = useState(null); // URL ya guardada en BD
 
   const listar = () => {
     setLoading(true);
-    axios.get(URL_API)
+    // Invitados y clientes usan el endpoint público (sin token)
+    const endpoint = isAdminView ? URL_API : URL_API_PUBLIC;
+    axios.get(endpoint)
       .then(res => setProductos(res.data))
       .catch(err => console.error("Error al listar productos:", err))
       .finally(() => setLoading(false));
@@ -51,13 +89,8 @@ const Productos = ({ variant }) => {
 
   const listarDependencias = () => {
     if (!isAdminView) return;
-    axios.get(URL_CATEGORIAS)
-      .then(res => setCategoriasList(res.data))
-      .catch(err => console.error("Error al listar categorias:", err));
-
-    axios.get(URL_PROVEEDORES)
-      .then(res => setProveedoresList(res.data))
-      .catch(err => console.error("Error al listar proveedores:", err));
+    axios.get(URL_CATEGORIAS).then(res => setCategoriasList(res.data)).catch(console.error);
+    axios.get(URL_PROVEEDORES).then(res => setProveedoresList(res.data)).catch(console.error);
   };
 
   useEffect(() => {
@@ -65,7 +98,6 @@ const Productos = ({ variant }) => {
     listarDependencias();
   }, [isAdminView]);
 
-  // --- FUNCIÓN VER DETALLES (RF005) ---
   const verDetalles = (p) => {
     setSelectedProduct(p);
     setShowDetailModal(true);
@@ -75,6 +107,7 @@ const Productos = ({ variant }) => {
     setCategoriaId(""); setProveedorId(""); setNombre(""); setDescripcion("");
     setPrecioCompra(0); setPrecioVenta(0); setStockActual(0); setStockMinimo(0);
     setActivo(1); setEnEdicion(false); setIdProducto(null);
+    setImagenFile(null); setImagenPreview(null); setImagenUrlActual(null); // ← NUEVO
     setShowModal(false);
   };
 
@@ -96,50 +129,81 @@ const Productos = ({ variant }) => {
     setStockActual(p.stock_actual);
     setStockMinimo(p.stock_minimo);
     setActivo(p.activo);
+    // ── NUEVO: cargar imagen actual ──────────────────────────
+    setImagenFile(null);
+    setImagenUrlActual(p.imagen_url || null);
+    setImagenPreview(p.imagen_url || null);
+    // ─────────────────────────────────────────────────────────
     setEnEdicion(true);
     setShowModal(true);
   };
 
-  const guardar = () => {
-    const datos = {
-      categoria_id: categoriaId || null,
-      proveedor_id: proveedorId || null,
-      nombre,
-      descripcion,
-      precio_compra: parseFloat(precioCompra),
-      precio_venta: parseFloat(precioVenta),
-      stock_actual: parseInt(stockActual, 10),
-      stock_minimo: parseInt(stockMinimo, 10),
-      activo
-    };
+  // ── NUEVO: handler para selección de archivo ─────────────
+  const handleImagenChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImagenFile(file);
+    // Mostrar preview local antes de subir
+    const blobUrl = URL.createObjectURL(file);
+    setImagenPreview(blobUrl);
+  };
 
+  const quitarImagen = () => {
+    setImagenFile(null);
+    setImagenPreview(null);
+    setImagenUrlActual(null);
+  };
+
+  // ── NUEVO: guardar usa FormData para enviar el archivo ───
+  const guardar = async () => {
     if (!nombre || !categoriaId) {
       alert("El nombre y la categoría son obligatorios");
       return;
     }
 
-    if (enEdicion) {
-      axios.put(`${URL_API}/${idProducto}`, datos)
-        .then(() => {
-          limpiarFormulario();
-          listar();
-          alert("Producto actualizado correctamente.");
-        })
-        .catch(err => {
-          console.error("Error interno:", err);
-          alert("Error al actualizar: " + (err.response?.data?.message || err.message));
+    setGuardando(true);
+
+    // FormData permite enviar texto + archivo en la misma petición
+    const formData = new FormData();
+    formData.append('categoria_id',  categoriaId || '');
+    formData.append('proveedor_id',  proveedorId || '');
+    formData.append('nombre',        nombre);
+    formData.append('descripcion',   descripcion || '');
+    formData.append('precio_compra', parseFloat(precioCompra));
+    formData.append('precio_venta',  parseFloat(precioVenta));
+    formData.append('stock_actual',  parseInt(stockActual, 10));
+    formData.append('stock_minimo',  parseInt(stockMinimo, 10));
+    formData.append('activo',        activo);
+
+    if (imagenFile) {
+      // Si hay un archivo nuevo, adjuntarlo con el campo "imagen"
+      // (debe coincidir con upload.single('imagen') en la ruta)
+      formData.append('imagen', imagenFile);
+    } else if (imagenUrlActual) {
+      // Si no cambió la imagen, mandar la URL actual para que no se borre
+      formData.append('imagen_url', imagenUrlActual);
+    }
+    // Si no hay imagen y tampoco URL actual, no se manda nada → imagen_url queda null
+
+    try {
+      if (enEdicion) {
+        await axios.put(`${URL_API}/${idProducto}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
-    } else {
-      axios.post(URL_API, datos)
-        .then(() => {
-          limpiarFormulario();
-          listar();
-          alert("Producto creado con éxito.");
-        })
-        .catch(err => {
-          console.error("Error interno:", err);
-          alert("Error al crear: " + (err.response?.data?.message || err.message));
+        alert("Producto actualizado correctamente.");
+      } else {
+        await axios.post(URL_API, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
+        alert("Producto creado con éxito.");
+      }
+      limpiarFormulario();
+      listar();
+    } catch (err) {
+      console.error("Error al guardar:", err);
+      alert("Error al guardar: " + (err.response?.data?.message || err.message));
+    } finally {
+      setGuardando(false);
     }
   };
 
@@ -162,10 +226,10 @@ const Productos = ({ variant }) => {
     return String(value).toLowerCase().includes(searchTerm.toLowerCase());
   });
 
-  const totalPages = Math.ceil(filteredProductos.length / itemsPerPage);
+  const totalPages   = Math.ceil(filteredProductos.length / itemsPerPage);
   const currentItems = filteredProductos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // --- VISTA CLIENTE / INVITADO ---
+  // ── VISTA CLIENTE / INVITADO ─────────────────────────────
   if (!isAdminView) {
     return (
       <div className="storefront-container">
@@ -186,17 +250,19 @@ const Productos = ({ variant }) => {
           {currentItems.map(p => (
             <div key={p.id_producto} className="product-horizontal-card">
               <div className="product-row-header">
-                {/* Título clickeable para RF005 */}
                 <h2 className="product-hc-title" style={{ cursor: 'pointer', color: 'var(--primary)' }} onClick={() => verDetalles(p)}>
                   {p.nombre}
                 </h2>
               </div>
 
               <div className="product-body-split">
-                <div className="product-hc-left" onClick={() => verDetalles(p)} style={{ cursor: 'pointer' }}>
-                  <div className="img-placeholder" style={{ background: '#f1f5f9' }}>
-                    <Package size={56} color="#94a3b8" />
-                  </div>
+                {/* ── Imagen real o ícono de fallback ── */}
+                <div
+                  className="product-hc-left"
+                  onClick={() => verDetalles(p)}
+                  style={{ cursor: 'pointer', width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0 }}
+                >
+                  <ProductoImagen src={p.imagen_url} alt={p.nombre} iconSize={56} />
                 </div>
 
                 <div className="product-hc-center">
@@ -211,7 +277,6 @@ const Productos = ({ variant }) => {
                   <div style={{ color: '#64748b', fontSize: '0.85rem' }}>
                     Categoría: <strong>{p.categoria_nombre || 'General'}</strong>
                   </div>
-                  {/* Botón extra para ficha técnica (RF005) */}
                   <button
                     onClick={() => verDetalles(p)}
                     style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '0.85rem', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '5px', padding: 0 }}
@@ -224,7 +289,6 @@ const Productos = ({ variant }) => {
                   <div className="pricing-block">
                     <div className="precio-final">${Number(p.precio_venta).toLocaleString()}</div>
                   </div>
-
                   {p.stock_actual > 0 ? (
                     <button className="btn-add-red" onClick={() => addToCart(p)}>
                       <ShoppingCart size={22} />
@@ -238,7 +302,7 @@ const Productos = ({ variant }) => {
           ))}
         </div>
 
-        {/* MODAL DE DETALLES (RF005) */}
+        {/* MODAL FICHA TÉCNICA (RF005) */}
         {showDetailModal && selectedProduct && (
           <div className="modal-backdrop" onClick={() => setShowDetailModal(false)}>
             <div className="modal-box detail-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '700px' }}>
@@ -248,8 +312,9 @@ const Productos = ({ variant }) => {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '25px', marginTop: '20px' }}>
-                <div style={{ background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', padding: '20px' }}>
-                  <Package size={150} color="#cbd5e1" />
+                {/* ── Imagen grande en la ficha técnica ── */}
+                <div style={{ background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', overflow: 'hidden', minHeight: '200px' }}>
+                  <ProductoImagen src={selectedProduct.imagen_url} alt={selectedProduct.nombre} iconSize={100} />
                 </div>
 
                 <div>
@@ -257,16 +322,13 @@ const Productos = ({ variant }) => {
                   <div style={{ display: 'inline-block', padding: '4px 12px', background: '#dbeafe', color: '#1e40af', borderRadius: '12px', fontSize: '0.85rem', marginBottom: '15px' }}>
                     {selectedProduct.categoria_nombre || 'General'}
                   </div>
-
                   <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '20px' }}>
                     ${Number(selectedProduct.precio_venta).toLocaleString()}
                   </div>
-
                   <div style={{ marginBottom: '20px' }}>
                     <h4 style={{ textTransform: 'uppercase', fontSize: '0.75rem', color: '#64748b', marginBottom: '8px', letterSpacing: '0.5px' }}>Descripción completa</h4>
                     <p style={{ fontSize: '0.95rem', color: '#475569', lineHeight: '1.6' }}>{selectedProduct.descripcion || 'No hay descripción disponible para este artículo.'}</p>
                   </div>
-
                   <div style={{ padding: '15px', background: '#f1f5f9', borderRadius: '8px' }}>
                     <h4 style={{ textTransform: 'uppercase', fontSize: '0.75rem', color: '#64748b', marginBottom: '10px' }}>Información Técnica</h4>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.85rem', color: '#334155' }}>
@@ -296,7 +358,7 @@ const Productos = ({ variant }) => {
     );
   }
 
-  // --- VISTA ADMINISTRADOR (Original 100%) ---
+  // ── VISTA ADMINISTRADOR ──────────────────────────────────
   return (
     <>
       <div className="top-action-bar">
@@ -340,6 +402,7 @@ const Productos = ({ variant }) => {
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Imagen</th>
                 <th>Nombre</th>
                 <th>Categoría</th>
                 <th>Proveedor</th>
@@ -353,6 +416,12 @@ const Productos = ({ variant }) => {
               {currentItems.map((p) => (
                 <tr key={p.id_producto}>
                   <td>{p.id_producto}</td>
+                  {/* ── Thumbnail de imagen en la tabla ── */}
+                  <td>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '6px', overflow: 'hidden' }}>
+                      <ProductoImagen src={p.imagen_url} alt={p.nombre} iconSize={24} />
+                    </div>
+                  </td>
                   <td>{p.nombre}</td>
                   <td>{p.categoria_nombre}</td>
                   <td>{p.proveedor_nombre || <span style={{ color: '#aaa', fontStyle: 'italic' }}>Ninguno</span>}</td>
@@ -395,9 +464,10 @@ const Productos = ({ variant }) => {
         </div>
       )}
 
+      {/* ── MODAL ADMINISTRADOR ─────────────────────────── */}
       {showModal && (
         <div className="modal-backdrop">
-          <div className="modal-box" style={{ maxWidth: '600px' }}>
+          <div className="modal-box" style={{ maxWidth: '620px' }}>
             <h2>{enEdicion ? "Actualizar Producto" : "Nuevo Producto"}</h2>
             <div className="form-grid">
               <div className="input-field" style={{ gridColumn: 'span 2' }}>
@@ -428,6 +498,63 @@ const Productos = ({ variant }) => {
                   ))}
                 </select>
               </div>
+
+              {/* ── NUEVO: Campo de imagen ──────────────────── */}
+              <div className="input-field" style={{ gridColumn: 'span 2' }}>
+                <label>Imagen del Producto</label>
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                  {/* Preview */}
+                  <div style={{
+                    width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden',
+                    border: '2px dashed #cbd5e1', flexShrink: 0, background: '#f8fafc',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    {imagenPreview
+                      ? <img src={imagenPreview} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <Package size={36} color="#94a3b8" />
+                    }
+                  </div>
+
+                  {/* Controles */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                    <label
+                      htmlFor="input-imagen"
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer',
+                        padding: '8px 16px', borderRadius: '6px', border: '1px solid #cbd5e1',
+                        background: '#f8fafc', fontSize: '0.85rem', color: '#475569',
+                        width: 'fit-content'
+                      }}
+                    >
+                      <Upload size={16} />
+                      {imagenPreview ? 'Cambiar imagen' : 'Subir imagen'}
+                    </label>
+                    <input
+                      id="input-imagen"
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleImagenChange}
+                      style={{ display: 'none' }}
+                    />
+                    <p style={{ fontSize: '0.78rem', color: '#94a3b8', margin: 0 }}>
+                      JPG, PNG o WEBP · Máx. 5MB
+                    </p>
+                    {imagenPreview && (
+                      <button
+                        onClick={quitarImagen}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: '6px',
+                          background: 'none', border: 'none', color: 'var(--danger)',
+                          cursor: 'pointer', fontSize: '0.82rem', padding: 0
+                        }}
+                      >
+                        <X size={14} /> Quitar imagen
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+              {/* ─────────────────────────────────────────────── */}
 
               <div className="input-field">
                 <label>Precio Compra</label>
@@ -467,9 +594,12 @@ const Productos = ({ variant }) => {
                 </select>
               </div>
             </div>
+
             <div className="modal-btns">
-              <button className="btn-cancel" onClick={limpiarFormulario}>Cancelar</button>
-              <button className="btn-save" onClick={guardar}>Guardar Cambios</button>
+              <button className="btn-cancel" onClick={limpiarFormulario} disabled={guardando}>Cancelar</button>
+              <button className="btn-save" onClick={guardar} disabled={guardando}>
+                {guardando ? 'Guardando...' : 'Guardar Cambios'}
+              </button>
             </div>
           </div>
         </div>

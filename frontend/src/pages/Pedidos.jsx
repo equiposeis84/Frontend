@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Pencil, Trash2, ShoppingCart, Download } from 'lucide-react';
+import { Pencil, Trash2, ShoppingCart, Download, Eye, X, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const URL_API = "http://localhost:3000/api/pedidos";
@@ -12,6 +12,11 @@ const Pedidos = ({ variant }) => {
   const [showModal, setShowModal] = useState(false);
   const [enEdicion, setEnEdicion] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Modal de detalle de pedido
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [pedidoDetalle, setPedidoDetalle] = useState(null);
 
   const navigate = useNavigate();
   const isAdminView = variant === 'admin' || !variant;
@@ -42,6 +47,22 @@ const Pedidos = ({ variant }) => {
     axios.get(URL_USUARIOS)
       .then(res => setUsuariosList(res.data))
       .catch(err => console.error("Error al listar usuarios:", err));
+  };
+
+  // ── Ver detalles de un pedido en modal ──────────────────────────
+  const verDetalles = async (pedidoId) => {
+    setDetailLoading(true);
+    setShowDetailModal(true);
+    try {
+      const res = await axios.get(`${URL_API}/${pedidoId}/ticket`);
+      setPedidoDetalle(res.data);
+    } catch (err) {
+      console.error('Error cargando detalles:', err);
+      alert('No se pudieron cargar los detalles del pedido.');
+      setShowDetailModal(false);
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   // --- LÓGICA RF011: Cancelación para el Cliente ---
@@ -315,8 +336,9 @@ const Pedidos = ({ variant }) => {
   // ── Vista: Cliente (Mis Pedidos) ──
   if (!isAdminView) {
     return (
-      <div className="module-container">
-        <div className="module-header" style={{marginBottom: '2rem'}}>
+      <>
+        <div className="module-container">
+          <div className="module-header" style={{marginBottom: '2rem'}}>
           <h1 className="module-title-table" style={{fontSize: '2rem', fontWeight: '800', color: '#111827', letterSpacing: '-0.03em'}}>Mis Pedidos</h1>
         </div>
         
@@ -354,6 +376,14 @@ const Pedidos = ({ variant }) => {
                   <div className="order-actions">
                     <button
                       className="btn-order-action btn-download"
+                      onClick={() => verDetalles(p.id_pedido)}
+                      style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #e2e8f0' }}
+                    >
+                      <Eye size={16} /> Ver Detalles
+                    </button>
+
+                    <button
+                      className="btn-order-action btn-download"
                       onClick={() => descargarTicket(p.id_pedido)}
                     >
                       <Download size={16} /> Ticket
@@ -384,6 +414,94 @@ const Pedidos = ({ variant }) => {
           )}
         </div>
       </div>
+
+      {/* ── MODAL DETALLE DE PEDIDO ─────────────────────────────── */}
+      {showDetailModal && (
+        <div className="modal-backdrop" onClick={() => setShowDetailModal(false)}>
+          <div
+            className="modal-box"
+            onClick={e => e.stopPropagation()}
+            style={{ maxWidth: '700px', maxHeight: '85vh', overflowY: 'auto' }}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ margin: 0 }}>
+                {pedidoDetalle ? `Pedido #${String(pedidoDetalle.id_pedido).padStart(6, '0')}` : 'Cargando...'}
+              </h2>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                {pedidoDetalle && (
+                  <button
+                    onClick={() => { setShowDetailModal(false); descargarTicket(pedidoDetalle.id_pedido); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#0f172a', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}
+                  >
+                    <Download size={15} /> Descargar Ticket
+                  </button>
+                )}
+                <button onClick={() => setShowDetailModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#94a3b8', lineHeight: 1 }}>
+                  <X size={22} />
+                </button>
+              </div>
+            </div>
+
+            {detailLoading ? (
+              <div style={{ textAlign: 'center', padding: '3rem', color: '#94a3b8' }}>Cargando detalles...</div>
+            ) : pedidoDetalle ? (
+              <>
+                {/* Info general */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: '#f8fafc', borderRadius: '12px', padding: '16px', marginBottom: '1.5rem', border: '1px solid #e2e8f0' }}>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, marginBottom: '4px' }}>Cliente</div>
+                    <div style={{ fontWeight: 600, color: '#0f172a' }}>{pedidoDetalle.usuario_nombre || 'N/A'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, marginBottom: '4px' }}>Estado</div>
+                    <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700,
+                      background: pedidoDetalle.estado === 'PENDIENTE' ? '#fffbeb' : pedidoDetalle.estado === 'CANCELADO' ? '#fef2f2' : '#f0fdf4',
+                      color: pedidoDetalle.estado === 'PENDIENTE' ? '#b45309' : pedidoDetalle.estado === 'CANCELADO' ? '#b91c1c' : '#15803d'
+                    }}>{pedidoDetalle.estado}</span>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, marginBottom: '4px' }}>Fecha</div>
+                    <div style={{ fontWeight: 500, color: '#334155' }}>{new Date(pedidoDetalle.fecha_pedido || pedidoDetalle.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, marginBottom: '4px' }}>Total</div>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>${Number(pedidoDetalle.total).toLocaleString()}</div>
+                  </div>
+                </div>
+
+                {/* Productos del pedido con imágenes */}
+                <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '12px' }}>Productos</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {(pedidoDetalle.detalles || []).length === 0 ? (
+                    <p style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>Sin productos detallados.</p>
+                  ) : (
+                    (pedidoDetalle.detalles || []).map(d => (
+                      <div key={d.id_detalle_pedido} style={{ display: 'flex', gap: '16px', alignItems: 'center', padding: '12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px' }}>
+                        {/* Imagen del producto */}
+                        <div style={{ width: '72px', height: '72px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <OrderProductImg src={d.imagen_url} alt={d.producto_nombre} />
+                        </div>
+                        {/* Info */}
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>{d.producto_nombre}</div>
+                          <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Cantidad: <strong>{d.cantidad}</strong></div>
+                          <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Precio unitario: <strong>${Number(d.precio_unitario).toLocaleString()}</strong></div>
+                        </div>
+                        {/* Subtotal */}
+                        <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#0f172a', textAlign: 'right', flexShrink: 0 }}>
+                          ${Number(d.subtotal).toLocaleString()}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
+            ) : null}
+          </div>
+        </div>
+      )}
+      </>
     );
   }
 
@@ -548,6 +666,22 @@ const Pedidos = ({ variant }) => {
         </div>
       )}
     </>
+  );
+};
+
+// Componente de imagen para detalles de pedido (con fallback)
+const OrderProductImg = ({ src, alt }) => {
+  const [error, setError] = useState(false);
+  if (!src || error) {
+    return <Package size={32} color="#94a3b8" />;
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setError(true)}
+      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+    />
   );
 };
 

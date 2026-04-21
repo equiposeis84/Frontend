@@ -42,9 +42,13 @@ const Login = () => {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg-dark)' }}>
       <div className="modal-box" style={{ width: '100%', maxWidth: '400px', transform: 'none', position: 'relative' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <Layers size={48} color="var(--primary)" style={{ marginBottom: '1rem' }} />
-          <h2>Bienvenido al AdminPanel</h2>
-          <p style={{ color: '#64748b' }}>Inicia sesión para continuar</p>
+          <Link to="/usuario/inicio" style={{ display: 'inline-block', marginBottom: '1rem', textDecoration: 'none' }}>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: '0.5rem' }}>
+              <path d="M12 2L2 22H22L12 2Z" fill="var(--primary)"/>
+            </svg>
+          </Link>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: '800', letterSpacing: '-0.02em', color: '#0f172a' }}>Iniciar Sesión</h2>
+          <p style={{ color: '#64748b' }}>Accede a tu cuenta de Nexbit</p>
         </div>
 
         {error && <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '0.75rem', borderRadius: '4px', marginBottom: '1.5rem', textAlign: 'center' }}>{error}</div>}

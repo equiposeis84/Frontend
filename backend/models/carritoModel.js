@@ -12,7 +12,7 @@ const Carrito = {
             where,
             include: {
                 producto: {
-                    select: { nombre: true, precio_venta: true, stock_actual: true }
+                    select: { nombre: true, precio_venta: true, stock_actual: true, imagen_url: true }
                 }
             }
         });
@@ -27,7 +27,8 @@ const Carrito = {
             nombre:       item.producto.nombre,
             precio:       item.producto.precio_venta,
             subtotal:     Number(item.cantidad) * Number(item.producto.precio_venta),
-            stock_actual: item.producto.stock_actual
+            stock_actual: item.producto.stock_actual,
+            imagen_url:   item.producto.imagen_url || null
         }));
     },
 

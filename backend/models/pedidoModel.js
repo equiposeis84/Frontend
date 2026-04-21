@@ -64,7 +64,7 @@ const Pedido = {
                 usuario: { select: { nombre: true, email: true, numero_documento: true } },
                 detalle_pedido: {
                     orderBy: { id_detalle_pedido: 'asc' },
-                    include: { producto: { select: { nombre: true } } }
+                    include: { producto: { select: { nombre: true, imagen_url: true } } }
                 }
             }
         });
@@ -80,6 +80,7 @@ const Pedido = {
             detalles: pedido.detalle_pedido.map(d => ({
                 ...d,
                 producto_nombre: d.producto?.nombre,
+                imagen_url:      d.producto?.imagen_url || null,
                 producto: undefined
             })),
             detalle_pedido: undefined

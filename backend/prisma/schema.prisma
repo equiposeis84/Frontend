@@ -1,3 +1,9 @@
+// ============================================================
+// PASO 2: backend/prisma/schema.prisma
+// Solo se agrega UNA línea: imagen_url
+// El resto del archivo queda EXACTAMENTE igual
+// ============================================================
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -61,6 +67,9 @@ model productos {
   proveedor_id           Int?
   nombre                 String                   @db.VarChar(150)
   descripcion            String?                  @db.Text
+  // ── NUEVO CAMPO ──────────────────────────────────────────
+  imagen_url             String?                  @db.VarChar(500)
+  // ─────────────────────────────────────────────────────────
   precio_compra          Decimal                  @default(0.00) @db.Decimal(12, 2)
   precio_venta           Decimal                  @default(0.00) @db.Decimal(12, 2)
   stock_actual           Int?                     @default(0)

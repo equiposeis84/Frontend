@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { Package, ShieldCheck, Lock, CreditCard, ChevronRight } from 'lucide-react';
@@ -45,8 +45,8 @@ const Carrito = ({ variant }) => {
           <div className="cart-main">
             {cartItems.map(item => (
               <div className="cart-item-row" key={item.producto_id} style={{ borderRadius: '8px', borderTop: '1px solid #e1e1e1', marginBottom: '15px' }}>
-                <div className="cart-item-img">
-                  <Package size={40} color="#ccc" />
+                <div className="cart-item-img" style={{ width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <CartItemImg src={item.imagen_url} alt={item.nombre} />
                 </div>
                 
                 <div className="cart-item-details" style={{ flex: 1.5 }}>
@@ -120,6 +120,21 @@ const Carrito = ({ variant }) => {
         </div>
       )}
     </div>
+  );
+};
+
+const CartItemImg = ({ src, alt }) => {
+  const [error, setError] = useState(false);
+  if (!src || error) {
+    return <Package size={36} color="#94a3b8" />;
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setError(true)}
+      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+    />
   );
 };
 

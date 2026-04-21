@@ -128,7 +128,17 @@ const TopBar = ({ onLogout, variant }) => {
     <nav className={`topbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="topbar-inner">
         {/* LOGO */}
-        <div className="topbar-logo" onClick={() => navigate('/')}>
+        <div 
+          className="topbar-logo" 
+          onClick={() => {
+            const homePath = 
+              variant === 'admin' ? '/admin/inicio' : 
+              variant === 'cliente' ? '/cliente/inicio' : 
+              '/usuario/inicio';
+            navigate(homePath);
+          }}
+          style={{ cursor: 'pointer' }}
+        >
           <div className="logo-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 2L2 22H22L12 2Z" fill="url(#paint0_linear)"/>
