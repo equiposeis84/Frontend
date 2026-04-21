@@ -1,1 +1,0 @@
-Si existen commits con contributores que no corresponden a los propios del proyecto es porque alguno de los contributores asociados uso una cuenta que estaba en los computadores del SENA la cual no pudo quitar, porfavor de poner sus nombres en los commits de pasar.
