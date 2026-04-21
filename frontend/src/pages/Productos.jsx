@@ -7,6 +7,11 @@
 //  - Modal de administrador incluye campo para subir/cambiar imagen
 // ============================================================
 
+/**
+ * @file Productos.jsx
+ * @description Vista del catálogo de productos. Soporta modos Admin, Cliente e Invitado.
+ * Gestiona la visualización, creación y edición de productos con soporte para imágenes.
+ */
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pencil, Trash2, Package, ShoppingCart, Info, Upload, X } from 'lucide-react';

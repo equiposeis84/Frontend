@@ -1,3 +1,8 @@
+/**
+ * @file app.js
+ * @description Configuración principal de la aplicación Express.
+ * Incluye middlewares, rutas, manejo de errores y documentación Swagger.
+ */
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';

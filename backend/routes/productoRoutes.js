@@ -1,3 +1,7 @@
+/**
+ * @file productoRoutes.js
+ * @description Definición de rutas para el recurso de productos.
+ */
 import express from 'express';
 const router = express.Router();
 import productoController from '../controllers/productoController.js';

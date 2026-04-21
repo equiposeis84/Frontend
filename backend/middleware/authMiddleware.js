@@ -1,3 +1,7 @@
+/**
+ * @file authMiddleware.js
+ * @description Middleware para la validación de tokens JWT y protección de rutas.
+ */
 import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = process.env.JWT_SECRET || 'mi_clave_secreta_super_segura';

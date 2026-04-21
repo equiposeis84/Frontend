@@ -1,3 +1,7 @@
+/**
+ * @file pedidoController.js
+ * @description Controlador para la gestión de pedidos y transacciones de checkout.
+ */
 import Pedido from '../models/pedidoModel.js';
 import db from '../config/db.js';
 

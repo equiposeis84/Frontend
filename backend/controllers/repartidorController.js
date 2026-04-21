@@ -1,3 +1,7 @@
+/**
+ * @file repartidorController.js
+ * @description Controlador para la gestión de repartidores y asignación de pedidos.
+ */
 import Repartidor from '../models/repartidorModel.js';
 
 const repartidorController = {

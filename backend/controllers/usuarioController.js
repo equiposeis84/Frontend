@@ -1,3 +1,7 @@
+/**
+ * @file usuarioController.js
+ * @description Controlador para la gestión de usuarios y autenticación.
+ */
 import jwt from 'jsonwebtoken';
 import Usuario from '../models/usuarioModel.js';
 

@@ -1,3 +1,8 @@
+/**
+ * @file productoController.js
+ * @description Controlador para las operaciones CRUD de productos.
+ * Incluye la lógica de integración con Cloudinary para imágenes.
+ */
 import Producto from '../models/productoModel.js';
 import { v2 as cloudinary } from 'cloudinary';
 

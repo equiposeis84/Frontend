@@ -1,3 +1,8 @@
+/**
+ * @file Carrito.jsx
+ * @description Vista del carrito de compras.
+ * Permite gestionar productos, cantidades y proceder al checkout.
+ */
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';

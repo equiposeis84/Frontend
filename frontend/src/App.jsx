@@ -1,3 +1,8 @@
+/**
+ * @file App.jsx
+ * @description Componente raíz que gestiona el enrutamiento, la autenticación
+ * y la estructura general de la interfaz de usuario.
+ */
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import TopBar from './components/TopBar';

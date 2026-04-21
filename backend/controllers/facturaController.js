@@ -1,3 +1,7 @@
+/**
+ * @file facturaController.js
+ * @description Controlador para la gestión de facturas.
+ */
 import Factura from '../models/facturaModel.js';
 
 const getAll = async (req, res) => {

@@ -1,5 +1,8 @@
-// package.json debe tener "type": "module"
-// package.json: { "type": "module" }
+/**
+ * @file server.js
+ * @description Punto de entrada del servidor backend.
+ * Inicia el servicio Express en el puerto configurado.
+ */
 import app from './app.js'; 
 
 const PORT = 3000;

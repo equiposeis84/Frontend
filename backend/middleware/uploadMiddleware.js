@@ -1,18 +1,8 @@
-// ============================================================
-// PASO 3: backend/middleware/uploadMiddleware.js  ← ARCHIVO NUEVO
-//
-// Dependencias a instalar:
-//   npm install cloudinary multer multer-storage-cloudinary
-//
-// Variables de entorno a agregar en backend/.env:
-//   CLOUDINARY_CLOUD_NAME=tu_cloud_name
-//   CLOUDINARY_API_KEY=tu_api_key
-//   CLOUDINARY_API_SECRET=tu_api_secret
-//
-// Consigue estas credenciales en: https://cloudinary.com
-// → Dashboard → API Keys (es gratis)
-// ============================================================
-
+/**
+ * @file uploadMiddleware.js
+ * @description Middleware para la gestión de subida de archivos (imágenes) a Cloudinary.
+ * Configura el almacenamiento en la nube y las validaciones de archivos.
+ */
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';

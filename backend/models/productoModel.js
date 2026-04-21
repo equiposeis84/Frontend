@@ -1,3 +1,7 @@
+/**
+ * @file productoModel.js
+ * @description Modelo para la persistencia de productos y sus relaciones.
+ */
 import prisma from '../config/prisma.js';
 
 const includeRelations = {

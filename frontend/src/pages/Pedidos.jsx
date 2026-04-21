@@ -1,3 +1,8 @@
+/**
+ * @file Pedidos.jsx
+ * @description Gestión de pedidos para Administradores y Clientes.
+ * Incluye visualización de detalles, generación de tickets y gestión de estados.
+ */
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pencil, Trash2, ShoppingCart, Download, Eye, X, Package } from 'lucide-react';

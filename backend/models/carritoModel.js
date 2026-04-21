@@ -1,3 +1,8 @@
+/**
+ * @file carritoModel.js
+ * @description Modelo para la gestión de persistencia del carrito de compras.
+ * Interactúa con la base de datos a través de Prisma.
+ */
 import prisma from '../config/prisma.js';
 
 const Carrito = {

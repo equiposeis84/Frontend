@@ -1,3 +1,7 @@
+/**
+ * @file categoriaModel.js
+ * @description Modelo para la gestión de categorías de productos.
+ */
 import prisma from '../config/prisma.js';
 
 const Categoria = {

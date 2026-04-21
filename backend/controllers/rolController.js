@@ -1,3 +1,7 @@
+/**
+ * @file rolController.js
+ * @description Controlador para la gestión de roles de usuario.
+ */
 import Rol from '../models/rolModel.js';
 
 const getAll = async (req, res) => {

@@ -1,3 +1,7 @@
+/**
+ * @file proveedorController.js
+ * @description Controlador para la gestión de proveedores.
+ */
 import Proveedor from '../models/proveedorModel.js';
 
 const getAll = async (req, res) => {

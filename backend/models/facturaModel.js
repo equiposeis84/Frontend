@@ -1,3 +1,7 @@
+/**
+ * @file facturaModel.js
+ * @description Modelo para la gestión de facturas de pedidos.
+ */
 import prisma from '../config/prisma.js';
 
 const Factura = {

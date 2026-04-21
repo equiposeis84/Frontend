@@ -1,3 +1,7 @@
+/**
+ * @file db.js
+ * @description Configuración de la conexión directa a MySQL mediante el driver mysql2.
+ */
 import mysql from 'mysql2';
 
 const pool = mysql.createPool({

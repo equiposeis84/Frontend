@@ -1,3 +1,7 @@
+/**
+ * @file categoriaController.js
+ * @description Controlador para la gestión de categorías de productos.
+ */
 import Categoria from '../models/categoriaModel.js';
 
 const getAll = async (req, res) => {

@@ -1,3 +1,7 @@
+/**
+ * @file carritoController.js
+ * @description Controlador para gestionar el carrito de compras.
+ */
 import Carrito from '../models/carritoModel.js';
 
 const getCart = async (req, res) => {
