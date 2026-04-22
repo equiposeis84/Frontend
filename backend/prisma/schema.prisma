@@ -199,6 +199,7 @@ enum movimientos_inventario_tipo_movimiento {
 enum seguimiento_pedido_estado_anterior {
   PENDIENTE
   CONFIRMADO
+  PAGADO
   ASIGNADO
   EN_CAMINO
   ENTREGADO
@@ -208,6 +209,7 @@ enum seguimiento_pedido_estado_anterior {
 enum seguimiento_pedido_estado_nuevo {
   PENDIENTE
   CONFIRMADO
+  PAGADO
   ASIGNADO
   EN_CAMINO
   ENTREGADO
@@ -217,6 +219,7 @@ enum seguimiento_pedido_estado_nuevo {
 enum pedidos_estado {
   PENDIENTE
   CONFIRMADO
+  PAGADO
   ASIGNADO
   EN_CAMINO
   ENTREGADO
