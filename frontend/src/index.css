@@ -3543,3 +3543,14 @@ input:focus, select:focus, .search-input:focus, .search-select:focus {
   .hp-features { padding: 40px 1.25rem; }
   .hp-cta { padding: 60px 1.25rem; }
 }
+
+/* ── Stats: estado de carga ── */
+@keyframes statPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+.hp-stat-loading {
+  animation: statPulse 1.2s ease-in-out infinite;
+  color: #9ca3af !important;
+}
+

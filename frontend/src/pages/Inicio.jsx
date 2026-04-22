@@ -2,10 +2,13 @@
  * @file Inicio.jsx
  * @description Página de inicio del sistema Nexbit.
  * Hero e-commerce atractivo con accesos rápidos, features y CTA.
+ * Los stats se obtienen en tiempo real desde /api/stats con polling de 30 segundos.
  */
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Package, ShoppingCart, ClipboardList, ArrowRight,
   Truck, ShieldCheck, Zap, Headphones,
@@ -19,19 +22,38 @@ const FEATURES = [
   { Icon: Headphones,  title: 'Soporte 24/7',   desc: 'Un equipo listo para ayudarte en cualquier momento.' },
 ];
 
-const STATS = [
-  { value: '500+', label: 'Productos disponibles' },
-  { value: '98%',  label: 'Clientes satisfechos'  },
-  { value: '24h',  label: 'Tiempo de entrega'      },
-  { value: '100%', label: 'Pagos seguros'          },
-];
-
 const Inicio = () => {
   const { isAuthenticated, role, user } = useAuth();
   const { totalItems } = useCart();
   const navigate = useNavigate();
 
   const basePath = role === 'Cliente' ? '/cliente' : '/usuario';
+
+  // ── Stats en tiempo real ────────────────────────────────────
+  const [stats, setStats] = useState(null);
+
+  const fetchStats = async () => {
+    try {
+      const { data } = await axios.get('http://localhost:3000/api/stats');
+      setStats(data);
+    } catch {
+      // Si falla, mantiene el último valor conocido
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();                              // carga inmediata
+    const interval = setInterval(fetchStats, 30_000); // actualiza cada 30 s
+    return () => clearInterval(interval);
+  }, []);
+
+  // Genera el array de stats dinámicamente con los datos reales
+  const STATS_LIVE = [
+    { value: stats ? stats.productos.toLocaleString('es-CO') + '+' : '...', label: 'Productos disponibles' },
+    { value: stats ? stats.pedidos.toLocaleString('es-CO')            : '...', label: 'Pedidos realizados'    },
+    { value: stats ? stats.clientes.toLocaleString('es-CO')           : '...', label: 'Clientes registrados'  },
+    { value: stats ? stats.categorias.toLocaleString('es-CO')         : '...', label: 'Categorías activas'    },
+  ];
 
   const QUICK_ACTIONS = [
     {
@@ -130,12 +152,14 @@ const Inicio = () => {
       </section>
 
       {/* ═══════════════════════════════════════
-          STATS STRIP
+          STATS STRIP — datos reales del sistema
       ═══════════════════════════════════════ */}
       <section className="hp-stats">
-        {STATS.map(({ value, label }) => (
+        {STATS_LIVE.map(({ value, label }) => (
           <div key={label} className="hp-stat">
-            <span className="hp-stat-value">{value}</span>
+            <span className={`hp-stat-value${value === '...' ? ' hp-stat-loading' : ''}`}>
+              {value}
+            </span>
             <span className="hp-stat-label">{label}</span>
           </div>
         ))}

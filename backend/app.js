@@ -19,6 +19,7 @@ import pedidoRoutes from './routes/pedidoRoutes.js';
 import facturaRoutes from './routes/facturaRoutes.js';
 import carritoRoutes from './routes/carritoRoutes.js';
 import repartidorRoutes from './routes/repartidorRoutes.js';
+import statsRoutes from './routes/statsRoutes.js';
 
 const app = express();
 
@@ -56,5 +57,6 @@ app.use('/api/pedidos', pedidoRoutes);
 app.use('/api/facturas', facturaRoutes);
 app.use('/api/carrito', carritoRoutes);
 app.use('/api/repartidores', repartidorRoutes);
+app.use('/api/stats',        statsRoutes);
 
 export default app;
