@@ -62,6 +62,11 @@ body {
   background-attachment: fixed;
 }
 
+/* Bloquea el scroll del body cuando hay un modal abierto */
+body.modal-open {
+  overflow: hidden;
+}
+
 .admin-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -313,7 +318,10 @@ input:focus, select:focus, .search-input:focus, .search-select:focus {
   backdrop-filter: blur(8px);
   display: flex; 
   justify-content: center; 
-  align-items: center; 
+  align-items: flex-start;   /* permite que el modal empiece desde arriba */
+  overflow-y: auto;           /* el backdrop es el que hace scroll */
+  padding: 2rem 1rem;         /* margen top/bottom para que respire */
+  box-sizing: border-box;
   z-index: 1000; 
   animation: fadeIn 0.3s ease;
 }
@@ -322,11 +330,17 @@ input:focus, select:focus, .search-input:focus, .search-select:focus {
   background: var(--card-bg); 
   width: 90%;
   max-width: 550px; 
+  max-height: 90dvh;          /* nunca supera el 90% de la pantalla */
+  overflow-y: auto;           /* scroll interno con rueda del mouse */
+  overscroll-behavior: contain;
   padding: 2.5rem; 
   border-radius: 24px; 
   border: 1px solid rgba(0,0,0,0.05); 
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  flex-shrink: 0;             /* evita que flexbox comprima el modal */
+  margin: auto;               /* centra verticalmente cuando hay espacio */
 }
 
 @keyframes slideUp {

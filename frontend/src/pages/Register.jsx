@@ -34,8 +34,8 @@ export default function Register() {
             if (res.data.length > 0) {
                 // Buscar rol "cliente" o "usuario", si no existe asignar el primero disponible
                 const roleCliente = res.data.find(r => 
-                    r.nombre_rol.toLowerCase().includes('cliente') || 
-                    r.nombre_rol.toLowerCase().includes('usuario')
+                    r.nombre.toLowerCase().includes('cliente') || 
+                    r.nombre.toLowerCase().includes('usuario')
                 ) || res.data[0];
                 
                 setFormData(prev => ({ ...prev, rol_id: roleCliente.id_rol }));

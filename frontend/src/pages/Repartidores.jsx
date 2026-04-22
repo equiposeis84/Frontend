@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { MapPin, Eye, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { useModalScroll } from '../hooks/useModalScroll';
 
 const URL_API = "http://localhost:3000/api/repartidores";
 
@@ -13,6 +14,7 @@ const Repartidores = () => {
   // Modal de Detalle de Pedido
   const [selectedPedido, setSelectedPedido] = useState(null);
   const [showPedidoModal, setShowPedidoModal] = useState(false);
+  useModalScroll(showPedidoModal);
 
   // Filtros vista principal
   const [searchTerm, setSearchTerm] = useState("");

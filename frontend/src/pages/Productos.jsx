@@ -16,6 +16,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pencil, Trash2, Package, ShoppingCart, Info, Upload, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useModalScroll } from '../hooks/useModalScroll';
 
 const URL_API        = "http://localhost:3000/api/productos";
 const URL_API_PUBLIC = "http://localhost:3000/api/productos/publico";
@@ -58,6 +59,7 @@ const Productos = ({ variant }) => {
 
   const { addToCart } = useCart();
   const isAdminView   = variant === 'admin' || !variant;
+  useModalScroll(showModal || showDetailModal);
 
   // Paginación y búsqueda
   const [searchTerm, setSearchTerm]   = useState("");

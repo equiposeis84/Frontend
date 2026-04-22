@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pencil, Trash2, ShoppingCart, Download, Eye, X, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useModalScroll } from '../hooks/useModalScroll';
 
 const URL_API = "http://localhost:3000/api/pedidos";
 const URL_USUARIOS = "http://localhost:3000/api/usuarios";
@@ -26,6 +27,7 @@ const Pedidos = ({ variant }) => {
   const navigate = useNavigate();
   const isAdminView = variant === 'admin' || !variant;
   const isGuestView = variant === 'guest';
+  useModalScroll(showModal || showDetailModal);
 
   // Paginación y búsqueda
   const [searchTerm, setSearchTerm] = useState("");

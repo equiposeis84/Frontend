@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pencil, Trash2, Truck } from 'lucide-react';
+import { useModalScroll } from '../hooks/useModalScroll';
 
 const URL_API = "http://localhost:3000/api/proveedores";
 
@@ -9,6 +10,7 @@ const Proveedores = () => {
   const [showModal, setShowModal] = useState(false);
   const [enEdicion, setEnEdicion] = useState(false);
   const [loading, setLoading] = useState(true);
+  useModalScroll(showModal);
 
   // Paginación y búsqueda
   const [searchTerm, setSearchTerm] = useState("");
