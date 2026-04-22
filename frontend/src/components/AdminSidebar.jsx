@@ -5,7 +5,7 @@
  */
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard, ShoppingBag, Boxes, Receipt, Tags,
+  LayoutDashboard, ShoppingBag, Boxes, Receipt, Tags, BarChart2,
   UsersRound, Building2, Bike, Shield,
   UserCog, LogOut, PanelLeftClose, PanelLeftOpen
 } from 'lucide-react';
@@ -14,11 +14,12 @@ const NAV_GROUPS = [
   {
     label: 'Tienda',
     items: [
-      { to: '/admin/inicio',    Icon: LayoutDashboard, label: 'Dashboard'  },
-      { to: '/admin/pedidos',   Icon: ShoppingBag,     label: 'Pedidos'    },
-      { to: '/admin/productos', Icon: Boxes,           label: 'Productos'  },
-      { to: '/admin/facturas',  Icon: Receipt,         label: 'Facturas'   },
-      { to: '/admin/categorias',Icon: Tags,            label: 'Categorías' },
+      { to: '/admin/inicio',     Icon: LayoutDashboard, label: 'Dashboard'  },
+      { to: '/admin/pedidos',    Icon: ShoppingBag,     label: 'Pedidos'    },
+      { to: '/admin/productos',  Icon: Boxes,           label: 'Productos'  },
+      { to: '/admin/facturas',   Icon: Receipt,         label: 'Facturas'   },
+      { to: '/admin/categorias', Icon: Tags,            label: 'Categorías' },
+      { to: '/admin/reportes',   Icon: BarChart2,       label: 'Reportes'   },
     ],
   },
   {

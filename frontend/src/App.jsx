@@ -24,6 +24,7 @@ import Register    from './pages/Register';
 import Carrito     from './pages/Carrito';
 import Ayuda       from './pages/Ayuda';
 import Contacto    from './pages/Contacto';
+import Reportes    from './pages/Reportes';
 import { CartProvider }     from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -145,6 +146,7 @@ function AppRoutes() {
         <Route path="proveedores"  element={<Proveedores />} />
         <Route path="repartidores" element={<Repartidores />} />
         <Route path="perfil"       element={<Perfil />} />
+        <Route path="reportes"     element={<Reportes />} />
       </Route>
 
       {/* Catch-all */}

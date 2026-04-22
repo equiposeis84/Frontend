@@ -20,6 +20,7 @@ import facturaRoutes from './routes/facturaRoutes.js';
 import carritoRoutes from './routes/carritoRoutes.js';
 import repartidorRoutes from './routes/repartidorRoutes.js';
 import statsRoutes from './routes/statsRoutes.js';
+import reportesRoutes from './routes/reportesRoutes.js';
 
 const app = express();
 
@@ -58,5 +59,6 @@ app.use('/api/facturas', facturaRoutes);
 app.use('/api/carrito', carritoRoutes);
 app.use('/api/repartidores', repartidorRoutes);
 app.use('/api/stats',        statsRoutes);
+app.use('/api/reportes',     reportesRoutes);
 
 export default app;
