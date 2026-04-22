@@ -1,202 +1,225 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * @file TopBar.jsx
+ * @description Barra de navegación para la tienda (usuario / cliente).
+ * Diseño e-commerce de dos niveles:
+ *  - Nivel superior: logo | búsqueda | acciones (carrito, cuenta)
+ *  - Nivel inferior: links de categorías/secciones
+ */
+import { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { 
-  Home, Users, Shield, Tags, Package, ShoppingCart, 
-  FileText, Truck, LogOut, LogIn, ChevronDown, 
-  HelpCircle, Mail, User, Activity, Zap, Cpu, Code,
-  Globe
+import {
+  Search, ShoppingCart, LogIn, LogOut,
+  Globe, Home, ChevronDown, Store,
+  ShoppingBag, ClipboardList, Menu, X,
+  LifeBuoy, UserCircle
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 
 const TopBar = ({ onLogout, variant }) => {
   const { totalItems } = useCart();
-  const { t, language, changeLanguage } = useLanguage();
-  const navigate = useNavigate();
-  const [activeDropdown, setActiveDropdown] = useState(null);
-  const [scrolled, setScrolled] = useState(false);
+  const { language, changeLanguage } = useLanguage();
+  const navigate     = useNavigate();
+  const [scrolled, setScrolled]     = useState(false);
+  const [langOpen, setLangOpen]     = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [cartBump, setCartBump]     = useState(false);
+  const prevTotalRef = useRef(totalItems);
+  const langRef = useRef(null);
 
+  const basePath  = variant === 'cliente' ? '/cliente' : '/usuario';
+  const isCliente = variant === 'cliente';
+
+  /* ── Scroll shadow ──────────────────────────────────── */
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const closeDropdown = () => setActiveDropdown(null);
-
-  const renderLinks = () => {
-    if (variant === 'admin') {
-      return (
-        <>
-          <NavLink to="/admin/inicio" className="nav-pill" onClick={closeDropdown}>{t('nav.product')}</NavLink>
-          
-          <div className="dropdown-container" onMouseLeave={closeDropdown}>
-            <button 
-              className={`nav-pill ${activeDropdown === 'management' ? 'active-drop' : ''}`}
-              onMouseEnter={() => setActiveDropdown('management')}
-            >
-              {t('nav.management')} <ChevronDown size={14} className={`chevron ${activeDropdown === 'management' ? 'rotate' : ''}`} />
-            </button>
-            
-            {activeDropdown === 'management' && (
-              <div className="mega-menu">
-                <div className="mega-menu-content">
-                  <div className="mega-menu-column">
-                    <h3 className="mega-menu-title">Core Operations</h3>
-                    <NavLink to="/admin/pedidos" className="mega-item"><ShoppingCart size={16}/> Pedidos</NavLink>
-                    <NavLink to="/admin/productos" className="mega-item"><Package size={16}/> Productos</NavLink>
-                    <NavLink to="/admin/facturas" className="mega-item"><FileText size={16}/> Facturas</NavLink>
-                  </div>
-                  <div className="mega-menu-column">
-                    <h3 className="mega-menu-title">People & Roles</h3>
-                    <NavLink to="/admin/usuarios" className="mega-item"><Users size={16}/> Usuarios</NavLink>
-                    <NavLink to="/admin/repartidores" className="mega-item"><Truck size={16}/> Repartidores</NavLink>
-                    <NavLink to="/admin/proveedores" className="mega-item"><Activity size={16}/> Proveedores</NavLink>
-                  </div>
-                  <div className="mega-menu-column">
-                    <h3 className="mega-menu-title">System</h3>
-                    <NavLink to="/admin/roles" className="mega-item"><Shield size={16}/> Roles</NavLink>
-                    <NavLink to="/admin/categorias" className="mega-item"><Tags size={16}/> Categorías</NavLink>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          <NavLink to="/admin/perfil" className="nav-pill" onClick={closeDropdown}>{t('nav.adminProfile')}</NavLink>
-        </>
-      );
+  /* ── Animación del carrito al añadir ────────────────── */
+  useEffect(() => {
+    if (totalItems > prevTotalRef.current) {
+      setCartBump(true);
+      const t = setTimeout(() => setCartBump(false), 600);
+      return () => clearTimeout(t);
     }
+    prevTotalRef.current = totalItems;
+  }, [totalItems]);
 
-    const basePath = variant === 'cliente' ? '/cliente' : '/usuario';
-    return (
-      <>
-        <NavLink to={`${basePath}/inicio`} className="nav-pill" onClick={closeDropdown}>{t('nav.product')}</NavLink>
-        
-        <div className="dropdown-container" onMouseLeave={closeDropdown}>
-          <button 
-            className={`nav-pill ${activeDropdown === 'store' ? 'active-drop' : ''}`}
-            onMouseEnter={() => setActiveDropdown('store')}
-          >
-            {t('nav.useCases')} <ChevronDown size={14} className={`chevron ${activeDropdown === 'store' ? 'rotate' : ''}`} />
-          </button>
-          
-          {activeDropdown === 'store' && (
-            <div className="mega-menu">
-              <div className="mega-menu-content compact">
-                <div className="mega-menu-column">
-                  <h3 className="mega-menu-title">Built for everyone</h3>
-                  <NavLink to={`${basePath}/productos`} className="mega-item"><Zap size={16}/> {t('hero.btn.catalog')}</NavLink>
-                  <NavLink to={`${basePath}/pedidos`} className="mega-item"><Package size={16}/> Mis Pedidos</NavLink>
-                  <NavLink to={`${basePath}/carrito`} className="mega-item"><ShoppingCart size={16}/> Carrito de Compras</NavLink>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+  /* ── Cierra lang dropdown al click fuera ────────────── */
+  useEffect(() => {
+    const handler = (e) => {
+      if (langRef.current && !langRef.current.contains(e.target)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
-        <div className="dropdown-container" onMouseLeave={closeDropdown}>
-          <button 
-            className={`nav-pill ${activeDropdown === 'resources' ? 'active-drop' : ''}`}
-            onMouseEnter={() => setActiveDropdown('resources')}
-          >
-            {t('nav.resources')} <ChevronDown size={14} className={`chevron ${activeDropdown === 'resources' ? 'rotate' : ''}`} />
-          </button>
-          
-          {activeDropdown === 'resources' && (
-            <div className="mega-menu narrow">
-              <div className="mega-menu-content compact">
-                <div className="mega-menu-column">
-                  <NavLink to={`${basePath}/ayuda`} className="mega-item"><HelpCircle size={16}/> Centro de Ayuda</NavLink>
-                  <NavLink to={`${basePath}/contacto`} className="mega-item"><Mail size={16}/> Contáctanos</NavLink>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        {variant === 'cliente' && (
-          <NavLink to="/cliente/perfil" className="nav-pill" onClick={closeDropdown}>{t('nav.myAccount')}</NavLink>
-        )}
-      </>
-    );
-  };
+  const NAV_LINKS = [
+    { to: `${basePath}/inicio`,    label: 'Inicio',      Icon: Home         },
+    { to: `${basePath}/productos`, label: 'Catálogo',    Icon: Store        },
+    { to: `${basePath}/pedidos`,   label: 'Mis Pedidos', Icon: ClipboardList },
+    { to: `${basePath}/ayuda`,     label: 'Ayuda',       Icon: LifeBuoy     },
+  ];
 
   return (
-    <nav className={`topbar ${scrolled ? 'scrolled' : ''}`}>
-      <div className="topbar-inner">
-        {/* LOGO */}
-        <div 
-          className="topbar-logo" 
-          onClick={() => {
-            const homePath = 
-              variant === 'admin' ? '/admin/inicio' : 
-              variant === 'cliente' ? '/cliente/inicio' : 
-              '/usuario/inicio';
-            navigate(homePath);
-          }}
-          style={{ cursor: 'pointer' }}
-        >
-          <div className="logo-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 22H22L12 2Z" fill="url(#paint0_linear)"/>
-              <defs>
-                <linearGradient id="paint0_linear" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#111111" />
-                  <stop offset="1" stopColor="#444444" />
-                </linearGradient>
-              </defs>
-            </svg>
+    <header className={`store-header${scrolled ? ' store-header--scrolled' : ''}`}>
+
+      {/* ══ NIVEL 1: Marca + Acciones ════════════════════ */}
+      <div className="store-header-top">
+        <div className="store-header-inner">
+
+          {/* Logo */}
+          <div className="store-logo" onClick={() => navigate(`${basePath}/inicio`)}>
+            <div className="store-logo-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L2 22H22L12 2Z" fill="url(#hGrad)" />
+                <defs>
+                  <linearGradient id="hGrad" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#111111" />
+                    <stop offset="1" stopColor="#555555" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <span className="store-logo-text">Nexbit</span>
           </div>
-          <span className="logo-text">{t('brand')}</span>
-        </div>
 
-        {/* CENTER LINKS */}
-        <div className="topbar-links">
-          {renderLinks()}
-        </div>
+          {/* Barra de búsqueda central */}
+          <div className="store-search-bar">
+            <Search size={16} className="store-search-icon" />
+            <input
+              className="store-search-input"
+              type="text"
+              placeholder="Buscar productos, categorías..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.target.value.trim()) {
+                  navigate(`${basePath}/productos`);
+                }
+              }}
+            />
+          </div>
 
-        {/* RIGHT ACTIONS */}
-        <div className="topbar-actions">
-          {/* Selector de Idioma */}
-          <div className="dropdown-container" onMouseLeave={closeDropdown}>
-            <button 
-              className="lang-btn"
-              onMouseEnter={() => setActiveDropdown('lang')}
-            >
-              <Globe size={18} /> {language.toUpperCase()}
-            </button>
-            {activeDropdown === 'lang' && (
-              <div className="mega-menu narrow lang-menu">
-                <div className="mega-menu-content compact" style={{flexDirection: 'column', padding: '10px', gap: '5px'}}>
-                  <button className={`lang-option ${language === 'en' ? 'active' : ''}`} onClick={() => changeLanguage('en')}>🇺🇸 English</button>
-                  <button className={`lang-option ${language === 'es' ? 'active' : ''}`} onClick={() => changeLanguage('es')}>🇪🇸 Español</button>
+          {/* Acciones derechas */}
+          <div className="store-header-actions">
+
+            {/* Idioma */}
+            <div ref={langRef} className="store-lang-wrap">
+              <button
+                className="store-action-btn store-action-btn--text"
+                onClick={() => setLangOpen(o => !o)}
+                title="Idioma"
+              >
+                <Globe size={17} />
+                <span className="store-action-label">{language.toUpperCase()}</span>
+                <ChevronDown size={12} style={{
+                  transition: 'transform 0.2s',
+                  transform: langOpen ? 'rotate(180deg)' : 'none'
+                }} />
+              </button>
+              {langOpen && (
+                <div className="store-lang-dropdown">
+                  <button
+                    className={`store-lang-opt${language === 'es' ? ' active' : ''}`}
+                    onClick={() => { changeLanguage('es'); setLangOpen(false); }}
+                  >🇪🇸 Español</button>
+                  <button
+                    className={`store-lang-opt${language === 'en' ? ' active' : ''}`}
+                    onClick={() => { changeLanguage('en'); setLangOpen(false); }}
+                  >🇺🇸 English</button>
                 </div>
-              </div>
+              )}
+            </div>
+
+            {/* Cuenta */}
+            {isCliente ? (
+              <NavLink to="/cliente/perfil" className="store-action-btn store-action-btn--text">
+                <UserCircle size={17} />
+                <span className="store-action-label">Mi Cuenta</span>
+              </NavLink>
+            ) : (
+              <button
+                className="store-action-btn store-action-btn--text"
+                onClick={() => navigate('/login')}
+              >
+                <LogIn size={17} />
+                <span className="store-action-label">Iniciar sesión</span>
+              </button>
             )}
+
+            {/* Carrito — botón principal */}
+            <button
+              className={`store-cart-btn${cartBump ? ' store-cart-btn--bump' : ''}`}
+              onClick={() => navigate(`${basePath}/carrito`)}
+              title="Ver carrito"
+            >
+              {/* SVG inline garantiza visibilidad sin importar CSS global */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20" height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ flexShrink: 0 }}
+              >
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+              {totalItems > 0 && (
+                <span className="store-cart-badge">{totalItems > 99 ? '99+' : totalItems}</span>
+              )}
+              <span className="store-cart-label">Carrito</span>
+            </button>
+
+            {/* Logout (solo cliente) */}
+            {isCliente && (
+              <button
+                className="store-action-btn store-action-btn--icon"
+                onClick={onLogout}
+                title="Cerrar sesión"
+              >
+                <LogOut size={17} />
+              </button>
+            )}
+
+            {/* Hamburger */}
+            <button
+              className="store-hamburger"
+              onClick={() => setMobileOpen(o => !o)}
+              aria-label="Menú"
+            >
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
           </div>
-
-          {(variant === 'cliente' || variant === 'usuario') && (
-            <button className="cart-btn" onClick={() => navigate(variant === 'cliente' ? '/cliente/carrito' : '/usuario/carrito')}>
-              <ShoppingCart size={20} />
-              {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
-            </button>
-          )}
-
-          {variant === 'admin' || variant === 'cliente' ? (
-            <button onClick={onLogout} className="btn-dark-pill">
-              {t('nav.signOut')}
-            </button>
-          ) : (
-            <button onClick={() => navigate('/login')} className="btn-dark-pill">
-              {t('nav.login')} <LogIn size={16} />
-            </button>
-          )}
         </div>
       </div>
-    </nav>
+
+      {/* ══ NIVEL 2: Categorías / Navegación ═════════════ */}
+      <nav className={`store-nav-bar${mobileOpen ? ' store-nav-bar--open' : ''}`}>
+        <div className="store-nav-inner">
+          {NAV_LINKS.map(({ to, label, Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              onClick={() => setMobileOpen(false)}
+              className={({ isActive }) =>
+                `store-nav-link${isActive ? ' store-nav-link--active' : ''}`
+              }
+            >
+              <Icon size={15} />
+              <span>{label}</span>
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+    </header>
   );
 };
 

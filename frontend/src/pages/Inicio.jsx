@@ -1,104 +1,219 @@
-import React, { useEffect, useState } from 'react';
+/**
+ * @file Inicio.jsx
+ * @description Página de inicio del sistema Nexbit.
+ * Hero e-commerce atractivo con accesos rápidos, features y CTA.
+ */
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
-import { ArrowRight, Box, Zap, Users } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import {
+  Package, ShoppingCart, ClipboardList, ArrowRight,
+  Truck, ShieldCheck, Zap, Headphones,
+  TrendingUp, Star, ChevronRight, Sparkles
+} from 'lucide-react';
+
+const FEATURES = [
+  { Icon: Truck,       title: 'Envío Ágil',     desc: 'Entregas coordinadas y rastreables en tiempo real.' },
+  { Icon: ShieldCheck, title: 'Compra Segura',  desc: 'Tus datos y transacciones están siempre protegidos.' },
+  { Icon: Zap,         title: 'Gestión Rápida', desc: 'Pedidos confirmados y procesados al instante.' },
+  { Icon: Headphones,  title: 'Soporte 24/7',   desc: 'Un equipo listo para ayudarte en cualquier momento.' },
+];
+
+const STATS = [
+  { value: '500+', label: 'Productos disponibles' },
+  { value: '98%',  label: 'Clientes satisfechos'  },
+  { value: '24h',  label: 'Tiempo de entrega'      },
+  { value: '100%', label: 'Pagos seguros'          },
+];
 
 const Inicio = () => {
   const { isAuthenticated, role, user } = useAuth();
-  const { t } = useLanguage();
+  const { totalItems } = useCart();
   const navigate = useNavigate();
-  const [showParticles, setShowParticles] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setShowParticles(true), 300);
-    return () => clearTimeout(timer);
-  }, []);
+  const basePath = role === 'Cliente' ? '/cliente' : '/usuario';
 
-  const renderParticles = () => {
-    if (!showParticles) return null;
-    return Array.from({ length: 40 }).map((_, i) => {
-      const size = Math.random() * 4 + 2;
-      const style = {
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`,
-        width: `${size}px`,
-        height: `${size}px`,
-        animationDelay: `${Math.random() * 5}s`,
-        animationDuration: `${Math.random() * 10 + 10}s`
-      };
-      const colors = ['particle-blue', 'particle-red', 'particle-dark'];
-      const colorClass = colors[Math.floor(Math.random() * colors.length)];
-      
-      return <div key={i} className={`particle ${colorClass}`} style={style} />;
-    });
-  };
+  const QUICK_ACTIONS = [
+    {
+      Icon: Package,
+      title: 'Explorar Catálogo',
+      desc: 'Descubre todos nuestros productos disponibles',
+      to: `${basePath}/productos`,
+      accent: '#111111',
+    },
+    {
+      Icon: ShoppingCart,
+      title: 'Mi Carrito',
+      desc: totalItems > 0
+        ? `Tienes ${totalItems} producto${totalItems > 1 ? 's' : ''} esperándote`
+        : 'Tu carrito está vacío por ahora',
+      to: `${basePath}/carrito`,
+      accent: '#1f2937',
+      badge: totalItems || null,
+    },
+    {
+      Icon: ClipboardList,
+      title: 'Mis Pedidos',
+      desc: 'Revisa el estado de tus compras recientes',
+      to: `${basePath}/pedidos`,
+      accent: '#374151',
+    },
+  ];
 
   return (
-    <div className="landing-container">
-      <div className="particles-wrapper">
-        {renderParticles()}
-      </div>
+    <div className="hp-root">
 
-      <div className="hero-content">
-        <div className="hero-badge">
-          <Zap size={14} className="badge-icon" />
-          <span>{t('brand')} v2.0 is now live</span>
+      {/* ═══════════════════════════════════════
+          HERO
+      ═══════════════════════════════════════ */}
+      <section className="hp-hero">
+        {/* Decoración de fondo */}
+        <div className="hp-hero-deco">
+          <div className="hp-deco-blob hp-deco-blob--1" />
+          <div className="hp-deco-blob hp-deco-blob--2" />
+          <div className="hp-deco-grid" />
         </div>
-        
-        <h1 className="hero-title">
-          {t('hero.title.1')} <br className="hero-break" /> 
-          {t('hero.title.2')} <span className="text-gradient">{t('hero.title.span')}</span>
-        </h1>
-        
-        <p className="hero-subtitle">
-          {isAuthenticated 
-            ? t('hero.subtitle.auth', { name: user?.nombre || role })
-            : t('hero.subtitle.guest')}
-        </p>
-        
-        <div className="hero-actions">
-          {isAuthenticated ? (
-            role === 'Administrador' ? null : (
-              <>
-                <button className="btn-dark-pill huge" onClick={() => navigate(role === 'Cliente' ? '/cliente/productos' : '/usuario/productos')}>
-                  {t('hero.btn.catalog')}
-                </button>
-                <button className="btn-outline-pill huge" onClick={() => navigate(role === 'Cliente' ? '/cliente/pedidos' : '/usuario/pedidos')}>
-                  {t('hero.btn.myOrders')} <ArrowRight size={18} />
-                </button>
-              </>
-            )
-          ) : (
-            <>
-              <button className="btn-dark-pill huge" onClick={() => navigate('/login')}>
-                {t('hero.btn.start')}
-              </button>
-              <button className="btn-outline-pill huge" onClick={() => navigate('/usuario/productos')}>
-                {t('hero.btn.explore')} <ArrowRight size={18} />
-              </button>
-            </>
-          )}
-        </div>
-      </div>
 
-      <div className="features-grid">
-        <div className="feature-card">
-          <div className="feature-icon"><Box size={24} /></div>
-          <h3>{t('feature.1.title')}</h3>
-          <p>{t('feature.1.desc')}</p>
+        <div className="hp-hero-body">
+          {/* Badge */}
+          <div className="hp-hero-badge">
+            <Sparkles size={13} />
+            <span>Plataforma comercial · Nexbit</span>
+          </div>
+
+          {/* Título */}
+          <h1 className="hp-hero-title">
+            {isAuthenticated
+              ? <>Bienvenido, <span className="hp-hero-hi">{user?.nombre?.split(' ')[0] || 'Usuario'}</span></>
+              : <>Todo lo que necesitas,<br /><span className="hp-hero-hi">en un solo lugar</span></>
+            }
+          </h1>
+
+          {/* Subtítulo */}
+          <p className="hp-hero-sub">
+            {isAuthenticated
+              ? 'Explora el catálogo, gestiona tus pedidos y disfruta de la mejor experiencia de compra en Nexbit.'
+              : 'Conectamos compradores y vendedores en una plataforma rápida, segura y moderna. Empieza hoy.'
+            }
+          </p>
+
+          {/* CTAs */}
+          <div className="hp-hero-ctas">
+            <button
+              className="hp-btn-primary"
+              onClick={() => navigate(isAuthenticated ? `${basePath}/productos` : '/login')}
+            >
+              {isAuthenticated ? 'Ir al Catálogo' : 'Empezar ahora'}
+              <ArrowRight size={17} />
+            </button>
+            {isAuthenticated
+              ? (
+                <button className="hp-btn-ghost" onClick={() => navigate(`${basePath}/pedidos`)}>
+                  Ver mis pedidos <ChevronRight size={16} />
+                </button>
+              ) : (
+                <button className="hp-btn-ghost" onClick={() => navigate('/usuario/productos')}>
+                  Explorar sin cuenta <ChevronRight size={16} />
+                </button>
+              )
+            }
+          </div>
+
+          {/* Social proof pills */}
+          <div className="hp-trust">
+            <div className="hp-trust-stars">
+              {[...Array(5)].map((_, i) => <Star key={i} size={13} fill="#111" />)}
+            </div>
+            <span className="hp-trust-text">Confiado por cientos de compradores</span>
+          </div>
         </div>
-        <div className="feature-card">
-          <div className="feature-icon"><Users size={24} /></div>
-          <h3>{t('feature.2.title')}</h3>
-          <p>{t('feature.2.desc')}</p>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          STATS STRIP
+      ═══════════════════════════════════════ */}
+      <section className="hp-stats">
+        {STATS.map(({ value, label }) => (
+          <div key={label} className="hp-stat">
+            <span className="hp-stat-value">{value}</span>
+            <span className="hp-stat-label">{label}</span>
+          </div>
+        ))}
+      </section>
+
+      {/* ═══════════════════════════════════════
+          ACCESOS RÁPIDOS (solo autenticados)
+      ═══════════════════════════════════════ */}
+      {isAuthenticated && (
+        <section className="hp-quick">
+          <div className="hp-section-header">
+            <h2 className="hp-section-title">¿Qué quieres hacer hoy?</h2>
+            <p className="hp-section-sub">Accede rápidamente a las secciones principales</p>
+          </div>
+          <div className="hp-quick-grid">
+            {QUICK_ACTIONS.map(({ Icon, title, desc, to, badge }) => (
+              <button key={to} className="hp-quick-card" onClick={() => navigate(to)}>
+                <div className="hp-quick-icon-wrap">
+                  <Icon size={24} />
+                  {badge > 0 && <span className="hp-quick-badge">{badge}</span>}
+                </div>
+                <div className="hp-quick-text">
+                  <h3 className="hp-quick-title">{title}</h3>
+                  <p className="hp-quick-desc">{desc}</p>
+                </div>
+                <ArrowRight size={16} className="hp-quick-arrow" />
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════
+          FEATURES
+      ═══════════════════════════════════════ */}
+      <section className="hp-features">
+        <div className="hp-section-header">
+          <h2 className="hp-section-title">¿Por qué elegir Nexbit?</h2>
+          <p className="hp-section-sub">Diseñado para ofrecerte la mejor experiencia comercial</p>
         </div>
-        <div className="feature-card">
-          <div className="feature-icon"><Zap size={24} /></div>
-          <h3>{t('feature.3.title')}</h3>
-          <p>{t('feature.3.desc')}</p>
+        <div className="hp-features-grid">
+          {FEATURES.map(({ Icon, title, desc }) => (
+            <div key={title} className="hp-feature-card">
+              <div className="hp-feature-icon">
+                <Icon size={22} />
+              </div>
+              <h3 className="hp-feature-title">{title}</h3>
+              <p className="hp-feature-desc">{desc}</p>
+            </div>
+          ))}
         </div>
-      </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          CTA BANNER (solo invitados)
+      ═══════════════════════════════════════ */}
+      {!isAuthenticated && (
+        <section className="hp-cta">
+          <div className="hp-cta-inner">
+            <div className="hp-cta-tag">
+              <TrendingUp size={14} /> Únete hoy
+            </div>
+            <h2 className="hp-cta-title">Empieza a comprar en Nexbit</h2>
+            <p className="hp-cta-sub">
+              Crea tu cuenta gratis y accede a cientos de productos con gestión de pedidos, seguimiento y mucho más.
+            </p>
+            <div className="hp-cta-btns">
+              <button className="hp-btn-primary" onClick={() => navigate('/register')}>
+                Crear cuenta gratis <ArrowRight size={16} />
+              </button>
+              <button className="hp-btn-ghost hp-btn-ghost--light" onClick={() => navigate('/login')}>
+                Ya tengo cuenta
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
     </div>
   );
 };

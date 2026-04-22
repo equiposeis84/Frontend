@@ -53,12 +53,12 @@ const Carrito = ({ variant }) => {
                 <div className="cart-item-img" style={{ width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <CartItemImg src={item.imagen_url} alt={item.nombre} />
                 </div>
-                
+
                 <div className="cart-item-details" style={{ flex: 1.5 }}>
                   <h3 className="cart-item-title">{item.nombre}</h3>
                   <div className="cart-item-variant" style={{ color: '#64748b' }}>Stock Total: {item.stock_actual} | ID: {item.producto_id}</div>
-                  
-                  <button 
+
+                  <button
                     style={{ background: 'none', border: 'none', color: 'var(--danger)', padding: 0, marginTop: '10px', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', fontSize: '0.85rem' }}
                     onClick={() => removeFromCart(item.producto_id)}
                   >
@@ -69,24 +69,24 @@ const Carrito = ({ variant }) => {
                 <div className="cart-item-prices" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
                   <div className="cart-qty-selector" style={{ marginBottom: '15px' }}>
                     <label style={{ fontSize: '0.85rem', marginRight: '5px', color: '#475569' }}>Cantidad:</label>
-                    <input 
-                      type="number" 
-                      min="1" 
+                    <input
+                      type="number"
+                      min="1"
                       max={item.stock_actual || 100}
-                      value={item.cantidad} 
+                      value={item.cantidad}
                       onChange={(e) => updateQuantity(item.producto_id, parseInt(e.target.value))}
                       style={{ width: '60px', padding: '5px', borderRadius: '4px', border: '1px solid var(--border)' }}
                     />
                   </div>
 
-                  <div className="precio-final" style={{fontSize: '1.2rem', color:'#0f172a'}}>${Number(item.precio).toLocaleString()}</div>
+                  <div className="precio-final" style={{ fontSize: '1.2rem', color: '#0f172a' }}>${Number(item.precio).toLocaleString()}</div>
                   <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
                     Subtotal: ${(item.precio * item.cantidad).toLocaleString()}
                   </div>
                 </div>
               </div>
             ))}
-            
+
             <div style={{ marginTop: '5px' }}>
               <a href="#" onClick={(e) => { e.preventDefault(); navigate(`/${variant}/productos`) }} style={{ color: 'var(--primary)', textDecoration: 'none', fontSize: '0.9rem', display: 'flex', alignItems: 'center' }}>
                 <ChevronRight size={16} /> Ver más productos
@@ -97,7 +97,7 @@ const Carrito = ({ variant }) => {
           {/* SIDEBAR SUMMARY */}
           <div className="cart-sidebar">
             <h3 className="cart-sidebar-title">Resumen de Compra</h3>
-            
+
             <div className="summary-row">
               <span>Subtotal ({cartItems.length} producto{cartItems.length !== 1 && 's'})</span>
               <span>${total.toLocaleString()}</span>
@@ -111,14 +111,14 @@ const Carrito = ({ variant }) => {
             <button className="btn-checkout-red" onClick={handleProceed}>
               {isGuest ? 'Iniciar Sesión para Pagar' : 'Generar Pedido'}
             </button>
-            <p style={{textAlign:'center', fontSize:'0.75rem', marginTop:'15px', color:'#888'}}>
-                <a href="#" onClick={(e) => { e.preventDefault(); clearCart(); }} style={{color: '#999', textDecoration: 'none'}}>Vaciar todo el carrito</a>
+            <p style={{ textAlign: 'center', fontSize: '0.75rem', marginTop: '15px', color: '#888' }}>
+              <a href="#" onClick={(e) => { e.preventDefault(); clearCart(); }} style={{ color: '#999', textDecoration: 'none' }}>Vaciar todo el carrito</a>
             </p>
 
             <div className="security-badges" style={{ marginTop: '20px' }}>
               <p><Lock size={14} /> Tu pedido seguro</p>
-              <div style={{display:'flex', gap:'10px', margin: '10px 0'}}>
-                 <ShieldCheck size={28} color="var(--primary)" />
+              <div style={{ display: 'flex', gap: '10px', margin: '10px 0' }}>
+                <ShieldCheck size={28} color="var(--primary)" />
               </div>
             </div>
           </div>

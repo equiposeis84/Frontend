@@ -1,49 +1,66 @@
 /**
  * @file App.jsx
- * @description Componente raíz que gestiona el enrutamiento, la autenticación
- * y la estructura general de la interfaz de usuario.
+ * @description Componente raíz. Dos layouts separados:
+ *  - AdminLayout: sidebar oscuro colapsable (panel admin)
+ *  - StoreLayout: topbar e-commerce (cliente / usuario)
  */
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import TopBar from './components/TopBar';
-import Usuarios from './pages/Usuarios';
-import Roles from './pages/Roles';
-import Categorias from './pages/Categorias';
-import Productos from './pages/Productos';
-import Pedidos from './pages/Pedidos';
-import Facturas from './pages/Facturas';
+import TopBar       from './components/TopBar';
+import AdminSidebar  from './components/AdminSidebar';
+import CartToast     from './components/CartToast';
+import Usuarios    from './pages/Usuarios';
+import Roles       from './pages/Roles';
+import Categorias  from './pages/Categorias';
+import Productos   from './pages/Productos';
+import Pedidos     from './pages/Pedidos';
+import Facturas    from './pages/Facturas';
 import Proveedores from './pages/Proveedores';
 import Repartidores from './pages/Repartidores';
-import Perfil from './pages/Perfil';
-import Inicio from './pages/Inicio';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Carrito from './pages/Carrito';
-import Ayuda from './pages/Ayuda';
-import Contacto from './pages/Contacto';
-import { Menu } from 'lucide-react';
-import { CartProvider } from './context/CartContext';
+import Perfil      from './pages/Perfil';
+import Inicio      from './pages/Inicio';
+import Login       from './pages/Login';
+import Register    from './pages/Register';
+import Carrito     from './pages/Carrito';
+import Ayuda       from './pages/Ayuda';
+import Contacto    from './pages/Contacto';
+import { CartProvider }     from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { LanguageProvider } from './context/LanguageContext';
 import './services/authService';
 
-const AppLayout = ({ variant }) => {
+/* ─── Layout del Panel Admin ────────────────────────────────── */
+const AdminLayout = () => {
   const { logout } = useAuth();
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="app-wrapper">
-      <TopBar
+    <div className="adm-layout">
+      <AdminSidebar
+        collapsed={collapsed}
+        onToggle={() => setCollapsed(c => !c)}
         onLogout={logout}
-        variant={variant}
       />
-      <div className="main-content">
-        <div className="mobile-header">
-          <h2 className="mobile-title">
-            {variant === 'admin' ? 'AdminPanel' : 'RematesPaisa'}
-          </h2>
+      <main className={`adm-content${collapsed ? ' adm-content--expanded' : ''}`}>
+        <div className="admin-container">
+          <Outlet />
         </div>
+      </main>
+    </div>
+  );
+};
 
+/* ─── Layout de la Tienda (usuario / cliente) ───────────────── */
+const StoreLayout = ({ variant }) => {
+  const { logout } = useAuth();
+  const basePath = variant === 'cliente' ? '/cliente' : '/usuario';
+
+  return (
+    <div className="store-layout">
+      <TopBar onLogout={logout} variant={variant} />
+      <CartToast basePath={basePath} />
+      <div className="store-content">
         <div className="admin-container">
           <Outlet />
         </div>
@@ -52,80 +69,89 @@ const AppLayout = ({ variant }) => {
   );
 };
 
+
+/* ─── Rutas ─────────────────────────────────────────────────── */
 function AppRoutes() {
   const { isAuthenticated, role, loading } = useAuth();
 
-  if (loading) return <div style={{ padding: '4rem', textAlign: 'center' }}>Validando sesión...</div>;
+  if (loading) return (
+    <div style={{ padding: '4rem', textAlign: 'center', color: '#94a3b8' }}>
+      <div className="spinner" />
+      <p style={{ marginTop: '1rem' }}>Validando sesión...</p>
+    </div>
+  );
 
   const isAdmin = role === 'Administrador';
 
   return (
     <Routes>
-      {/* Redirección Inicial */}
+      {/* Redirección inicial */}
       <Route path="/" element={<Navigate to="/usuario/inicio" replace />} />
 
-      {/* Login y Registro Globales (Sin Sidebar) */}
-      <Route path="/login" element={isAuthenticated ? <Navigate to={isAdmin ? "/admin/inicio" : "/cliente/inicio"} replace /> : <Login />} />
-      <Route path="/register" element={isAuthenticated ? <Navigate to={isAdmin ? "/admin/inicio" : "/cliente/inicio"} replace /> : <Register />} />
+      {/* Auth (sin layout) */}
+      <Route path="/login"    element={isAuthenticated ? <Navigate to={isAdmin ? '/admin/inicio' : '/cliente/inicio'} replace /> : <Login />} />
+      <Route path="/register" element={isAuthenticated ? <Navigate to={isAdmin ? '/admin/inicio' : '/cliente/inicio'} replace /> : <Register />} />
 
-      {/* --- SECCIÓN DE USUARIO / INVITADO --- */}
+      {/* ── Usuario / Invitado ──────────────────────────────── */}
       <Route path="/usuario">
-        {/* Login específico dentro de /usuario (Sin Sidebar para evitar errores) */}
         <Route path="login" element={isAuthenticated ? <Navigate to="/usuario/inicio" replace /> : <Login />} />
-
-        {/* Rutas con Sidebar mediante AppLayout */}
-        <Route element={<AppLayout variant="usuario" />}>
-          <Route index element={<Navigate to="inicio" replace />} />
-          <Route path="inicio" element={<Inicio />} />
+        <Route element={<StoreLayout variant="usuario" />}>
+          <Route index      element={<Navigate to="inicio" replace />} />
+          <Route path="inicio"    element={<Inicio />} />
           <Route path="productos" element={<Productos variant="usuario" />} />
-          <Route path="carrito" element={<Carrito variant="usuario" />} />
-          <Route path="pedidos" element={<Pedidos variant="usuario" />} />
-          <Route path="ayuda" element={<Ayuda />} />
-          <Route path="contacto" element={<Contacto />} />
+          <Route path="carrito"   element={<Carrito variant="usuario" />} />
+          <Route path="pedidos"   element={<Pedidos variant="usuario" />} />
+          <Route path="ayuda"     element={<Ayuda />} />
+          <Route path="contacto"  element={<Contacto />} />
         </Route>
       </Route>
 
-      {/* --- SECCIÓN DE CLIENTE REGISTRADO --- */}
-      <Route path="/cliente" element={
-        <ProtectedRoute allowedRoles={['Cliente', 'Administrador']}>
-          <AppLayout variant="cliente" />
-        </ProtectedRoute>
-      }>
-        <Route index element={<Navigate to="inicio" replace />} />
-        <Route path="inicio" element={<Inicio />} />
+      {/* ── Cliente Registrado ──────────────────────────────── */}
+      <Route
+        path="/cliente"
+        element={
+          <ProtectedRoute allowedRoles={['Cliente', 'Administrador']}>
+            <StoreLayout variant="cliente" />
+          </ProtectedRoute>
+        }
+      >
+        <Route index      element={<Navigate to="inicio" replace />} />
+        <Route path="inicio"    element={<Inicio />} />
         <Route path="productos" element={<Productos variant="cliente" />} />
-        <Route path="carrito" element={<Carrito variant="cliente" />} />
-        <Route path="pedidos" element={<Pedidos variant="cliente" />} />
-        <Route path="ayuda" element={<Ayuda />} />
-        <Route path="contacto" element={<Contacto />} />
-        <Route path="perfil" element={<Perfil />} />
+        <Route path="carrito"   element={<Carrito variant="cliente" />} />
+        <Route path="pedidos"   element={<Pedidos variant="cliente" />} />
+        <Route path="ayuda"     element={<Ayuda />} />
+        <Route path="contacto"  element={<Contacto />} />
+        <Route path="perfil"    element={<Perfil />} />
       </Route>
 
-      {/* --- SECCIÓN DE ADMINISTRADOR --- */}
-      <Route path="/admin" element={
-        <ProtectedRoute allowedRoles={['Administrador']}>
-          <AppLayout variant="admin" />
-        </ProtectedRoute>
-      }>
-        <Route index element={<Navigate to="inicio" replace />} />
-        <Route path="inicio" element={<Inicio />} />
-        <Route path="usuarios" element={<Usuarios />} />
-        <Route path="roles" element={<Roles />} />
-        <Route path="categorias" element={<Categorias />} />
-        <Route path="productos" element={<Productos variant="admin" />} />
-        <Route path="pedidos" element={<Pedidos variant="admin" />} />
-        <Route path="facturas" element={<Facturas />} />
-        <Route path="proveedores" element={<Proveedores />} />
+      {/* ── Administrador ───────────────────────────────────── */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={['Administrador']}>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index          element={<Navigate to="inicio" replace />} />
+        <Route path="inicio"       element={<Inicio />} />
+        <Route path="usuarios"     element={<Usuarios />} />
+        <Route path="roles"        element={<Roles />} />
+        <Route path="categorias"   element={<Categorias />} />
+        <Route path="productos"    element={<Productos variant="admin" />} />
+        <Route path="pedidos"      element={<Pedidos variant="admin" />} />
+        <Route path="facturas"     element={<Facturas />} />
+        <Route path="proveedores"  element={<Proveedores />} />
         <Route path="repartidores" element={<Repartidores />} />
-        <Route path="perfil" element={<Perfil />} />
+        <Route path="perfil"       element={<Perfil />} />
       </Route>
 
-      {/* Catch-all: Redirigir a inicio si la ruta no existe */}
+      {/* Catch-all */}
       <Route path="/*" element={<Navigate to="/usuario/inicio" replace />} />
     </Routes>
   );
 }
-
 
 function App() {
   return (

@@ -235,7 +235,7 @@ const Pedidos = ({ variant }) => {
           <div class="ticket">
             <div class="ticket-header">
               <div>
-                <div class="brand">RematesPaisa</div>
+                <div class="brand">Nexbit</div>
                 <div class="doc-type">Comprobante de Pedido</div>
               </div>
               <div class="order-id">
@@ -285,7 +285,7 @@ const Pedidos = ({ variant }) => {
               </div>
             </div>
             <div class="ticket-footer">
-              <p>Este documento constituye el comprobante oficial de su pedido en RematesPaisa.</p>
+              <p>Este documento constituye el comprobante oficial de su pedido en Nexbit.</p>
               <p>Para consultas o reclamos, por favor conserve este número de pedido.</p>
               <div class="doc-info">
                 Documento generado el ${new Date().toLocaleString('es-CO')}

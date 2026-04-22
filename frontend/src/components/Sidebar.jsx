@@ -43,7 +43,7 @@ const Sidebar = ({ isOpen, setIsOpen, onLogout, variant = "admin" }) => {
         <div className="sidebar-header">
           <NavLink to={variant === 'admin' ? '/admin/inicio' : `/${variant}/inicio`} className="sidebar-logo" style={{ textDecoration: 'none', color: 'inherit' }} onClickCapture={() => setIsOpen(false)}>
             <Layers size={28} className="logo-icon" />
-            <span>{variant === 'admin' ? 'AdminPanel' : 'RematesPaisa'}</span>
+            <span>{variant === 'admin' ? 'Nexbit Admin' : 'Nexbit'}</span>
           </NavLink>
           <button className="sidebar-close" onClick={() => setIsOpen(false)}>
             <X size={24} />
