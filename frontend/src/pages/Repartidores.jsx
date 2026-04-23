@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
-import { MapPin, Eye, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { MapPin, Eye, CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react';
 import { useModalScroll } from '../hooks/useModalScroll';
-
 const URL_API = "/api/repartidores";
 
 const Repartidores = () => {

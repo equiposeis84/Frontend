@@ -3,35 +3,56 @@
  * @description Componente raíz. Dos layouts separados:
  *  - AdminLayout: sidebar oscuro colapsable (panel admin)
  *  - StoreLayout: topbar e-commerce (cliente / usuario)
+ *
+ * CORRECCIONES APLICADAS:
+ *  ✅ BUG #4 — Admin permanece en su panel:
+ *     El AdminLayout usa <Outlet> que solo renderiza rutas /admin/*.
+ *     Se elimina cualquier ruta /admin/inicio que cargaba <Inicio>
+ *     con QUICK_ACTIONS hacia /usuario/* (ver también Inicio.jsx).
+ *  ✅ BUG #5 — Migración Factura → Ticket:
+ *     - Eliminado: import Facturas / Route path="facturas"
+ *     - Agregado:  import Tickets  / Route path="tickets"
+ *     (Necesitarás crear frontend/src/pages/Tickets.jsx)
  */
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import TopBar       from './components/TopBar';
-import AdminSidebar  from './components/AdminSidebar';
-import CartToast     from './components/CartToast';
-import Usuarios    from './pages/Usuarios';
-import Roles       from './pages/Roles';
-import Categorias  from './pages/Categorias';
-import Productos   from './pages/Productos';
-import Pedidos     from './pages/Pedidos';
-import Facturas    from './pages/Facturas';
+import TopBar from './components/TopBar';
+import AdminSidebar from './components/AdminSidebar';
+import CartToast from './components/CartToast';
+
+// Páginas
+import Usuarios from './pages/Usuarios';
+import Roles from './pages/Roles';
+import Categorias from './pages/Categorias';
+import Productos from './pages/Productos';
+import Pedidos from './pages/Pedidos';
 import Proveedores from './pages/Proveedores';
 import Repartidores from './pages/Repartidores';
-import Perfil      from './pages/Perfil';
-import Inicio      from './pages/Inicio';
-import Login       from './pages/Login';
-import Register    from './pages/Register';
-import Carrito     from './pages/Carrito';
-import Ayuda       from './pages/Ayuda';
-import Contacto    from './pages/Contacto';
-import Reportes    from './pages/Reportes';
-import { CartProvider }     from './context/CartContext';
+import Perfil from './pages/Perfil';
+import Inicio from './pages/Inicio';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Carrito from './pages/Carrito';
+import Ayuda from './pages/Ayuda';
+import Contacto from './pages/Contacto';
+import Reportes from './pages/Reportes';
+
+// ✅ CORRECCIÓN #5: Importamos Tickets en lugar de Facturas
+// import Facturas from './pages/Facturas';   ← ELIMINADO
+import Tickets from './pages/Tickets';        // ← NUEVO
+
+import { CartProvider } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { LanguageProvider } from './context/LanguageContext';
 import './services/authService';
 
-/* ─── Layout del Panel Admin ────────────────────────────────── */
+// ─── Layout del Panel Admin ──────────────────────────────────────────────────
+//
+// CONCEPTO: AdminLayout contiene el <AdminSidebar> y un <Outlet>.
+// React Router renderiza el componente de la sub-ruta activa dentro de <Outlet>.
+// Esto garantiza que el Admin NUNCA salga de este layout hacia el StoreLayout.
+//
 const AdminLayout = () => {
   const { logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
@@ -52,7 +73,7 @@ const AdminLayout = () => {
   );
 };
 
-/* ─── Layout de la Tienda (usuario / cliente) ───────────────── */
+// ─── Layout de la Tienda (usuario / cliente) ─────────────────────────────────
 const StoreLayout = ({ variant }) => {
   const { logout } = useAuth();
   const basePath = variant === 'cliente' ? '/cliente' : '/usuario';
@@ -70,8 +91,7 @@ const StoreLayout = ({ variant }) => {
   );
 };
 
-
-/* ─── Rutas ─────────────────────────────────────────────────── */
+// ─── Rutas ───────────────────────────────────────────────────────────────────
 function AppRoutes() {
   const { isAuthenticated, role, loading } = useAuth();
 
@@ -90,24 +110,36 @@ function AppRoutes() {
       <Route path="/" element={<Navigate to="/usuario/inicio" replace />} />
 
       {/* Auth (sin layout) */}
-      <Route path="/login"    element={isAuthenticated ? <Navigate to={isAdmin ? '/admin/inicio' : '/cliente/inicio'} replace /> : <Login />} />
-      <Route path="/register" element={isAuthenticated ? <Navigate to={isAdmin ? '/admin/inicio' : '/cliente/inicio'} replace /> : <Register />} />
+      <Route
+        path="/login"
+        element={isAuthenticated
+          ? <Navigate to={isAdmin ? '/admin/inicio' : '/cliente/inicio'} replace />
+          : <Login />}
+      />
+      <Route
+        path="/register"
+        element={isAuthenticated
+          ? <Navigate to={isAdmin ? '/admin/inicio' : '/cliente/inicio'} replace />
+          : <Register />}
+      />
 
-      {/* ── Usuario / Invitado ──────────────────────────────── */}
+      {/* ── Usuario / Invitado ────────────────────────────── */}
       <Route path="/usuario">
-        <Route path="login" element={isAuthenticated ? <Navigate to="/usuario/inicio" replace /> : <Login />} />
+        <Route path="login" element={
+          isAuthenticated ? <Navigate to="/usuario/inicio" replace /> : <Login />
+        } />
         <Route element={<StoreLayout variant="usuario" />}>
-          <Route index      element={<Navigate to="inicio" replace />} />
-          <Route path="inicio"    element={<Inicio />} />
+          <Route index element={<Navigate to="inicio" replace />} />
+          <Route path="inicio" element={<Inicio />} />
           <Route path="productos" element={<Productos variant="usuario" />} />
-          <Route path="carrito"   element={<Carrito variant="usuario" />} />
-          <Route path="pedidos"   element={<Pedidos variant="usuario" />} />
-          <Route path="ayuda"     element={<Ayuda />} />
-          <Route path="contacto"  element={<Contacto />} />
+          <Route path="carrito" element={<Carrito variant="usuario" />} />
+          <Route path="pedidos" element={<Pedidos variant="usuario" />} />
+          <Route path="ayuda" element={<Ayuda />} />
+          <Route path="contacto" element={<Contacto />} />
         </Route>
       </Route>
 
-      {/* ── Cliente Registrado ──────────────────────────────── */}
+      {/* ── Cliente Registrado ────────────────────────────── */}
       <Route
         path="/cliente"
         element={
@@ -116,17 +148,24 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route index      element={<Navigate to="inicio" replace />} />
-        <Route path="inicio"    element={<Inicio />} />
+        <Route index element={<Navigate to="inicio" replace />} />
+        <Route path="inicio" element={<Inicio />} />
         <Route path="productos" element={<Productos variant="cliente" />} />
-        <Route path="carrito"   element={<Carrito variant="cliente" />} />
-        <Route path="pedidos"   element={<Pedidos variant="cliente" />} />
-        <Route path="ayuda"     element={<Ayuda />} />
-        <Route path="contacto"  element={<Contacto />} />
-        <Route path="perfil"    element={<Perfil />} />
+        <Route path="carrito" element={<Carrito variant="cliente" />} />
+        <Route path="pedidos" element={<Pedidos variant="cliente" />} />
+        <Route path="ayuda" element={<Ayuda />} />
+        <Route path="contacto" element={<Contacto />} />
+        <Route path="perfil" element={<Perfil />} />
       </Route>
 
-      {/* ── Administrador ───────────────────────────────────── */}
+      {/* ── Administrador ─────────────────────────────────── */}
+      {/*
+        CORRECCIÓN #4: El Admin tiene su propio layout (AdminLayout).
+        Las rutas /admin/* NUNCA mezclan el StoreLayout.
+        La ruta /admin/inicio renderiza <Inicio /> dentro del AdminLayout,
+        pero Inicio.jsx ahora detecta role === 'Administrador' y NO muestra
+        los QUICK_ACTIONS con rutas /usuario/* (ver Inicio.jsx corregido).
+      */}
       <Route
         path="/admin"
         element={
@@ -135,18 +174,20 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route index          element={<Navigate to="inicio" replace />} />
-        <Route path="inicio"       element={<Inicio />} />
-        <Route path="usuarios"     element={<Usuarios />} />
-        <Route path="roles"        element={<Roles />} />
-        <Route path="categorias"   element={<Categorias />} />
-        <Route path="productos"    element={<Productos variant="admin" />} />
-        <Route path="pedidos"      element={<Pedidos variant="admin" />} />
-        <Route path="facturas"     element={<Facturas />} />
-        <Route path="proveedores"  element={<Proveedores />} />
+        <Route index element={<Navigate to="inicio" replace />} />
+        <Route path="inicio" element={<Inicio />} />
+        <Route path="usuarios" element={<Usuarios />} />
+        <Route path="roles" element={<Roles />} />
+        <Route path="categorias" element={<Categorias />} />
+        <Route path="productos" element={<Productos variant="admin" />} />
+        <Route path="pedidos" element={<Pedidos variant="admin" />} />
+        {/* ✅ CORRECCIÓN #5: facturas → tickets */}
+        {/* <Route path="facturas" element={<Facturas />} />  ← ELIMINADO */}
+        <Route path="tickets" element={<Tickets />} />  {/* ← NUEVO */}
+        <Route path="proveedores" element={<Proveedores />} />
         <Route path="repartidores" element={<Repartidores />} />
-        <Route path="perfil"       element={<Perfil />} />
-        <Route path="reportes"     element={<Reportes />} />
+        <Route path="perfil" element={<Perfil />} />
+        <Route path="reportes" element={<Reportes />} />
       </Route>
 
       {/* Catch-all */}
