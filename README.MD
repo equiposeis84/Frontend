@@ -18,6 +18,7 @@ git push -u origin main
 
 INICIAR SERVIDORES:
 cd backend
+npm i --legacy-peer-deps
 node server.js
 
 cd frontend
