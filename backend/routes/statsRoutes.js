@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
         (SELECT COUNT(*) FROM productos   WHERE activo = 1)        AS productos,
         (SELECT COUNT(*) FROM pedidos)                             AS pedidos,
         (SELECT COUNT(*) FROM usuarios u
-           INNER JOIN roles r ON u.id_rol = r.id_rol
+           INNER JOIN roles r ON u.rol_id = r.id_rol
            WHERE r.nombre = 'Cliente')                            AS clientes,
         (SELECT COUNT(*) FROM categorias)                         AS categorias
     `);

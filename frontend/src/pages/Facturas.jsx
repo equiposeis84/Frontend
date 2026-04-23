@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Pencil, Trash2, FileText } from 'lucide-react';
 import { useModalScroll } from '../hooks/useModalScroll';
 
-const URL_API = "http://localhost:3000/api/facturas";
-const URL_PEDIDOS = "http://localhost:3000/api/pedidos";
+const URL_API = "/api/facturas";
+const URL_PEDIDOS = "/api/pedidos";
 
 const Facturas = () => {
   const [facturas, setFacturas] = useState([]);
@@ -31,14 +31,14 @@ const Facturas = () => {
 
   const listar = () => {
     setLoading(true);
-    axios.get(URL_API)
+    api.get(URL_API)
       .then(res => setFacturas(res.data))
       .catch(err => console.error("Error al listar facturas:", err))
       .finally(() => setLoading(false));
   };
 
   const listarPedidos = () => {
-    axios.get(URL_PEDIDOS)
+    api.get(URL_PEDIDOS)
       .then(res => setPedidosList(res.data))
       .catch(err => console.error("Error al listar pedidos:", err));
   };
@@ -89,7 +89,7 @@ const Facturas = () => {
     }
 
     if (enEdicion) {
-      axios.put(`${URL_API}/${idFactura}`, datos)
+      api.put(`${URL_API}/${idFactura}`, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -100,7 +100,7 @@ const Facturas = () => {
           alert("Error al actualizar: " + (err.response?.data?.message || err.message));
         });
     } else {
-      axios.post(URL_API, datos)
+      api.post(URL_API, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -115,7 +115,7 @@ const Facturas = () => {
 
   const eliminar = (id) => {
     if (window.confirm("¿Confirmar eliminación de este registro?")) {
-      axios.delete(`${URL_API}/${id}`)
+      api.delete(`${URL_API}/${id}`)
         .then(() => listar())
         .catch(err => {
           console.error("Error al eliminar:", err);

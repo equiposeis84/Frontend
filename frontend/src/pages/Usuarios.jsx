@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Pencil, Trash2, Users } from 'lucide-react';
 import { useModalScroll } from '../hooks/useModalScroll';
 
-const URL_API = "http://localhost:3000/api/usuarios";
+const URL_API = "/api/usuarios";
 
 const Usuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -30,14 +30,14 @@ const Usuarios = () => {
 
   const listar = () => {
     setLoading(true);
-    axios.get(URL_API)
+    api.get(URL_API)
       .then(res => setUsuarios(res.data))
       .catch(err => console.error("Error al listar usuarios:", err))
       .finally(() => setLoading(false));
   };
 
   const listarRoles = () => {
-    axios.get(`${URL_API}/roles`)
+    api.get(`${URL_API}/roles`)
       .then(res => setRolesList(res.data))
       .catch(err => console.error("Error al listar roles:", err));
   };
@@ -80,7 +80,7 @@ const Usuarios = () => {
     };
 
     if (enEdicion) {
-      axios.put(`${URL_API}/${idUsuario}`, datos)
+      api.put(`${URL_API}/${idUsuario}`, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -91,7 +91,7 @@ const Usuarios = () => {
           alert("Error al actualizar: " + (err.response?.data?.message || err.message));
         });
     } else {
-      axios.post(URL_API, datos)
+      api.post(URL_API, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -106,7 +106,7 @@ const Usuarios = () => {
 
   const eliminar = (id) => {
     if (window.confirm("¿Confirmar eliminación de este registro?")) {
-      axios.delete(`${URL_API}/${id}`)
+      api.delete(`${URL_API}/${id}`)
         .then(() => listar())
         .catch(err => {
           console.error("Error al eliminar:", err);

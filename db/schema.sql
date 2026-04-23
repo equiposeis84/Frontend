@@ -65,6 +65,7 @@ CREATE TABLE productos (
     proveedor_id  INT           NULL,
     nombre        VARCHAR(150)  NOT NULL,
     descripcion   TEXT,
+    imagen_url    VARCHAR(500)  NULL,
     precio_compra DECIMAL(12,2) NOT NULL DEFAULT 0,
     precio_venta  DECIMAL(12,2) NOT NULL DEFAULT 0,
     stock_actual  INT           DEFAULT 0,

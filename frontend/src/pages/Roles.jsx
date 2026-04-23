@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Pencil, Trash2, ShieldCheck } from 'lucide-react';
 import { useModalScroll } from '../hooks/useModalScroll';
 
-const URL_API = "http://localhost:3000/api/roles";
+const URL_API = "/api/roles";
 
 const Roles = () => {
   const [roles, setRoles] = useState([]);
@@ -25,7 +25,7 @@ const Roles = () => {
 
   const listar = () => {
     setLoading(true);
-    axios.get(URL_API)
+    api.get(URL_API)
       .then(res => setRoles(res.data))
       .catch(err => console.error("Error al listar roles:", err))
       .finally(() => setLoading(false));
@@ -65,7 +65,7 @@ const Roles = () => {
     }
 
     if (enEdicion) {
-      axios.put(`${URL_API}/${idRol}`, datos)
+      api.put(`${URL_API}/${idRol}`, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -76,7 +76,7 @@ const Roles = () => {
           alert("Error al actualizar: " + (err.response?.data?.message || err.message));
         });
     } else {
-      axios.post(URL_API, datos)
+      api.post(URL_API, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -91,7 +91,7 @@ const Roles = () => {
 
   const eliminar = (id) => {
     if (window.confirm("¿Confirmar eliminación de este registro?")) {
-      axios.delete(`${URL_API}/${id}`)
+      api.delete(`${URL_API}/${id}`)
         .then(() => listar())
         .catch(err => {
           console.error("Error al eliminar:", err);

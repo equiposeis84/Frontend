@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { UserCircle, Save, Bell, Moon, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const URL_API = "http://localhost:3000/api/usuarios";
+const URL_API = "/api/usuarios";
 
 const Perfil = () => {
   const { user } = useAuth();
@@ -34,7 +34,7 @@ const Perfil = () => {
 
   const cargarPerfil = () => {
     setLoading(true);
-    axios.get(`${URL_API}/${user.id_usuario}`)
+    api.get(`${URL_API}/${user.id_usuario}`)
       .then(res => {
         const u = res.data;
         if(u) {
@@ -71,7 +71,7 @@ const Perfil = () => {
       return;
     }
 
-    axios.put(`${URL_API}/${user.id_usuario}`, datos)
+    api.put(`${URL_API}/${user.id_usuario}`, datos)
       .then(() => {
         alert("¡Perfil actualizado con éxito!");
         setPassword(""); 

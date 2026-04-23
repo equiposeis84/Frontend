@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Pencil, Trash2, Truck } from 'lucide-react';
 import { useModalScroll } from '../hooks/useModalScroll';
 
-const URL_API = "http://localhost:3000/api/proveedores";
+const URL_API = "/api/proveedores";
 
 const Proveedores = () => {
   const [proveedores, setProveedores] = useState([]);
@@ -29,7 +29,7 @@ const Proveedores = () => {
 
   const listar = () => {
     setLoading(true);
-    axios.get(URL_API)
+    api.get(URL_API)
       .then(res => setProveedores(res.data))
       .catch(err => console.error("Error al listar proveedores:", err))
       .finally(() => setLoading(false));
@@ -74,7 +74,7 @@ const Proveedores = () => {
     }
 
     if (enEdicion) {
-      axios.put(`${URL_API}/${idProveedor}`, datos)
+      api.put(`${URL_API}/${idProveedor}`, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -85,7 +85,7 @@ const Proveedores = () => {
           alert("Error al actualizar: " + (err.response?.data?.message || err.message));
         });
     } else {
-      axios.post(URL_API, datos)
+      api.post(URL_API, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -100,7 +100,7 @@ const Proveedores = () => {
 
   const eliminar = (id) => {
     if (window.confirm("¿Confirmar eliminación de este registro?")) {
-      axios.delete(`${URL_API}/${id}`)
+      api.delete(`${URL_API}/${id}`)
         .then(() => listar())
         .catch(err => {
           console.error("Error al eliminar:", err);

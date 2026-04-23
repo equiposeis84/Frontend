@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import {
   Package, ShoppingCart, ClipboardList, ArrowRight,
   Truck, ShieldCheck, Zap, Headphones,
@@ -34,7 +34,7 @@ const Inicio = () => {
 
   const fetchStats = async () => {
     try {
-      const { data } = await axios.get('http://localhost:3000/api/stats');
+      const { data } = await api.get('/api/stats');
       setStats(data);
     } catch {
       // Si falla, mantiene el último valor conocido

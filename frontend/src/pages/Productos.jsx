@@ -13,15 +13,15 @@
  * Gestiona la visualización, creación y edición de productos con soporte para imágenes.
  */
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Pencil, Trash2, Package, ShoppingCart, Info, Upload, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useModalScroll } from '../hooks/useModalScroll';
 
-const URL_API        = "http://localhost:3000/api/productos";
-const URL_API_PUBLIC = "http://localhost:3000/api/productos/publico";
-const URL_CATEGORIAS = "http://localhost:3000/api/categorias";
-const URL_PROVEEDORES = "http://localhost:3000/api/proveedores";
+const URL_API        = "/api/productos";
+const URL_API_PUBLIC = "/api/productos/publico";
+const URL_CATEGORIAS = "/api/categorias";
+const URL_PROVEEDORES = "/api/proveedores";
 
 // ── Componente de imagen con fallback al ícono ───────────────
 const ProductoImagen = ({ src, alt, style = {}, iconSize = 56 }) => {
@@ -88,7 +88,7 @@ const Productos = ({ variant }) => {
     setLoading(true);
     // Invitados y clientes usan el endpoint público (sin token)
     const endpoint = isAdminView ? URL_API : URL_API_PUBLIC;
-    axios.get(endpoint)
+    api.get(endpoint)
       .then(res => setProductos(res.data))
       .catch(err => console.error("Error al listar productos:", err))
       .finally(() => setLoading(false));
@@ -96,8 +96,8 @@ const Productos = ({ variant }) => {
 
   const listarDependencias = () => {
     if (!isAdminView) return;
-    axios.get(URL_CATEGORIAS).then(res => setCategoriasList(res.data)).catch(console.error);
-    axios.get(URL_PROVEEDORES).then(res => setProveedoresList(res.data)).catch(console.error);
+    api.get(URL_CATEGORIAS).then(res => setCategoriasList(res.data)).catch(console.error);
+    api.get(URL_PROVEEDORES).then(res => setProveedoresList(res.data)).catch(console.error);
   };
 
   useEffect(() => {
@@ -194,12 +194,12 @@ const Productos = ({ variant }) => {
 
     try {
       if (enEdicion) {
-        await axios.put(`${URL_API}/${idProducto}`, formData, {
+        await api.put(`${URL_API}/${idProducto}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         alert("Producto actualizado correctamente.");
       } else {
-        await axios.post(URL_API, formData, {
+        await api.post(URL_API, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         alert("Producto creado con éxito.");
@@ -216,7 +216,7 @@ const Productos = ({ variant }) => {
 
   const eliminar = (id) => {
     if (window.confirm("¿Confirmar eliminación de este registro?")) {
-      axios.delete(`${URL_API}/${id}`)
+      api.delete(`${URL_API}/${id}`)
         .then(() => listar())
         .catch(err => {
           console.error("Error al eliminar:", err);

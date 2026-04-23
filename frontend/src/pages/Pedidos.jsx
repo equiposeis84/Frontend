@@ -4,13 +4,13 @@
  * Incluye visualización de detalles, generación de tickets y gestión de estados.
  */
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Pencil, Trash2, ShoppingCart, Download, Eye, X, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useModalScroll } from '../hooks/useModalScroll';
 
-const URL_API = "http://localhost:3000/api/pedidos";
-const URL_USUARIOS = "http://localhost:3000/api/usuarios";
+const URL_API = "/api/pedidos";
+const URL_USUARIOS = "/api/usuarios";
 
 const Pedidos = ({ variant }) => {
   const [pedidos, setPedidos] = useState([]);
@@ -43,7 +43,7 @@ const Pedidos = ({ variant }) => {
 
   const listar = () => {
     setLoading(true);
-    axios.get(URL_API)
+    api.get(URL_API)
       .then(res => setPedidos(res.data))
       .catch(err => console.error("Error al listar pedidos:", err))
       .finally(() => setLoading(false));
@@ -51,7 +51,7 @@ const Pedidos = ({ variant }) => {
 
   const listarUsuarios = () => {
     if (!isAdminView) return;
-    axios.get(URL_USUARIOS)
+    api.get(URL_USUARIOS)
       .then(res => setUsuariosList(res.data))
       .catch(err => console.error("Error al listar usuarios:", err));
   };
@@ -61,7 +61,7 @@ const Pedidos = ({ variant }) => {
     setDetailLoading(true);
     setShowDetailModal(true);
     try {
-      const res = await axios.get(`${URL_API}/${pedidoId}/ticket`);
+      const res = await api.get(`${URL_API}/${pedidoId}/ticket`);
       setPedidoDetalle(res.data);
     } catch (err) {
       console.error('Error cargando detalles:', err);
@@ -76,7 +76,7 @@ const Pedidos = ({ variant }) => {
   const cancelarMiPedido = async (id) => {
     if (window.confirm("¿Estás seguro de que deseas cancelar este pedido?")) {
       try {
-        await axios.put(`${URL_API}/${id}/cancelar`);
+        await api.put(`${URL_API}/${id}/cancelar`);
         listar(); // Refrescamos la lista automáticamente
         alert("Pedido cancelado correctamente.");
       } catch (err) {
@@ -125,7 +125,7 @@ const Pedidos = ({ variant }) => {
     }
 
     if (enEdicion) {
-      axios.put(`${URL_API}/${idPedido}`, datos)
+      api.put(`${URL_API}/${idPedido}`, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -136,7 +136,7 @@ const Pedidos = ({ variant }) => {
           alert("Error al actualizar: " + (err.response?.data?.message || err.message));
         });
     } else {
-      axios.post(URL_API, datos)
+      api.post(URL_API, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -151,7 +151,7 @@ const Pedidos = ({ variant }) => {
 
   const eliminar = (id) => {
     if (window.confirm("¿Confirmar eliminación de este registro?")) {
-      axios.delete(`${URL_API}/${id}`)
+      api.delete(`${URL_API}/${id}`)
         .then(() => listar())
         .catch(err => {
           console.error("Error al eliminar:", err);
@@ -162,7 +162,7 @@ const Pedidos = ({ variant }) => {
 
   const descargarTicket = async (pedidoId) => {
     try {
-      const res = await axios.get(`${URL_API}/${pedidoId}/ticket`);
+      const res = await api.get(`${URL_API}/${pedidoId}/ticket`);
       const pedido = res.data;
       const detalles = pedido.detalles || [];
 

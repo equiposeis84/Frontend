@@ -22,14 +22,14 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../api';
 import {
   BarChart2, Package, ShieldCheck, ShoppingCart,
   Truck, X, TrendingUp, AlertTriangle, CheckCircle,
   RefreshCw, ChevronRight, Users, Receipt
 } from 'lucide-react';
 
-const API = 'http://localhost:3000/api/reportes';
+const API = '/api/reportes';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const fmt = (n) => Number(n ?? 0).toLocaleString('es-CO');
@@ -494,7 +494,7 @@ const Reportes = () => {
     setLoading(newLoading);
 
     const results = await Promise.allSettled(
-      REPORTES_CONFIG.map(r => axios.get(r.endpoint).then(res => ({ id: r.id, rows: res.data })))
+      REPORTES_CONFIG.map(r => api.get(r.endpoint).then(res => ({ id: r.id, rows: res.data })))
     );
 
     const newData = {};

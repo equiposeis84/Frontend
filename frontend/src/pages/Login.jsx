@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Link } from 'react-router-dom';
 import { Layers } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const URL_LOGIN = "http://localhost:3000/api/usuarios/login";
+const URL_LOGIN = "/api/usuarios/login";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -25,7 +25,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(URL_LOGIN, { email, password });
+      const response = await api.post(URL_LOGIN, { email, password });
 
       // Cargar sesión al contexto global. El token ya está en la httpOnly cookie
       // que el servidor emitió; aquí solo pasamos los datos del usuario para la UI.

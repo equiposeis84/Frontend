@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Pencil, Trash2, Tags } from 'lucide-react';
 import { useModalScroll } from '../hooks/useModalScroll';
 
-const URL_API = "http://localhost:3000/api/categorias";
+const URL_API = "/api/categorias";
 
 const Categorias = () => {
   const [categorias, setCategorias] = useState([]);
@@ -25,7 +25,7 @@ const Categorias = () => {
 
   const listar = () => {
     setLoading(true);
-    axios.get(URL_API)
+    api.get(URL_API)
       .then(res => setCategorias(res.data))
       .catch(err => console.error("Error al listar categorias:", err))
       .finally(() => setLoading(false));
@@ -67,7 +67,7 @@ const Categorias = () => {
     }
 
     if (enEdicion) {
-      axios.put(`${URL_API}/${idCategoria}`, datos)
+      api.put(`${URL_API}/${idCategoria}`, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -78,7 +78,7 @@ const Categorias = () => {
           alert("Error al actualizar: " + (err.response?.data?.message || err.message));
         });
     } else {
-      axios.post(URL_API, datos)
+      api.post(URL_API, datos)
         .then(() => {
           limpiarFormulario();
           listar();
@@ -93,7 +93,7 @@ const Categorias = () => {
 
   const eliminar = (id) => {
     if (window.confirm("¿Confirmar eliminación de este registro?")) {
-      axios.delete(`${URL_API}/${id}`)
+      api.delete(`${URL_API}/${id}`)
         .then(() => listar())
         .catch(err => {
           console.error("Error al eliminar:", err);

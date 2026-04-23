@@ -4,7 +4,7 @@
  * Expone `toast` (última notificación) y `clearToast` para el sistema de notificaciones.
  */
 import { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
@@ -20,7 +20,7 @@ const generateSessionId = () => {
   return sessionId;
 };
 
-const URL_CARRITO = 'http://localhost:3000/api/carrito';
+const URL_CARRITO = '/api/carrito';
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
@@ -36,7 +36,7 @@ export const CartProvider = ({ children }) => {
       const params = {};
       if (isAuthenticated && usuario_id) params.usuario_id = usuario_id;
       if (sessionId) params.session_id = sessionId;
-      const res = await axios.get(URL_CARRITO, { params });
+      const res = await api.get(URL_CARRITO, { params });
       setCartItems(res.data);
     } catch (err) {
       console.error('Error cargando carrito remoto', err);
@@ -47,7 +47,7 @@ export const CartProvider = ({ children }) => {
     const syncCart = async () => {
       if (isAuthenticated && usuario_id && sessionId) {
         try {
-          await axios.post(`${URL_CARRITO}/merge`, { session_id: sessionId, usuario_id });
+          await api.post(`${URL_CARRITO}/merge`, { session_id: sessionId, usuario_id });
         } catch (e) {
           console.log('Error en merge de carrito', e);
         }
@@ -64,7 +64,7 @@ export const CartProvider = ({ children }) => {
       if (isAuthenticated) payload.usuario_id = usuario_id;
       payload.session_id = sessionId;
 
-      const res = await axios.post(`${URL_CARRITO}/add`, payload);
+      const res = await api.post(`${URL_CARRITO}/add`, payload);
       setCartItems(res.data);
 
       // Disparar toast de notificación
@@ -82,7 +82,7 @@ export const CartProvider = ({ children }) => {
       const params = {};
       if (isAuthenticated) params.usuario_id = usuario_id;
       params.session_id = sessionId;
-      const res = await axios.delete(`${URL_CARRITO}/remove/${productId}`, { params });
+      const res = await api.delete(`${URL_CARRITO}/remove/${productId}`, { params });
       setCartItems(res.data);
     } catch (err) {
       console.error('Error removiendo item', err);
@@ -98,7 +98,7 @@ export const CartProvider = ({ children }) => {
       const payload = { cantidad: quantity };
       if (isAuthenticated) payload.usuario_id = usuario_id;
       payload.session_id = sessionId;
-      const res = await axios.put(`${URL_CARRITO}/update/${cartItem.id_carrito}`, payload);
+      const res = await api.put(`${URL_CARRITO}/update/${cartItem.id_carrito}`, payload);
       setCartItems(res.data);
     } catch (err) {
       console.error('Error actualizando cantidad', err);
@@ -111,7 +111,7 @@ export const CartProvider = ({ children }) => {
       const payload = {};
       if (isAuthenticated) payload.usuario_id = usuario_id;
       payload.session_id = sessionId;
-      await axios.post(`${URL_CARRITO}/clear`, payload);
+      await api.post(`${URL_CARRITO}/clear`, payload);
       setCartItems([]);
     } catch (err) {
       console.error('Error vaciando carrito', err);
@@ -122,7 +122,7 @@ export const CartProvider = ({ children }) => {
   const checkout = async () => {
     if (!isAuthenticated || !usuario_id) return false;
     try {
-      await axios.post('http://localhost:3000/api/pedidos/checkout', { usuario_id });
+      await api.post('/api/pedidos/checkout', { usuario_id });
       setCartItems([]);
       return true;
     } catch (err) {

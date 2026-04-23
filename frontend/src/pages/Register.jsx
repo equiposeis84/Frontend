@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Users, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -28,7 +28,7 @@ export default function Register() {
 
     const fetchRoles = async () => {
         try {
-            const res = await axios.get('http://localhost:3000/api/usuarios/roles');
+            const res = await api.get('/api/usuarios/roles');
             setRoles(res.data);
             
             if (res.data.length > 0) {
@@ -57,7 +57,7 @@ export default function Register() {
 
         setLoading(true);
         try {
-            await axios.post('http://localhost:3000/api/usuarios', formData);
+            await api.post('/api/usuarios', formData);
             setSuccess('¡Usuario registrado exitosamente! Ya puedes iniciar sesión.');
             setFormData({
                 rol_id: '',

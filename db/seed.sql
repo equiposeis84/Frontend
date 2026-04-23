@@ -13,14 +13,14 @@ INSERT INTO roles (id_rol, nombre, descripcion) VALUES
 -- 2. USUARIOS
 -- =====================================================
 INSERT INTO usuarios (rol_id, nombre, email, password, numero_documento, telefono) VALUES
-(1, 'Sebastian Admin', 'admin@remate.com',   'pass123', '1010', '3001000001'),
-(2, 'Juan Cliente',    'juan@email.com',     'pass123', '2020', '3002000002'),
-(2, 'Maria Compra',    'maria@email.com',    'pass123', '3030', '3003000003'),
-(2, 'Carlos Venta',    'carlos@email.com',   'pass123', '4040', '3004000004'),
-(2, 'Ana Gomez',       'ana@email.com',      'pass123', '5050', '3005000005'),
-(4, 'Luis Repartidor', 'luis@remate.com',    'pass123', '6060', '3006000006'),
-(4, 'Paula Envios',    'paula@remate.com',   'pass123', '7070', '3007000007'),
-(4, 'Jorge Moto',      'jorge@remate.com',   'pass123', '8080', '3008000008');
+(1, 'Sebastian Admin', 'admin@remate.com',   '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '1010', '3001000001'),
+(2, 'Juan Cliente',    'juan@email.com',     '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '2020', '3002000002'),
+(2, 'Maria Compra',    'maria@email.com',    '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '3030', '3003000003'),
+(2, 'Carlos Venta',    'carlos@email.com',   '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '4040', '3004000004'),
+(2, 'Ana Gomez',       'ana@email.com',      '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '5050', '3005000005'),
+(4, 'Luis Repartidor', 'luis@remate.com',    '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '6060', '3006000006'),
+(4, 'Paula Envios',    'paula@remate.com',   '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '7070', '3007000007'),
+(4, 'Jorge Moto',      'jorge@remate.com',   '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '8080', '3008000008');
 
 -- =====================================================
 -- 3. CATEGORIAS
@@ -41,17 +41,17 @@ INSERT INTO proveedores (nit, nombre, activo) VALUES
 -- =====================================================
 -- 5. PRODUCTOS
 -- =====================================================
-INSERT INTO productos (categoria_id, proveedor_id, nombre, precio_compra, precio_venta, stock_actual) VALUES
-(1, 1, 'Juego Utensilios', 3000,  5000,  100),
-(1, 1, 'Colador Pro',       500,  1000,  200),
-(2, 2, 'Masajeador',       5000,  9000,   50),
-(3, 4, 'Parlante BT',     15000, 25000,   30),
-(4, 5, 'Silla Rattan',    20000, 35000,   20),
-(5, 3, 'Matera Barro',     2000,  4000,   80),
-(1, 1, 'Sarten Teflon',   8000, 15000,   45),
-(2, 2, 'Lampara LED',     12000, 22000,   15),
-(3, 4, 'Audifonos',        7000, 12000,   60),
-(4, 5, 'Mesa Centro',     40000, 75000,   10);
+INSERT INTO productos (categoria_id, proveedor_id, nombre, precio_compra, precio_venta, stock_actual, imagen_url) VALUES
+(1, 1, 'Juego Utensilios', 3000,  5000,  100, NULL),
+(1, 1, 'Colador Pro',       500,  1000,  200, NULL),
+(2, 2, 'Masajeador',       5000,  9000,   50, NULL),
+(3, 4, 'Parlante BT',     15000, 25000,   30, NULL),
+(4, 5, 'Silla Rattan',    20000, 35000,   20, NULL),
+(5, 3, 'Matera Barro',     2000,  4000,   80, NULL),
+(1, 1, 'Sarten Teflon',   8000, 15000,   45, NULL),
+(2, 2, 'Lampara LED',     12000, 22000,   15, NULL),
+(3, 4, 'Audifonos',        7000, 12000,   60, NULL),
+(4, 5, 'Mesa Centro',     40000, 75000,   10, NULL);
 
 -- =====================================================
 -- 6. CARRITO
