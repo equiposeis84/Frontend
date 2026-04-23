@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MapPin, Eye, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { MapPin, Eye, CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react';
 import { useModalScroll } from '../hooks/useModalScroll';
 
-const URL_API = "http://localhost:3000/api/repartidores";
+const api = axios.create({
+  baseURL: 'http://localhost:3000',
+  withCredentials: true
+});
+
+const URL_API = "/api/repartidores";
 
 const Repartidores = () => {
   const [repartidores, setRepartidores] = useState([]);
@@ -23,7 +28,7 @@ const Repartidores = () => {
   const fetchRepartidores = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(URL_API);
+      const res = await api.get(URL_API);
       setRepartidores(res.data);
     } catch (err) {
       console.error("Error al cargar repartidores:", err);
@@ -34,7 +39,7 @@ const Repartidores = () => {
 
   const fetchPedidosSinAsignar = async () => {
     try {
-      const res = await axios.get(`${URL_API}/pedidos-sin-asignar`);
+      const res = await api.get(`${URL_API}/pedidos-sin-asignar`);
       setPedidosSinAsignar(res.data);
     } catch (err) {
       console.error("Error al cargar pedidos sin asignar:", err);
@@ -49,7 +54,7 @@ const Repartidores = () => {
 
   const verDetalleRepartidor = async (id) => {
     try {
-      const res = await axios.get(`${URL_API}/${id}`);
+      const res = await api.get(`${URL_API}/${id}`);
       setSelectedRepartidor(res.data);
       fetchPedidosSinAsignar();
     } catch (err) {
@@ -60,7 +65,7 @@ const Repartidores = () => {
 
   const toggleActivo = async (id, currentStatus) => {
     try {
-      await axios.put(`${URL_API}/${id}/activo`, { activo: !currentStatus });
+      await api.put(`${URL_API}/${id}/activo`, { activo: !currentStatus });
       if (selectedRepartidor && selectedRepartidor.id_usuario === id) {
         setSelectedRepartidor({ ...selectedRepartidor, activo: !currentStatus });
       }
@@ -74,7 +79,7 @@ const Repartidores = () => {
   const asignarPedido = async (pedidoId) => {
     if (!pedidoId) return;
     try {
-      await axios.post(`${URL_API}/${selectedRepartidor.id_usuario}/asignar-pedido`, { pedido_id: pedidoId });
+      await api.post(`${URL_API}/${selectedRepartidor.id_usuario}/asignar-pedido`, { pedido_id: pedidoId });
       alert("Pedido asignado exitosamente");
       verDetalleRepartidor(selectedRepartidor.id_usuario);
     } catch (err) {
@@ -86,7 +91,7 @@ const Repartidores = () => {
   const desasignarPedido = async (pedidoId) => {
     if (!window.confirm("¿Seguro que deseas desasignar este pedido del repartidor?")) return;
     try {
-      await axios.put(`${URL_API}/pedidos/${pedidoId}/desasignar`);
+      await api.put(`${URL_API}/pedidos/${pedidoId}/desasignar`);
       alert("Pedido desasignado exitosamente");
       verDetalleRepartidor(selectedRepartidor.id_usuario);
     } catch (err) {
@@ -99,7 +104,7 @@ const Repartidores = () => {
     const notas = prompt("Notas adicionales para este cambio de estado (opcional):");
     if (notas === null) return; // cancelado
     try {
-      await axios.put(`${URL_API}/pedidos/${pedidoId}/estado`, { estado: nuevoEstado, notas });
+      await api.put(`${URL_API}/pedidos/${pedidoId}/estado`, { estado: nuevoEstado, notas });
       alert("Estado del pedido actualizado");
       verDetalleRepartidor(selectedRepartidor.id_usuario);
       if (showPedidoModal) {

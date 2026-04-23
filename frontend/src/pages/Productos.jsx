@@ -18,6 +18,13 @@ import { Pencil, Trash2, Package, ShoppingCart, Info, Upload, X } from 'lucide-r
 import { useCart } from '../context/CartContext';
 import { useModalScroll } from '../hooks/useModalScroll';
 
+const formatCOP = (valor) =>
+  new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+  }).format(valor);
+
 const URL_API        = "http://localhost:3000/api/productos";
 const URL_API_PUBLIC = "http://localhost:3000/api/productos/publico";
 const URL_CATEGORIAS = "http://localhost:3000/api/categorias";
@@ -294,7 +301,7 @@ const Productos = ({ variant }) => {
 
                 <div className="product-hc-right" style={{ justifyContent: 'center' }}>
                   <div className="pricing-block">
-                    <div className="precio-final">${Number(p.precio_venta).toLocaleString()}</div>
+                    <div className="precio-final">{formatCOP(p.precio_venta)}</div>
                   </div>
                   {p.stock_actual > 0 ? (
                     <button className="btn-add-red" onClick={() => addToCart(p)}>
@@ -330,7 +337,7 @@ const Productos = ({ variant }) => {
                     {selectedProduct.categoria_nombre || 'General'}
                   </div>
                   <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'var(--primary)', marginBottom: '20px' }}>
-                    ${Number(selectedProduct.precio_venta).toLocaleString()}
+                    {formatCOP(selectedProduct.precio_venta)}
                   </div>
                   <div style={{ marginBottom: '20px' }}>
                     <h4 style={{ textTransform: 'uppercase', fontSize: '0.75rem', color: '#64748b', marginBottom: '8px', letterSpacing: '0.5px' }}>Descripción completa</h4>
@@ -440,7 +447,7 @@ const Productos = ({ variant }) => {
                       {p.stock_actual}
                     </span>
                   </td>
-                  <td>${Number(p.precio_venta).toLocaleString()}</td>
+                  <td>{formatCOP(p.precio_venta)}</td>
                   <td>
                     <button className={`status-toggle ${p.activo ? 'is-active' : 'is-inactive'}`}>
                       {p.activo ? 'Activo' : 'Inactivo'}
