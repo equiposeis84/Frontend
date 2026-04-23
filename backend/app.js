@@ -8,7 +8,9 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import swaggerUI from 'swagger-ui-express';
-import swaggerDocumentation from './swagger.json' with { type: 'json' };
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const swaggerDocumentation = require('./swagger.json');
 
 import usuarioRoutes from './routes/usuarioRoutes.js';
 import rolRoutes from './routes/rolRoutes.js';

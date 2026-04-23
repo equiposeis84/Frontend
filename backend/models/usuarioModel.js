@@ -1,4 +1,5 @@
 import prisma from '../config/prisma.js';
+import bcrypt from 'bcrypt';
 
 const Usuario = {
     findAll: async () => {
@@ -38,12 +39,13 @@ const Usuario = {
 
     create: async (data) => {
         const { rol_id, nombre, email, password, tipo_documento, numero_documento, telefono, direccion } = data;
+        const hashedPassword = await bcrypt.hash(password, 10);
         const result = await prisma.usuarios.create({
             data: {
                 rol_id: Number(rol_id),
                 nombre,
                 email,
-                password,
+                password: hashedPassword,
                 tipo_documento,
                 numero_documento,
                 telefono,

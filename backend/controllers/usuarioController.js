@@ -3,6 +3,7 @@
  * @description Controlador para la gestión de usuarios y autenticación.
  */
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import Usuario from '../models/usuarioModel.js';
 
 const SECRET_KEY = process.env.JWT_SECRET || 'mi_clave_secreta_super_segura';
@@ -92,7 +93,8 @@ const login = async (req, res) => {
         const { email, password } = req.body;
         const user = await Usuario.findByEmail(email);
 
-        if (!user || user.password !== password) {
+        const passwordValida = user && await bcrypt.compare(password, user.password);
+        if (!passwordValida) {
             return res.status(401).json({ message: 'Correo o contraseña incorrectos' });
         }
         if (!user.activo) {

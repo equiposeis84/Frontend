@@ -56,7 +56,7 @@ const repartidorController = {
     cambiarEstadoPedido: async (req, res) => {
         try {
             const { estado, notas } = req.body;
-            const usuario_id = req.user.id_usuario; // Asumiendo que el middleware verificarToken añade req.user
+            const usuario_id = req.usuario?.userId; // Asumiendo que el middleware verificarToken añade req.usuario
             await Repartidor.cambiarEstadoPedido(req.params.pedidoId, estado, usuario_id, notas);
             res.json({ message: 'Estado del pedido actualizado exitosamente' });
         } catch (error) {

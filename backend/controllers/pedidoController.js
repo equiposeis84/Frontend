@@ -3,7 +3,7 @@
  * @description Controlador para la gestión de pedidos y transacciones de checkout.
  */
 import Pedido from '../models/pedidoModel.js';
-import db from '../config/db.js';
+import prisma from '../config/prisma.js';
 
 const getAll = async (req, res) => {
     try {
@@ -29,32 +29,57 @@ const checkout = async (req, res) => {
         const { usuario_id } = req.body;
         if (!usuario_id) return res.status(400).json({ message: "Se requiere usuario activo" });
 
-        const [cartItems] = await db.query(`
-            SELECT c.*, p.precio_venta 
-            FROM carrito c
-            INNER JOIN productos p ON c.producto_id = p.id_producto
-            WHERE c.usuario_id = ?
-        `, [usuario_id]);
+        const cartItems = await prisma.carrito.findMany({
+            where: { usuario_id: Number(usuario_id) },
+            include: { producto: { select: { precio_venta: true, nombre: true } } }
+        });
 
         if (cartItems.length === 0) return res.status(400).json({ message: "El carrito está vacío" });
 
-        const total = cartItems.reduce((acc, item) => acc + (item.cantidad * item.precio_venta), 0);
-
-        const [resultUser] = await db.query(`
-            INSERT INTO pedidos (usuario_id, total, estado) VALUES (?, ?, 'PENDIENTE')
-        `, [usuario_id, total]);
-        const pedidoId = resultUser.insertId;
-
-        for (let item of cartItems) {
-            const subtotal = item.cantidad * item.precio_venta;
-            await db.query(`
-                INSERT INTO detalle_pedido (pedido_id, producto_id, cantidad, precio_unitario, subtotal)
-                VALUES (?, ?, ?, ?, ?)
-            `, [pedidoId, item.producto_id, item.cantidad, item.precio_venta, subtotal]);
+        for (const item of cartItems) {
+            const producto = await prisma.productos.findUnique({
+                where: { id_producto: item.producto_id },
+                select: { stock_actual: true, nombre: true }
+            });
+            if (!producto || producto.stock_actual < item.cantidad) {
+                return res.status(400).json({
+                    message: `Stock insuficiente para: ${producto?.nombre}`
+                });
+            }
         }
 
-        await db.query(`DELETE FROM carrito WHERE usuario_id = ?`, [usuario_id]);
-        res.status(201).json({ message: "Pedido procesado con éxito", id_pedido: pedidoId });
+        const total = cartItems.reduce((acc, item) =>
+            acc + (item.cantidad * Number(item.producto.precio_venta)), 0
+        );
+
+        const transactionResult = await prisma.$transaction(async (tx) => {
+            const pedido = await tx.pedidos.create({
+                data: { usuario_id: Number(usuario_id), total, estado: 'PENDIENTE' }
+            });
+            for (const item of cartItems) {
+                const precio = Number(item.producto.precio_venta);
+                await tx.detalle_pedido.create({
+                    data: {
+                        pedido_id: pedido.id_pedido,
+                        producto_id: item.producto_id,
+                        cantidad: item.cantidad,
+                        precio_unitario: precio,
+                        subtotal: item.cantidad * precio
+                    }
+                });
+                
+                await tx.productos.update({
+                    where: { id_producto: item.producto_id },
+                    data: {
+                        stock_actual: { decrement: item.cantidad }
+                    }
+                });
+            }
+            await tx.carrito.deleteMany({ where: { usuario_id: Number(usuario_id) } });
+            return pedido;
+        });
+
+        res.status(201).json({ message: "Pedido procesado con éxito", id_pedido: transactionResult.id_pedido });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
