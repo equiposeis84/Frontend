@@ -20,7 +20,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth(); // Hook al Contexto Global
+  const { login, isAuthenticated, role } = useAuth(); // Hook al Contexto Global
 
   // ── Manejador del submit ────────────────────────────────────────────────────
   const handleLogin = async (e) => {
@@ -84,23 +84,27 @@ const Login = () => {
         transform: 'none', position: 'relative'
       }}>
 
-        {/* Logo + Título */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        {/* Logo + Título (Cliqueable) */}
+        <Link 
+          to={isAuthenticated ? (role === 'Administrador' ? '/admin/inicio' : '/cliente/inicio') : '/usuario/inicio'}
+          style={{ textDecoration: 'none', display: 'block', textAlign: 'center', marginBottom: '2rem' }}
+        >
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            style={{ marginBottom: '0.75rem' }}>
+            style={{ marginBottom: '0.75rem', cursor: 'pointer' }}>
             <path d="M12 2L2 22H22L12 2Z" fill="var(--primary)" />
           </svg>
           <h2 style={{
             fontSize: '1.75rem', fontWeight: '800',
-            letterSpacing: '-0.02em', color: '#0f172a', margin: 0
+            letterSpacing: '-0.02em', color: '#0f172a', margin: 0,
+            cursor: 'pointer'
           }}>
-            Iniciar Sesión
+            Nexbit
           </h2>
           <p style={{ color: '#64748b', marginTop: '0.25rem' }}>
             Accede a tu cuenta de RematesPaisa
           </p>
-        </div>
+        </Link>
 
         {/* Mensaje de error */}
         {error && (
@@ -142,8 +146,10 @@ const Login = () => {
             className="btn-save"
             type="submit"
             style={{
-              width: '100%', padding: '0.75rem', fontSize: '1.05rem',
-              display: 'flex', justifyContent: 'center', marginBottom: '1rem'
+              width: '100%', padding: '0.8rem', fontSize: '1rem',
+              display: 'flex', justifyContent: 'center', alignItems: 'center',
+              marginBottom: '1rem', cursor: 'pointer', border: 'none',
+              borderRadius: '8px', boxSizing: 'border-box'
             }}
             disabled={loading}
           >
@@ -156,15 +162,16 @@ const Login = () => {
           {/* Enlace a Registro */}
           <Link
             to="/register"
-            className="btn-save"
             style={{
-              width: '100%', padding: '0.75rem', fontSize: '1.05rem',
-              display: 'flex', justifyContent: 'center',
-              backgroundColor: '#e2e8f0', color: '#1e293b',
-              textDecoration: 'none'
+              width: '100%', padding: '0.8rem', fontSize: '1rem',
+              display: 'flex', justifyContent: 'center', alignItems: 'center',
+              backgroundColor: '#f1f5f9', color: '#475569',
+              textDecoration: 'none', borderRadius: '8px',
+              fontWeight: '600', boxSizing: 'border-box',
+              border: '1px solid #e2e8f0'
             }}
           >
-            Registrarse
+            Crear cuenta nueva
           </Link>
         </form>
       </div>

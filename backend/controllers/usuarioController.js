@@ -122,6 +122,23 @@ const login = async (req, res) => {
 };
 
 /**
+ * GET /api/usuarios/me
+ * Retorna los datos del usuario autenticado (extraídos del token por el middleware)
+ */
+const getMe = async (req, res) => {
+    try {
+        // req.usuario viene del middleware verificarToken
+        const user = await Usuario.findById(req.usuario.userId);
+        if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+        delete user.password;
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+/**
  * POST /api/usuarios/logout
  * Limpia la httpOnly cookie del servidor
  */
@@ -130,4 +147,4 @@ const logout = (req, res) => {
     res.json({ message: 'Sesión cerrada correctamente' });
 };
 
-export default { getAll, getOne, store, update, getRoles, destroy, login, logout };
+export default { getAll, getOne, store, update, getRoles, destroy, login, logout, getMe };

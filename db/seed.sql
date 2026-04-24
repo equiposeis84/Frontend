@@ -13,14 +13,14 @@ INSERT INTO roles (id_rol, nombre, descripcion) VALUES
 -- 2. USUARIOS
 -- =====================================================
 INSERT INTO usuarios (rol_id, nombre, email, password, numero_documento, telefono) VALUES
-(1, 'Sebastian Admin', 'admin@remate.com',   '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '1010', '3001000001'),
-(2, 'Juan Cliente',    'juan@email.com',     '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '2020', '3002000002'),
-(2, 'Maria Compra',    'maria@email.com',    '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '3030', '3003000003'),
-(2, 'Carlos Venta',    'carlos@email.com',   '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '4040', '3004000004'),
-(2, 'Ana Gomez',       'ana@email.com',      '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '5050', '3005000005'),
-(4, 'Luis Repartidor', 'luis@remate.com',    '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '6060', '3006000006'),
-(4, 'Paula Envios',    'paula@remate.com',   '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '7070', '3007000007'),
-(4, 'Jorge Moto',      'jorge@remate.com',   '$2b$10$D/B1xG98K3r19zXj9cT9sOQ.H7kE7f.U9E1O2Y/q1a0kO6vV.y61G', '8080', '3008000008');
+(1, 'Sebastian Admin', 'admin@remate.com',   '$2b$10$FmvdWkpOie1MECB/paY9a.D1XyitCgIDj1g4XIZGqXvgIR4sVNGh6', '1010', '3001000001'),
+(2, 'Juan Cliente',    'juan@email.com',     '$2b$10$FmvdWkpOie1MECB/paY9a.D1XyitCgIDj1g4XIZGqXvgIR4sVNGh6', '2020', '3002000002'),
+(2, 'Maria Compra',    'maria@email.com',    '$2b$10$FmvdWkpOie1MECB/paY9a.D1XyitCgIDj1g4XIZGqXvgIR4sVNGh6', '3030', '3003000003'),
+(2, 'Carlos Venta',    'carlos@email.com',   '$2b$10$FmvdWkpOie1MECB/paY9a.D1XyitCgIDj1g4XIZGqXvgIR4sVNGh6', '4040', '3004000004'),
+(2, 'Ana Gomez',       'ana@email.com',      '$2b$10$FmvdWkpOie1MECB/paY9a.D1XyitCgIDj1g4XIZGqXvgIR4sVNGh6', '5050', '3005000005'),
+(4, 'Luis Repartidor', 'luis@remate.com',    '$2b$10$FmvdWkpOie1MECB/paY9a.D1XyitCgIDj1g4XIZGqXvgIR4sVNGh6', '6060', '3006000006'),
+(4, 'Paula Envios',    'paula@remate.com',   '$2b$10$FmvdWkpOie1MECB/paY9a.D1XyitCgIDj1g4XIZGqXvgIR4sVNGh6', '7070', '3007000007'),
+(4, 'Jorge Moto',      'jorge@remate.com',   '$2b$10$FmvdWkpOie1MECB/paY9a.D1XyitCgIDj1g4XIZGqXvgIR4sVNGh6', '8080', '3008000008');
 
 -- =====================================================
 -- 3. CATEGORIAS
