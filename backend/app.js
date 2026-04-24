@@ -27,20 +27,39 @@ import reportesRoutes from './routes/reportesRoutes.js';
 const app = express();
 
 // ─── CORS ────────────────────────────────────────────────────────────────────
-const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173').split(',');
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:8081', // Expo/React Native default
+  'http://127.0.0.1:8081'
+];
+
+// Si existe en el .env, lo añadimos
+if (process.env.CORS_ORIGIN) {
+  process.env.CORS_ORIGIN.split(',').forEach(origin => {
+    if (!allowedOrigins.includes(origin)) allowedOrigins.push(origin);
+  });
+}
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Permitir peticiones sin origen (Postman, Swagger local) y los orígenes en lista blanca
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Permitir peticiones sin origen (como Postman o curl)
+    if (!origin) return callback(null, true);
+    
+    // Verificar si el origen está en nuestra lista blanca
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error(`CORS: origen no permitido → ${origin}`));
+      console.warn(`⚠️ CORS bloqueado para el origen: ${origin}`);
+      // En lugar de un error duro, devolvemos false para que la librería CORS maneje el rechazo
+      callback(null, false);
     }
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true      // Necesario para httpOnly cookies
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  credentials: true
 }));
 
 // ─── PARSERS ─────────────────────────────────────────────────────────────────
@@ -62,5 +81,14 @@ app.use('/api/carrito', carritoRoutes);
 app.use('/api/repartidores', repartidorRoutes);
 app.use('/api/stats',        statsRoutes);
 app.use('/api/reportes',     reportesRoutes);
+
+// ─── MANEJO DE ERRORES ───────────────────────────────────────────────────────
+app.use((err, req, res, next) => {
+  console.error('❌ Error no controlado:', err.stack);
+  res.status(500).json({
+    error: 'Error interno del servidor',
+    message: err.message
+  });
+});
 
 export default app;
