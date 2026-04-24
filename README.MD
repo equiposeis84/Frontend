@@ -82,3 +82,11 @@ Si corriste el archivo `db/seed.sql` correctamente, puedes iniciar sesión en la
 - **Cliente:** `cliente@ejemplo.com`
 - **Repartidor 1:** `repartidor1@ejemplo.com`
 - **Repartidor 2:** `repartidor2@ejemplo.com`
+
+## 5. cambiar datos de cuenta de git
+
+Cambiar nombre y correo globalmente (afecta todos los repos):
+```bash
+git config --global user.name "TuNombre"
+git config --global user.email "tucorreo@email.com"
+```

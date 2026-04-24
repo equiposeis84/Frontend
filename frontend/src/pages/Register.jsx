@@ -137,12 +137,32 @@ export default function Register() {
                     </div>
 
                     <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
-                        <button className="btn-save" type="submit" style={{ width: '100%', padding: '0.75rem', fontSize: '1.05rem', display: 'flex', justifyContent: 'center' }} disabled={loading}>
-                            {loading ? <div className="spinner" style={{ width: '20px', height: '20px', borderTopColor: '#fff' }}></div> : 'Registrar Cuenta'}
+                        <button 
+                            className="btn-save" 
+                            type="submit" 
+                            style={{ 
+                                width: '100%', padding: '0.8rem', fontSize: '1rem', 
+                                display: 'flex', justifyContent: 'center', alignItems: 'center',
+                                cursor: 'pointer', border: 'none', borderRadius: '8px',
+                                boxSizing: 'border-box'
+                            }} 
+                            disabled={loading}
+                        >
+                            {loading ? <div className="spinner" style={{ width: '20px', height: '20px', borderTopColor: '#fff' }}></div> : 'Crear Cuenta'}
                         </button>
 
-                        <Link to="/login" className="btn-save" style={{ width: '100%', padding: '0.75rem', fontSize: '1.05rem', display: 'flex', justifyContent: 'center', backgroundColor: '#e2e8f0', color: '#1e293b', textDecoration: 'none', alignItems: 'center', gap: '0.5rem' }}>
-                            <ArrowLeft size={18} /> Volver al Inicio de Sesión
+                        <Link 
+                            to="/login" 
+                            style={{ 
+                                width: '100%', padding: '0.8rem', fontSize: '1rem', 
+                                display: 'flex', justifyContent: 'center', alignItems: 'center', 
+                                backgroundColor: '#f1f5f9', color: '#475569', 
+                                textDecoration: 'none', borderRadius: '8px', 
+                                fontWeight: '600', boxSizing: 'border-box',
+                                border: '1px solid #e2e8f0', gap: '0.5rem' 
+                            }}
+                        >
+                            <ArrowLeft size={18} /> Ya tengo cuenta / Volver
                         </Link>
                     </div>
                 </form>

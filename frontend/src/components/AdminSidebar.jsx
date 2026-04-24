@@ -60,15 +60,15 @@ const AdminSidebar = ({ collapsed, onToggle, onLogout }) => {
   return (
     <aside className={`adm-sidebar${collapsed ? ' adm-sidebar--collapsed' : ''}`}>
 
-      {/* ── Logo ─────────────────────────────────────────── */}
-      <div className="adm-sb-logo">
+      {/* ── Logo (Cliqueable) ─────────────────────────────────────────── */}
+      <NavLink to="/admin/inicio" className="adm-sb-logo" style={{ textDecoration: 'none' }}>
         <div className="adm-sb-logo-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
             <path d="M12 2L2 22H22L12 2Z" fill="white" />
           </svg>
         </div>
-        {!collapsed && <span className="adm-sb-logo-text">RematesPaisa</span>}
-      </div>
+        {!collapsed && <span className="adm-sb-logo-text">Nexbit</span>}
+      </NavLink>
 
       {/* ── Navegación ───────────────────────────────────── */}
       <nav className="adm-sb-nav">
