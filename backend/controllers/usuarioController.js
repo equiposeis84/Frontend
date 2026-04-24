@@ -107,11 +107,15 @@ const login = async (req, res) => {
         const payload = { userId: user.id_usuario, user: user.nombre, rol_id: user.rol_id };
         const token = generarToken(payload);
 
-        // ✅ Token en httpOnly cookie (no accesible desde JavaScript)
+        // ✅ Token en httpOnly cookie (mantenemos para compatibilidad con la WEB)
         res.cookie('token', token, cookieOptions);
 
-        // Solo se devuelven los datos del usuario al cliente (no el token en el body)
-        res.json({ message: '¡Inicio de sesión exitoso!', user });
+        // ✅ Se devuelve el token también en el body (para que el MÓVIL lo pueda guardar)
+        res.json({ 
+            message: '¡Inicio de sesión exitoso!', 
+            user,
+            token 
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

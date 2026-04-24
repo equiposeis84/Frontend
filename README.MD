@@ -43,7 +43,7 @@ El backend gestiona la API, la conexión a la base de datos y la seguridad media
 3. Configura las variables de entorno. Duplica el archivo `.env.example` y renómbralo a `.env`. Asegúrate de actualizar los valores correspondientes a tu entorno (especialmente `DATABASE_URL`, `JWT_SECRET` y las credenciales de Cloudinary).
 4. Sincroniza Prisma con la base de datos (Opcional si ya corriste los .sql, pero recomendado):
    ```bash
-   npx prisma generate
+  
    ```
 5. Inicia el servidor de desarrollo:
    ```bash
