@@ -14,10 +14,12 @@ import {
   LifeBuoy, UserCircle
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 
 const TopBar = ({ onLogout, variant }) => {
   const { totalItems } = useCart();
+  const { isAuthenticated } = useAuth(); // <--- Usar estado real
   const { language, changeLanguage } = useLanguage();
   const navigate     = useNavigate();
   const [scrolled, setScrolled]     = useState(false);
@@ -135,8 +137,8 @@ const TopBar = ({ onLogout, variant }) => {
             </div>
 
             {/* Cuenta */}
-            {isCliente ? (
-              <NavLink to="/cliente/perfil" className="store-action-btn store-action-btn--text">
+            {isAuthenticated ? (
+              <NavLink to={isCliente ? "/cliente/perfil" : "/admin/perfil"} className="store-action-btn store-action-btn--text">
                 <UserCircle size={17} />
                 <span className="store-action-label">Mi Cuenta</span>
               </NavLink>

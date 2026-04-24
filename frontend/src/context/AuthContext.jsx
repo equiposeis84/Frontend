@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { saveSession, logout as authServiceLogout, getUser, clearSession } from '../services/authService';
+import api from '../api';
 
 const AuthContext = createContext();
 
@@ -10,15 +11,32 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Al montar, restaurar la sesión desde los datos de usuario en localStorage.
-  // El token vive en la httpOnly cookie → el servidor lo valida automáticamente.
+  // Al montar, restaurar la sesión validando contra el backend.
   useEffect(() => {
-    const storedUser = getUser();
-    if (storedUser) {
-      setUser(storedUser);
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
+    const checkSession = async () => {
+      const storedUser = getUser();
+      if (!storedUser) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Validar si el token en la cookie sigue siendo válido
+        const res = await api.get('/api/usuarios/me');
+        setUser(res.data);
+        setIsAuthenticated(true);
+      } catch (err) {
+        // Si falla (401), el interceptor ya limpia la sesión, 
+        // pero aquí aseguramos el estado local.
+        setUser(null);
+        setIsAuthenticated(false);
+        clearSession();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
   }, []);
 
   /**

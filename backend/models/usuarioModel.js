@@ -112,7 +112,9 @@ const Usuario = {
         if (rol_id !== undefined) updateData.rol_id = Number(rol_id);
         if (nombre !== undefined) updateData.nombre = nombre;
         if (email !== undefined) updateData.email = email;
-        if (password) updateData.password = password;  // solo si hay nueva contraseña
+        if (password) {
+            updateData.password = await bcrypt.hash(password, 10);
+        }
         if (tipo_documento !== undefined) updateData.tipo_documento = tipo_documento;
         if (numero_documento !== undefined) updateData.numero_documento = numero_documento;
         if (telefono !== undefined) updateData.telefono = telefono;

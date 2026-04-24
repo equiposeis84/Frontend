@@ -8,6 +8,8 @@ router.post('/login', usuarioController.login);
 router.post('/logout', usuarioController.logout);   // Limpia la httpOnly cookie
 router.get('/roles', usuarioController.getRoles);
 
+router.get('/me', verificarToken, usuarioController.getMe);
+
 // ─── Rutas PROTEGIDAS (requieren JWT válido) ──────────────────────────────────
 router.get('/', verificarToken, usuarioController.getAll);
 router.get('/:id', verificarToken, usuarioController.getOne);

@@ -76,7 +76,7 @@ El frontend es una aplicación React construida con Vite.
 ## 🔐 4. Credenciales de Acceso (Por Defecto)
 
 Si corriste el archivo `db/seed.sql` correctamente, puedes iniciar sesión en la aplicación con los siguientes usuarios de prueba. La contraseña para **todos** es:
-**`pass123`**
+**`admin123`**
 
 - **Administrador:** `admin@remate.com`
 - **Cliente:** `cliente@ejemplo.com`
