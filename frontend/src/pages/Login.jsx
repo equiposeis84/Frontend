@@ -9,12 +9,14 @@
  */
 import { useState } from 'react';
 import api from '../api';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const URL_LOGIN = "/api/usuarios/login";
 
 const Login = () => {
+  const location = useLocation();
+  const message = location.state?.message;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -105,6 +107,19 @@ const Login = () => {
             Accede a tu cuenta de RematesPaisa
           </p>
         </Link>
+
+        {/* Mensaje de aviso (e.g. agregar al carrito sin autenticación) */}
+        {message && (
+          <div style={{
+            backgroundColor: '#dbeafe', color: '#1e40af',
+            padding: '0.75rem', borderRadius: '8px',
+            marginBottom: '1.5rem', textAlign: 'center',
+            fontSize: '0.9rem', fontWeight: '600',
+            border: '1px solid #bfdbfe'
+          }}>
+            {message}
+          </div>
+        )}
 
         {/* Mensaje de error */}
         {error && (

@@ -17,6 +17,8 @@ import api from '../api';
 import { Pencil, Trash2, Package, ShoppingCart, Info, Upload, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useModalScroll } from '../hooks/useModalScroll';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const formatCOP = (valor) =>
   new Intl.NumberFormat('es-CO', {
@@ -52,6 +54,8 @@ const ProductoImagen = ({ src, alt, style = {}, iconSize = 56 }) => {
 };
 
 const Productos = ({ variant }) => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [productos, setProductos]           = useState([]);
   const [categoriasList, setCategoriasList] = useState([]);
   const [proveedoresList, setProveedoresList] = useState([]);
@@ -65,6 +69,14 @@ const Productos = ({ variant }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const { addToCart } = useCart();
+
+  const handleAddToCart = (product, quantity = 1) => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { message: 'Inicia sesión para comprar' } });
+      return;
+    }
+    addToCart(product, quantity);
+  };
   const isAdminView   = variant === 'admin' || !variant;
   useModalScroll(showModal || showDetailModal);
 
@@ -304,7 +316,7 @@ const Productos = ({ variant }) => {
                     <div className="precio-final">{formatCOP(p.precio_venta)}</div>
                   </div>
                   {p.stock_actual > 0 ? (
-                    <button className="btn-add-red" onClick={() => addToCart(p)}>
+                    <button className="btn-add-red" onClick={() => handleAddToCart(p)}>
                       <ShoppingCart size={22} />
                     </button>
                   ) : (
@@ -359,7 +371,7 @@ const Productos = ({ variant }) => {
                 <button className="btn-cancel" onClick={() => setShowDetailModal(false)}>Cerrar</button>
                 <button
                   className="btn-save"
-                  onClick={() => { addToCart(selectedProduct); setShowDetailModal(false); }}
+                  onClick={() => { handleAddToCart(selectedProduct); setShowDetailModal(false); }}
                   disabled={selectedProduct.stock_actual <= 0}
                 >
                   {selectedProduct.stock_actual > 0 ? 'Añadir al Carrito' : 'Agotado'}
