@@ -1,8 +1,8 @@
 import axios from 'axios';
 
+// Instancia de axios configurada para enviar cookies de sesión
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '',
-  withCredentials: true,
+  withCredentials: true
 });
 
 export default api;

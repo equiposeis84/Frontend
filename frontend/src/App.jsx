@@ -15,7 +15,7 @@
  *     (Necesitarás crear frontend/src/pages/Tickets.jsx)
  */
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, NavLink } from 'react-router-dom';
 import TopBar from './components/TopBar';
 import AdminSidebar from './components/AdminSidebar';
 import CartToast from './components/CartToast';
@@ -40,6 +40,8 @@ import Reportes from './pages/Reportes';
 // ✅ CORRECCIÓN #5: Importamos Tickets en lugar de Facturas
 // import Facturas from './pages/Facturas';   ← ELIMINADO
 import Tickets from './pages/Tickets';        // ← NUEVO
+
+import PanelRepartidor from './pages/repartidor/PanelRepartidor';
 
 import { CartProvider } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -91,6 +93,37 @@ const StoreLayout = ({ variant }) => {
   );
 };
 
+// ─── Layout del Repartidor ───────────────────────────────────────────────────
+const DeliveryLayout = () => {
+  const { logout } = useAuth();
+  
+  return (
+    <div className="store-layout bg-light min-vh-100" style={{ display: 'flex', flexDirection: 'column' }}>
+      <header className="bg-white shadow-sm d-flex justify-content-between align-items-center px-4 py-3 position-fixed w-100" style={{ top: 0, zIndex: 1000 }}>
+        <div className="store-logo" onClick={() => window.location.href = '/repartidor'} style={{ cursor: 'pointer' }}>
+          <div className="store-logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 22H22L12 2Z" fill="var(--primary)" />
+            </svg>
+          </div>
+          <span className="store-logo-text ms-2 fw-bold text-dark fs-5">Nexbit Reparto</span>
+        </div>
+        <div className="d-flex align-items-center gap-3">
+          <NavLink to="/repartidor/perfil" className={({isActive}) => `btn btn-sm ${isActive ? 'btn-primary' : 'btn-outline-primary'}`}>
+            Mi Perfil
+          </NavLink>
+          <button onClick={logout} className="btn btn-outline-danger btn-sm">
+            Cerrar Sesión
+          </button>
+        </div>
+      </header>
+      <div className="store-content" style={{ marginTop: '70px', flex: 1 }}>
+        <Outlet />
+      </div>
+    </div>
+  );
+};
+
 // ─── Rutas ───────────────────────────────────────────────────────────────────
 function AppRoutes() {
   const { isAuthenticated, role, loading } = useAuth();
@@ -113,13 +146,13 @@ function AppRoutes() {
       <Route
         path="/login"
         element={isAuthenticated
-          ? <Navigate to={isAdmin ? '/admin/inicio' : '/cliente/inicio'} replace />
+          ? <Navigate to={isAdmin ? '/admin/inicio' : role === 'Repartidor' ? '/repartidor' : '/cliente/inicio'} replace />
           : <Login />}
       />
       <Route
         path="/register"
         element={isAuthenticated
-          ? <Navigate to={isAdmin ? '/admin/inicio' : '/cliente/inicio'} replace />
+          ? <Navigate to={isAdmin ? '/admin/inicio' : role === 'Repartidor' ? '/repartidor' : '/cliente/inicio'} replace />
           : <Register />}
       />
 
@@ -155,6 +188,19 @@ function AppRoutes() {
         <Route path="pedidos" element={<Pedidos variant="cliente" />} />
         <Route path="ayuda" element={<Ayuda />} />
         <Route path="contacto" element={<Contacto />} />
+        <Route path="perfil" element={<Perfil />} />
+      </Route>
+
+      {/* ── Repartidor ───────────────────────────────────── */}
+      <Route
+        path="/repartidor"
+        element={
+          <ProtectedRoute allowedRoles={['Repartidor']}>
+            <DeliveryLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<PanelRepartidor />} />
         <Route path="perfil" element={<Perfil />} />
       </Route>
 

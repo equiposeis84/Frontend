@@ -86,7 +86,7 @@ const Login = () => {
 
         {/* Logo + Título (Cliqueable) */}
         <Link 
-          to={isAuthenticated ? (role === 'Administrador' ? '/admin/inicio' : '/cliente/inicio') : '/usuario/inicio'}
+          to={isAuthenticated ? (role === 'Administrador' ? '/admin/inicio' : role === 'Repartidor' ? '/repartidor' : '/cliente/inicio') : '/usuario/inicio'}
           style={{ textDecoration: 'none', display: 'block', textAlign: 'center', marginBottom: '2rem' }}
         >
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
