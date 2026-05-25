@@ -182,92 +182,104 @@ const Pedidos = ({ variant }) => {
         <html lang="es">
         <head>
           <meta charset="UTF-8"/>
-          <title>Comprobante de Pedido - #${pedido.id_pedido}</title>
+          <title>Factura Comercial - #${pedido.id_pedido}</title>
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { font-family: 'Inter', sans-serif; background: #e2e8f0; padding: 40px 20px; color: #1e293b; }
-            .ticket { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; border-top: 6px solid #0f172a; }
-            .ticket-header { padding: 32px 32px 16px 32px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f1f5f9; }
-            .ticket-header .brand { font-size: 1.75rem; font-weight: 700; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.5px; }
-            .ticket-header .doc-type { font-size: 0.85rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-            .ticket-header .order-id { text-align: right; }
-            .ticket-header .order-id-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; }
-            .ticket-header .order-id-value { font-size: 1.25rem; font-weight: 700; color: #0f172a; }
-            .ticket-body { padding: 32px; }
-            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; background: #f8fafc; padding: 20px; border-radius: 6px; border: 1px solid #f1f5f9; }
-            .info-item label { display: block; font-size: 0.75rem; text-transform: uppercase; color: #64748b; font-weight: 600; margin-bottom: 6px; }
-            .info-item span { font-size: 0.95rem; font-weight: 500; color: #0f172a; }
-            .badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; }
-            .badge-pendiente { background: #fffbeb; color: #b45309; border-color: #fde68a; }
-            .badge-pagado { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
-            .badge-entregado { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-            .badge-cancelado { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
-            thead th { border-bottom: 2px solid #e2e8f0; padding: 12px 12px; font-size: 0.8rem; text-transform: uppercase; color: #64748b; font-weight: 600; text-align: left; }
+            .ticket { max-width: 800px; margin: 0 auto; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+            .ticket-header { padding: 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; }
+            .company-info .brand { font-size: 2rem; font-weight: 800; color: #0f172a; letter-spacing: -1px; margin-bottom: 8px; }
+            .company-info .details { font-size: 0.85rem; color: #64748b; line-height: 1.6; }
+            .invoice-details { text-align: right; }
+            .invoice-details .title { font-size: 1.5rem; font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+            .invoice-details .order-id { font-size: 1rem; color: #64748b; font-weight: 500; }
+            .ticket-body { padding: 40px; }
+            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+            .info-box { background: #f8fafc; padding: 24px; border-radius: 8px; border: 1px solid #e2e8f0; }
+            .info-box h3 { font-size: 0.85rem; text-transform: uppercase; color: #64748b; font-weight: 700; margin-bottom: 12px; letter-spacing: 1px; }
+            .info-box p { font-size: 0.95rem; color: #0f172a; font-weight: 500; margin-bottom: 4px; }
+            .info-box .light { color: #64748b; font-weight: 400; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+            thead th { background: #0f172a; color: #fff; padding: 16px; font-size: 0.85rem; text-transform: uppercase; font-weight: 600; text-align: left; letter-spacing: 1px; }
             thead th:nth-child(2), thead th:nth-child(3), thead th:nth-child(4) { text-align: center; }
             thead th:nth-child(3), thead th:nth-child(4) { text-align: right; }
-            tbody td { padding: 14px 12px; font-size: 0.95rem; color: #334155; border-bottom: 1px solid #f1f5f9; }
+            tbody td { padding: 16px; font-size: 0.95rem; color: #334155; border-bottom: 1px solid #e2e8f0; }
+            tbody tr:nth-child(even) { background: #f8fafc; }
             .total-section { display: flex; justify-content: flex-end; }
-            .total-box { width: 250px; }
-            .total-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
-            .total-row.final { border-top: 2px solid #0f172a; padding-top: 16px; margin-top: 4px; }
+            .total-box { width: 300px; background: #f8fafc; padding: 24px; border-radius: 8px; border: 1px solid #e2e8f0; }
+            .total-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+            .total-row.final { border-top: 2px solid #cbd5e1; padding-top: 16px; margin-top: 8px; }
             .total-row .label { font-size: 0.9rem; font-weight: 600; color: #64748b; }
-            .total-row.final .label { font-size: 1.1rem; font-weight: 700; color: #0f172a; }
+            .total-row.final .label { font-size: 1.2rem; font-weight: 800; color: #0f172a; }
             .total-row .amount { font-size: 1rem; font-weight: 600; color: #334155; }
-            .total-row.final .amount { font-size: 1.5rem; font-weight: 700; color: #0f172a; }
-            .ticket-footer { text-align: center; padding: 24px 32px; background: #fff; border-top: 1px solid #f1f5f9; }
-            .ticket-footer p { font-size: 0.85rem; color: #64748b; line-height: 1.5; }
-            .ticket-footer .doc-info { font-size: 0.75rem; color: #94a3b8; margin-top: 12px; }
+            .total-row.final .amount { font-size: 1.5rem; font-weight: 800; color: #0f172a; }
+            .ticket-footer { text-align: center; padding: 32px 40px; background: #0f172a; color: #fff; }
+            .ticket-footer p { font-size: 0.9rem; margin-bottom: 8px; opacity: 0.9; }
+            .ticket-footer .doc-info { font-size: 0.8rem; opacity: 0.6; }
+            .status-badge { display: inline-block; padding: 6px 16px; border-radius: 4px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 12px; }
+            .status-pendiente { background: #fef3c7; color: #b45309; }
+            .status-pagado { background: #dcfce7; color: #15803d; }
+            .status-entregado { background: #dbeafe; color: #1e3a8a; }
+            .status-cancelado { background: #fee2e2; color: #b91c1c; }
             @media print {
               body { background: #fff; padding: 0; }
-              .ticket { box-shadow: none; border: none; border-top: 6px solid #0f172a; }
+              .ticket { box-shadow: none; border: none; }
               .no-print { display: none !important; }
             }
           </style>
         </head>
         <body>
           <div style="text-align:center;margin-bottom:24px;" class="no-print">
-            <button onclick="window.print()" style="padding:12px 32px;background:#0f172a;color:#fff;border:none;border-radius:4px;font-weight:500;cursor:pointer;font-size:1rem;letter-spacing:0.5px;transition:background 0.2s;">
-              Imprimir Documento
+            <button onclick="window.print()" style="padding:14px 40px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:1.1rem;letter-spacing:0.5px;transition:background 0.2s; box-shadow: 0 4px 6px rgba(37,99,235,0.2);">
+              🖨️ Imprimir Factura
             </button>
           </div>
           <div class="ticket">
             <div class="ticket-header">
-              <div>
-                <div class="brand">Nexbit</div>
-                <div class="doc-type">Comprobante de Pedido</div>
+              <div class="company-info">
+                <div class="brand">RematesPaisa</div>
+                <div class="details">
+                  NIT: 900.123.456-7<br/>
+                  Calle Falsa 123, Medellín, Colombia<br/>
+                  Tel: +57 (4) 123 4567<br/>
+                  soporte@rematespaisa.com
+                </div>
               </div>
-              <div class="order-id">
-                <div class="order-id-label">Nº de Pedido</div>
-                <div class="order-id-value">${String(pedido.id_pedido).padStart(6, '0')}</div>
+              <div class="invoice-details">
+                <div class="title">Factura</div>
+                <div class="order-id">Nº ${String(pedido.id_pedido).padStart(6, '0')}</div>
+                <div class="status-badge status-${pedido.estado?.toLowerCase() || 'pendiente'}">
+                  ${pedido.estado || 'PENDIENTE'}
+                </div>
               </div>
             </div>
             <div class="ticket-body">
               <div class="info-grid">
-                <div class="info-item">
-                  <label>Cliente</label>
-                  <span>${pedido.usuario_nombre || 'N/A'}</span>
+                <div class="info-box">
+                  <h3>Facturar A</h3>
+                  <p>${pedido.usuario_nombre || 'N/A'}</p>
+                  <p class="light">Documento: ${pedido.numero_documento || 'N/A'}</p>
+                  ${pedido.direccion ? `<p class="light">Dirección: ${pedido.direccion}</p>` : ''}
                 </div>
-                <div class="info-item">
-                  <label>Documento de Identidad</label>
-                  <span>${pedido.numero_documento || 'N/A'}</span>
-                </div>
-                <div class="info-item">
-                  <label>Fecha de Emisión</label>
-                  <span>${new Date(pedido.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                </div>
-                <div class="info-item">
-                  <label>Estado del Pedido</label>
-                  <span class="badge badge-${pedido.estado?.toLowerCase() || 'pendiente'}">${pedido.estado || 'PENDIENTE'}</span>
+                <div class="info-box">
+                  <h3>Detalles de Emisión</h3>
+                  <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span class="light">Fecha:</span>
+                    <span>${new Date(pedido.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between;">
+                    <span class="light">Moneda:</span>
+                    <span>COP (Pesos Colombianos)</span>
+                  </div>
                 </div>
               </div>
               <table>
                 <thead>
                   <tr>
-                    <th>Descripción del Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio Unitario</th>
+                    <th>Descripción</th>
+                    <th>Cant.</th>
+                    <th>Precio Unit.</th>
                     <th>Subtotal</th>
                   </tr>
                 </thead>
@@ -277,6 +289,14 @@ const Pedidos = ({ variant }) => {
               </table>
               <div class="total-section">
                 <div class="total-box">
+                  <div class="total-row">
+                    <span class="label">Subtotal</span>
+                    <span class="amount">$${Number(pedido.total).toLocaleString()}</span>
+                  </div>
+                  <div class="total-row">
+                    <span class="label">Impuestos (IVA 0%)</span>
+                    <span class="amount">$0</span>
+                  </div>
                   <div class="total-row final">
                     <span class="label">Total a Pagar</span>
                     <span class="amount">$${Number(pedido.total).toLocaleString()}</span>
@@ -285,8 +305,7 @@ const Pedidos = ({ variant }) => {
               </div>
             </div>
             <div class="ticket-footer">
-              <p>Este documento constituye el comprobante oficial de su pedido en Nexbit.</p>
-              <p>Para consultas o reclamos, por favor conserve este número de pedido.</p>
+              <p>Gracias por tu compra en RematesPaisa. ¡Vuelve pronto!</p>
               <div class="doc-info">
                 Documento generado el ${new Date().toLocaleString('es-CO')}
               </div>
