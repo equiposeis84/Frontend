@@ -7,15 +7,17 @@ const api = axios.create({
 });
 
 // Interceptor: si el backend devuelve 401 (token expirado/inválido),
-// limpia la sesión local y redirige al login
+// limpia la sesión local y redirige al login.
+// Excluye rutas públicas (login, register, invitados en /usuario).
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (
-      error.response?.status === 401 &&
-      window.location.pathname !== '/login' &&
-      window.location.pathname !== '/register'
-    ) {
+    const path = window.location.pathname;
+    const isPublicRoute = path === '/login'
+      || path === '/register'
+      || path.startsWith('/usuario');
+
+    if (error.response?.status === 401 && !isPublicRoute) {
       localStorage.removeItem('user');
       window.location.href = '/login';
     }

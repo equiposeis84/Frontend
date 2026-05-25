@@ -23,7 +23,7 @@ import { Ticket, Search, Eye, CheckCircle, Clock, XCircle, Download, X, Package 
 
 // ── Instancia axios con credenciales (cookie httpOnly) ───────────────────────
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'http://127.0.0.1:3000',
   withCredentials: true
 });
 

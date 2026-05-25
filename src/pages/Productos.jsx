@@ -233,7 +233,10 @@ const Productos = ({ variant }) => {
   };
 
   const filteredProductos = productos.filter(p => {
-    if (!isAdminView && !p.activo) return false;
+    if (isAdminView && searchField === 'estado' && searchTerm) {
+      const estado = p.activo ? 'activo' : 'inactivo';
+      if (!estado.includes(searchTerm.toLowerCase())) return false;
+    }
     if (!searchTerm) return true;
     const value = p[searchField];
     if (value === null || value === undefined) return false;

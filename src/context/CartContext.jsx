@@ -32,10 +32,14 @@ export const CartProvider = ({ children }) => {
 
   /* ── Cargar carrito ──────────────────────────────────────── */
   const fetchCart = async () => {
+    // Si el usuario no está autenticado, no llamar al backend
+    // (las rutas de carrito requieren token → 401 → interceptor redirige a /login)
+    if (!isAuthenticated || !usuario_id) {
+      setCartItems([]);
+      return;
+    }
     try {
-      const params = {};
-      if (isAuthenticated && usuario_id) params.usuario_id = usuario_id;
-      if (sessionId) params.session_id = sessionId;
+      const params = { usuario_id, session_id: sessionId };
       const res = await api.get(URL_CARRITO, { params });
       setCartItems(res.data);
     } catch (err) {
@@ -59,10 +63,17 @@ export const CartProvider = ({ children }) => {
 
   /* ── Agregar al carrito + notificación ───────────────────── */
   const addToCart = async (product, quantity = 1) => {
+    if (!isAuthenticated || !usuario_id) {
+      alert('Debes iniciar sesión para agregar productos al carrito.');
+      return;
+    }
     try {
-      const payload = { producto_id: product.id_producto, cantidad: quantity };
-      if (isAuthenticated) payload.usuario_id = usuario_id;
-      payload.session_id = sessionId;
+      const payload = {
+        producto_id: product.id_producto,
+        cantidad: quantity,
+        usuario_id,
+        session_id: sessionId
+      };
 
       const res = await api.post(`${URL_CARRITO}/add`, payload);
       setCartItems(res.data);
