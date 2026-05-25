@@ -3,7 +3,7 @@
  * @description Página de inicio de sesión.
  *
  * CORRECCIONES APLICADAS:
- *  ✅ BUG #2 — Flujo de Login: Se añade un enlace funcional "Volver al Inicio"
+ *  BUG #2 — Flujo de Login: Se añade un enlace funcional "Volver al Inicio"
  *     que navega a /usuario/inicio sin necesidad de autenticación.
  *     El router NO bloquea esa ruta porque /usuario/* es pública (sin ProtectedRoute).
  */

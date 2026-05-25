@@ -3,8 +3,8 @@
  * @description Página de inicio del sistema RematesPaisa.
  *
  * CORRECCIONES APLICADAS:
- *  ✅ BUG #1 — Localización COP: Los stats usan Intl.NumberFormat('es-CO').
- *  ✅ BUG #4 — Admin no ve accesos rápidos de cliente:
+ *  BUG #1 — Localización COP: Los stats usan Intl.NumberFormat('es-CO').
+ *  BUG #4 — Admin no ve accesos rápidos de cliente:
  *     QUICK_ACTIONS solo aparece para roles 'Cliente' e 'Invitado'.
  *     El Admin ve un panel de accesos directos a sus propias secciones.
  */
@@ -45,13 +45,11 @@ const FEATURES = [
   { Icon: Headphones, title: 'Soporte 24/7', desc: 'Un equipo listo para ayudarte en cualquier momento.' },
 ];
 
-// ── Accesos rápidos para el Admin (van a rutas /admin/*) ─────────────────────
 const ADMIN_QUICK_ACTIONS = [
   { Icon: Boxes, title: 'Productos', desc: 'Gestiona el catálogo y el inventario', to: '/admin/productos' },
   { Icon: ClipboardList, title: 'Pedidos', desc: 'Revisa y actualiza los pedidos activos', to: '/admin/pedidos' },
   { Icon: UsersRound, title: 'Usuarios', desc: 'Administra cuentas y roles', to: '/admin/usuarios' },
   { Icon: BarChart2, title: 'Reportes', desc: 'Analiza ventas e inventario', to: '/admin/reportes' },
-  { Icon: Ticket, title: 'Tickets', desc: 'Consulta y gestiona tickets de pedido', to: '/admin/tickets' },
 ];
 
 // ── Componente principal ─────────────────────────────────────────────────────
@@ -81,7 +79,7 @@ const Inicio = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ CORRECCIÓN #1 — Formato COP con Intl.NumberFormat('es-CO')
+  // CORRECCIÓN #1 — Formato COP con Intl.NumberFormat('es-CO')
   // Antes: stats.productos.toLocaleString()  → podía dar formato en-US
   // Ahora: toLocaleString('es-CO') es consistente en todos los navegadores.
   // Para contadores (sin decimales) usamos toLocaleString; para precios, formatCOP.

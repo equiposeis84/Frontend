@@ -3,11 +3,11 @@
  * @description Sidebar de navegación para el panel de administración.
  *
  * CORRECCIONES APLICADAS:
- *  ✅ BUG #5 — Migración Factura → Ticket:
+ *  BUG #5 — Migración Factura → Ticket:
  *     - Se elimina la entrada "Facturas" del menú de navegación.
  *     - Se agrega "Tickets" apuntando a /admin/tickets.
  *     - Se cambia el ícono de Receipt por TicketIcon (Ticket en lucide-react).
- *  ✅ BUG #4 — El Admin ya NO ve enlaces a vistas de cliente.
+ *  BUG #4 — El Admin ya NO ve enlaces a vistas de cliente.
  *     (Los QUICK_ACTIONS de Inicio.jsx apuntan a basePath que para Admin
  *      es /usuario; este Sidebar es el único punto de navegación del Admin.)
  */
@@ -31,9 +31,6 @@ const NAV_GROUPS = [
       { to: '/admin/inicio', Icon: LayoutDashboard, label: 'Dashboard' },
       { to: '/admin/pedidos', Icon: ShoppingBag, label: 'Pedidos' },
       { to: '/admin/productos', Icon: Boxes, label: 'Productos' },
-      // ✅ CORRECCIÓN #5: "Facturas" → "Tickets"
-      // Eliminado: { to: '/admin/facturas', Icon: Receipt, label: 'Facturas' }
-      { to: '/admin/tickets', Icon: Ticket, label: 'Tickets' },
       { to: '/admin/categorias', Icon: Tags, label: 'Categorías' },
       { to: '/admin/reportes', Icon: BarChart2, label: 'Reportes' },
     ],

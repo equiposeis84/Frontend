@@ -232,7 +232,7 @@ const Pedidos = ({ variant }) => {
         <body>
           <div style="text-align:center;margin-bottom:24px;" class="no-print">
             <button onclick="window.print()" style="padding:14px 40px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:1.1rem;letter-spacing:0.5px;transition:background 0.2s; box-shadow: 0 4px 6px rgba(37,99,235,0.2);">
-              🖨️ Imprimir Factura
+              Imprimir Factura
             </button>
           </div>
           <div class="ticket">
@@ -595,18 +595,25 @@ const Pedidos = ({ variant }) => {
                   </td>
                   <td>{new Date(p.fecha).toLocaleDateString()}</td>
                   <td className="actions-cell">
-                    <button className="btn-icon" onClick={() => seleccionarPedido(p)}>
+                    <button className="btn-icon" onClick={() => seleccionarPedido(p)} title="Editar">
                       <Pencil size={18} color="var(--primary)" />
                     </button>
-                    <button className="btn-icon" onClick={() => eliminar(p.id_pedido)}>
+                    <button className="btn-icon" onClick={() => eliminar(p.id_pedido)} title="Eliminar">
                       <Trash2 size={18} color="var(--danger)" />
                     </button>
                   </td>
                   <td>
                     <button
                       className="btn-icon"
+                      onClick={() => verDetalles(p.id_pedido)}
+                      title="Ver Detalles"
+                    >
+                      <Eye size={18} color="var(--primary)" />
+                    </button>
+                    <button
+                      className="btn-icon"
                       onClick={() => descargarTicket(p.id_pedido)}
-                      title="Descargar Ticket de Compra"
+                      title="Descargar Ticket"
                     >
                       <Download size={18} color="var(--primary)" />
                     </button>
@@ -688,6 +695,93 @@ const Pedidos = ({ variant }) => {
               <button className="btn-cancel" onClick={limpiarFormulario}>Cancelar</button>
               <button className="btn-save" onClick={guardar}>Guardar Cambios</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL DETALLE DE PEDIDO (ADMIN) ───────────────────────── */}
+      {showDetailModal && (
+        <div className="modal-backdrop" onClick={() => setShowDetailModal(false)}>
+          <div
+            className="modal-box"
+            onClick={e => e.stopPropagation()}
+            style={{ maxWidth: '700px', maxHeight: '85vh', overflowY: 'auto' }}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ margin: 0 }}>
+                {pedidoDetalle ? `Pedido #${String(pedidoDetalle.id_pedido).padStart(6, '0')}` : 'Cargando...'}
+              </h2>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                {pedidoDetalle && (
+                  <button
+                    onClick={() => { setShowDetailModal(false); descargarTicket(pedidoDetalle.id_pedido); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#0f172a', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}
+                  >
+                    <Download size={15} /> Descargar Ticket
+                  </button>
+                )}
+                <button onClick={() => setShowDetailModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#94a3b8', lineHeight: 1 }}>
+                  <X size={22} />
+                </button>
+              </div>
+            </div>
+
+            {detailLoading ? (
+              <div style={{ textAlign: 'center', padding: '3rem', color: '#94a3b8' }}>Cargando detalles...</div>
+            ) : pedidoDetalle ? (
+              <>
+                {/* Info general */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: '#f8fafc', borderRadius: '12px', padding: '16px', marginBottom: '1.5rem', border: '1px solid #e2e8f0' }}>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, marginBottom: '4px' }}>Cliente</div>
+                    <div style={{ fontWeight: 600, color: '#0f172a' }}>{pedidoDetalle.usuario_nombre || 'N/A'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, marginBottom: '4px' }}>Estado</div>
+                    <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700,
+                      background: pedidoDetalle.estado === 'PENDIENTE' ? '#fffbeb' : pedidoDetalle.estado === 'CANCELADO' ? '#fef2f2' : '#f0fdf4',
+                      color: pedidoDetalle.estado === 'PENDIENTE' ? '#b45309' : pedidoDetalle.estado === 'CANCELADO' ? '#b91c1c' : '#15803d'
+                    }}>{pedidoDetalle.estado}</span>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, marginBottom: '4px' }}>Fecha</div>
+                    <div style={{ fontWeight: 500, color: '#334155' }}>{new Date(pedidoDetalle.fecha_pedido || pedidoDetalle.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, marginBottom: '4px' }}>Total</div>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>${Number(pedidoDetalle.total).toLocaleString()}</div>
+                  </div>
+                </div>
+
+                {/* Productos del pedido con imágenes */}
+                <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '12px' }}>Productos</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {(pedidoDetalle.detalles || []).length === 0 ? (
+                    <p style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>Sin productos detallados.</p>
+                  ) : (
+                    (pedidoDetalle.detalles || []).map(d => (
+                      <div key={d.id_detalle_pedido} style={{ display: 'flex', gap: '16px', alignItems: 'center', padding: '12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px' }}>
+                        {/* Imagen del producto */}
+                        <div style={{ width: '72px', height: '72px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <OrderProductImg src={d.imagen_url} alt={d.producto_nombre} />
+                        </div>
+                        {/* Info */}
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>{d.producto_nombre}</div>
+                          <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Cantidad: <strong>{d.cantidad}</strong></div>
+                          <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Precio unitario: <strong>${Number(d.precio_unitario).toLocaleString()}</strong></div>
+                        </div>
+                        {/* Subtotal */}
+                        <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#0f172a', textAlign: 'right', flexShrink: 0 }}>
+                          ${Number(d.subtotal).toLocaleString()}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
+            ) : null}
           </div>
         </div>
       )}

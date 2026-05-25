@@ -5,11 +5,11 @@
  *  - StoreLayout: topbar e-commerce (cliente / usuario)
  *
  * CORRECCIONES APLICADAS:
- *  ✅ BUG #4 — Admin permanece en su panel:
+ *  BUG #4 — Admin permanece en su panel:
  *     El AdminLayout usa <Outlet> que solo renderiza rutas /admin/*.
  *     Se elimina cualquier ruta /admin/inicio que cargaba <Inicio>
  *     con QUICK_ACTIONS hacia /usuario/* (ver también Inicio.jsx).
- *  ✅ BUG #5 — Migración Factura → Ticket:
+ *  BUG #5 — Migración Factura → Ticket:
  *     - Eliminado: import Facturas / Route path="facturas"
  *     - Agregado:  import Tickets  / Route path="tickets"
  *     (Necesitarás crear frontend/src/pages/Tickets.jsx)
@@ -37,10 +37,6 @@ import Carrito from './pages/Carrito';
 import Ayuda from './pages/Ayuda';
 import Contacto from './pages/Contacto';
 import Reportes from './pages/Reportes';
-
-// ✅ CORRECCIÓN #5: Importamos Tickets en lugar de Facturas
-// import Facturas from './pages/Facturas';   ← ELIMINADO
-import Tickets from './pages/Tickets';        // ← NUEVO
 
 // Páginas del repartidor
 import InicioRepartidor from './pages/repartidor/InicioRepartidor';
@@ -243,9 +239,6 @@ function AppRoutes() {
         <Route path="categorias" element={<Categorias />} />
         <Route path="productos" element={<Productos variant="admin" />} />
         <Route path="pedidos" element={<Pedidos variant="admin" />} />
-        {/* ✅ CORRECCIÓN #5: facturas → tickets */}
-        {/* <Route path="facturas" element={<Facturas />} />  ← ELIMINADO */}
-        <Route path="tickets" element={<Tickets />} />  {/* ← NUEVO */}
         <Route path="proveedores" element={<Proveedores />} />
         <Route path="repartidores" element={<Repartidores />} />
         <Route path="perfil" element={<Perfil />} />

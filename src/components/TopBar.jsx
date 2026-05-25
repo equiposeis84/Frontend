@@ -127,11 +127,11 @@ const TopBar = ({ onLogout, variant }) => {
                   <button
                     className={`store-lang-opt${language === 'es' ? ' active' : ''}`}
                     onClick={() => { changeLanguage('es'); setLangOpen(false); }}
-                  >🇪🇸 Español</button>
+                  >Español</button>
                   <button
                     className={`store-lang-opt${language === 'en' ? ' active' : ''}`}
                     onClick={() => { changeLanguage('en'); setLangOpen(false); }}
-                  >🇺🇸 English</button>
+                  >English</button>
                 </div>
               )}
             </div>
